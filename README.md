@@ -6,6 +6,7 @@
 # Four Phases for The Genesis UI
 
 ## Phase 1: Informational Interface.
+See below for [Make](#make-commands) Commands
 The informational Interface will contains three web pages:
 - [ ] A login page for developers to login using their credentials.
 - [ ] A home page for showing most recent viewed deployment details, a sandwich menu for account information accessing, and navigation bar for accessing list of deployments with filter.
@@ -24,4 +25,14 @@ The informational Interface will contains three web pages:
 ---
 ## Phase 4: Health Monitoring. 
 
+---
+## Make Commands
+* `make all` - Run `docker build` to create `genesis-ui` image from [DockerFile](./Dockerfile) and `docker run` to create a `genesis-ui` container based on `genesis-ui` image to hosting Genesis UI.
+* `make rm-all` - Stop `genesis-ui` container from running and then remove container and image.
+* `make docker-build` - Build the `genesis-ui` image from [DockerFile](./Dockerfile).
+* `make docker-run` - Create the `genesis-ui` container from `genesis-ui` image and runs it in the background.
+* `make docker-start` - Starts a `genesis-ui` container after `genesis-ui` container stopped by the command below.
+* `make docker-stop` - Stops running the `genesis-ui` container.
+* `make docker-rm-img` - Remove `genesis-ui` image if its associated container is stopped and removed.
+* `make docker-rm-container` - Stop and Remove `genesis-ui` container.
 ---

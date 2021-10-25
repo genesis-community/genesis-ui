@@ -7,20 +7,23 @@ ENV HOME ./
 WORKDIR /root
 
 # copy both go.mod and og.sum
-COPY go.mod ./
-COPY go.sum ./
+# COPY go.mod ./
+# COPY go.sum ./
+
+# copy all files
+COPY . ./
 
 # install all Go modules
 RUN go mod download
 
 # copy go source code
-COPY *.go ./
+# COPY *.go ./
 
 # build 
-RUN go build -o ./server.go
+RUN go build -o ./genesis-ui
 
-# expose port 8080 for external connection outside docker
-EXPOSE 8080
+# expose port 3000 for external connection outside docker
+EXPOSE 3000
 
 #execute main.go
-CMD [ "./server.go" ]
+CMD [ "./genesis-ui" ]
