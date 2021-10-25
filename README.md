@@ -8,14 +8,14 @@
 ## Phase 1: Informational Interface.
 See below for [Make](#make-commands) Commands
 The informational Interface will contains three web pages:
-- [ ] A login page for developers to login using their credentials.
-- [ ] A home page for showing most recent viewed deployment details, a sandwich menu for account information accessing, and navigation bar for accessing list of deployments with filter.
-- [ ] A Deployment page for hosting all information (company, region, infrastructure and etc)
+- [ ] A login page for developers to login using their S&W credentials.
+- [ ] A home page for showing most recent viewed deployment details, a sandwich menu for accessing account information, and a navigation bar for accessing list of deployments with filter categories such as the region(US East / US West) or deployment type(Lab / Products / Others). The home page also contains a youtube tutorial explaining the UI and helping new users to get familiar with GENESIS UI.
+- [ ] A Deployment page for hosting all information (company, region, infrastructure and etc) of the selected deployment for detailed information.
 
 ### Current focus:
-- [ ] Improving prototype based on needs.
+- [ ] Improving prototype based on deployment filters and specifications.
 - [ ] Getting familiar with Golang and Gin Gonic for backend.
-- [ ] Working on implementing login page and its functionality.
+- [ ] Enhancing React Prototype for the login page implementation and functionality.
 ---
 ## Phase 2: Compare Deployment.
 
