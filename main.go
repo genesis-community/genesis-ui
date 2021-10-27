@@ -1,30 +1,22 @@
 package main
 
 import (
-	"fmt"
-	"html/template"
-	"net/http"
-	"os"
+	// "fmt"
+	// "html/template"
+	// "net/http"
+	// "os"
+	"github.com/gin-gonic/gin"
 )
 
-var tpl = template.Must(template.ParseFiles("login.html"))
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	tpl.Execute(w, nil)
-}
-
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
-	}
+	router := gin.Default()
+	router.GET("/", func(context *gin.Context) {
+		context.File("login.html")
+	})
+	router.StaticFile("images/S&W logo.png", "./images/S&W logo.png")
+	router.GET("images/titleBar.png", func(context *gin.Context) {
+		context.File("./images/titleBar.png")
+	})
 
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", indexHandler)
-	http.ListenAndServe(":"+port, mux)
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
+	router.Run(":8080") // listen on local host 0.0.0.0:3000
 }
