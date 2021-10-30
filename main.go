@@ -18,5 +18,5 @@ func main() {
 		context.File("./images/titleBar.png")
 	})
 
-	router.Run(":8080") // listen on local host 0.0.0.0:3000
+	router.Run(":3000") // listen on local host 0.0.0.0:3000
 }
