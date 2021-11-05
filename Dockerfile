@@ -3,16 +3,23 @@ FROM golang:1.17.2
 # Set environment to current environment
 ENV HOME ./
 
+#make app directory
+RUN mkdir -p /app
+
 # cd into home directory
-WORKDIR /root
+WORKDIR /app
 
 # copy both go.mod and og.sum
 # COPY go.mod ./
 # COPY go.sum ./
 
 # copy all files
-COPY . ./
-
+# COPY . ./
+COPY go.mod /app
+COPY go.sum /app
+COPY login.html /app
+COPY *.go /app
+COPY assets /app/assets
 # install all Go modules
 RUN go mod download
 

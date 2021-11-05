@@ -9,7 +9,7 @@ docker-build:
 
 docker-run:
 	echo "Preparing Genesis UI in container."
-	docker container run --name genesis-ui --publish 3000:3000 --detach genesis-ui
+	docker run --name genesis-ui --publish 3000:3000 --detach -v $$PWD/images:/app/images genesis-ui
 	echo "Container up and runing."
 
 docker-start:
