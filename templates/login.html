@@ -160,14 +160,16 @@ span.psw {
                         <a href="#" class="nav-item nav-link">Contact</a>
                     </div>
                     <div class="navbar-nav ms-auto">
-                        <button onclick="document.getElementById('popUp-Login').style.display='block'" style="width:auto;">Log In</button>
+                      <form action = "templates/loginPage" method = "POST">
+                        <input style="width:auto;" type="submit" value="Log In">
+                      <form>
                     </div>
                 </div>
             </div>
         </nav>
     </div>
 
-    <div id="popUp-Login" class="modal">
+    <!-- <div id="popUp-Login" class="modal">
   
         <form class="modal-content animate" action="/action_page.php" method="post">
           <div class="imgcontainer">
@@ -176,18 +178,19 @@ span.psw {
           </div>
       
           <div class="container">
-            <label for="uname"><b>Username</b></label>
-            <input type="text" placeholder="Enter Username" name="uname" required>
+            <form action="/loginAuth" method="POST">
+              <label for="uname"><b>Username</b></label>
+              <input type="text" placeholder="Enter Username" name="uname" required>
       
-            <label for="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="psw" required>
-            <span class="psw"> <a href="#">Forgot password?</a></span>
+              <label for="psw"><b>Password</b></label>
+              <input type="password" placeholder="Enter Password" name="psw" required>
+              <span class="psw"> <a href="#">Forgot password?</a></span>
               
-            <button type="submit">Login</button>
-            <label>
+              <button type="submit" formaction="/loginAuth" method="POST" value="Submit">Login</button>
+              <label>
                 <input type="checkbox" checked="checked" name="remember"> Remember me
-            </label>
-            
+              </label>
+            </form>
           </div>
       
           <div class="container" style="background-color:#f1f1f1">
@@ -206,7 +209,7 @@ span.psw {
               modal.style.display = "none";
           }
       }
-      </script>
+      </script> -->
       
       
 </body>
