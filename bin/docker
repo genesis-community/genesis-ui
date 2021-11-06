@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+fail() { echo "FAIL: $*" >&2 ; exit 1; }
+
+cmd="$1"
+
+shift ||
+  fail "Usage: $0: {stop,build,start}"
+
+case "${cmd}" in
+  (build)
+    echo "Building Genesis UI image from Dockerfile."
+    docker build -t genesis-ui .
+    echo "Genesis UI image is ready."
+    ;;
+  (start)
+    echo "Preparing Genesis UI in container."
+    exec docker run \
+      --detach \
+      --name genesis-ui \
+      --publish 3000:3000 \
+      -v $PWD/images:/app/images \
+      genesis-ui
+    ;;
+  (stop)
+    echo "Stoping Genesis UI Container."
+    docker stop genesis-ui || true
+    docker rm genesis-ui || true
+    docker rmi genesis-ui || true
+    echo "Genesis UI Container Stopped."
+    ;;
+  (logs)
+    exec docker logs genesis-ui
+    ;;
+  (logs-tail)
+    exec docker logs -f genesis-ui
+    ;;
+  (open)
+    open http://127.0.0.1:3000
+    ;;
+esac

@@ -5,7 +5,7 @@
 <div className="loginPage">
     <head>
         <title>Login Page</title>
-        <link rel="stylesheet" href="/assets/style.css" />
+        <link rel="stylesheet" href="/assets/css/style.css" />
     </head>
     <div className="logoBanner">
         Stark and Wayne 
@@ -146,7 +146,7 @@ span.psw {
                 <div class="inner-flex-space-between flex no-flex-1100">
                     <div class="logo">
                         <a href="/">
-                            <img src="images/S&W logo.png" height="60">
+                            <img src="assets/images/S&W logo.png" height="60">
                         </a>
                     </div>
                 </div>
@@ -160,7 +160,7 @@ span.psw {
                         <a href="#" class="nav-item nav-link">Contact</a>
                     </div>
                     <div class="navbar-nav ms-auto">
-                      <form action = "templates/loginPage" method = "POST">
+                      <form action = "/loginPage" method = "GET">
                         <input style="width:auto;" type="submit" value="Log In">
                       <form>
                     </div>
@@ -174,7 +174,7 @@ span.psw {
         <form class="modal-content animate" action="/action_page.php" method="post">
           <div class="imgcontainer">
             <span onclick="document.getElementById('popUp-Login').style.display='none'" class="close" title="Close Modal">&times;</span>
-            <img src="images/titleBar.png" alt="Avatar" class="avatar">
+            <img src="assets/images/titleBar.png" alt="Avatar" class="avatar">
           </div>
       
           <div class="container">

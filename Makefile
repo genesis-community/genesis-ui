@@ -1,34 +1,20 @@
-all: docker-build docker-run
+all: stop build run
 
-rm-all: docker-rm-container docker-rm-img
+stop:
+	./bin/docker stop
 
-docker-build:
-	echo "Building Genesis UI image from Dockerfile."
-	docker build -t genesis-ui .
-	echo "Genesis UI image is ready."
+build:
+	./bin/docker build
 
-docker-run:
-	echo "Preparing Genesis UI in container."
-	docker run --name genesis-ui --publish 3000:3000 --detach -v $$PWD/images:/app/images genesis-ui
-	echo "Container up and runing."
+start:
+	./bin/docker start
 
-docker-start:
-	echo "Starting Up Genesis UI."
-	docker container start genesis-ui
-	echo "Container up and runing."
+logs:
+	./bin/docker logs
 
-docker-stop:
-	echo "Stoping Genesis UI Container."
-	docker container stop genesis-ui
-	echo "Genesis UI Container Stopped."
+logs-tail:
+	./bin/docker logs
 
-docker-rm-img:
-	echo "Removing image."
-	docker image rm genesis-ui
-	echo "Image removed."
+web:
+	./bin/docker web
 
-docker-rm-container:
-	echo "Remving container."
-	docker container stop genesis-ui
-	docker container rm genesis-ui
-	echo "Container removed."
