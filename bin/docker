@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
-
+set -ex
 fail() { echo "FAIL: $*" >&2 ; exit 1; }
 
 cmd="$1"
 
 shift ||
   fail "Usage: $0: {stop,build,start}"
+
+export VAULT_PREFIX="secret/exodus/"
+export VAULT_ADDR="https://10.128.4.5"
+
+# vvv Makefile
+export VAULT_TOKEN="$(cat ~/.vault-token)"
 
 case "${cmd}" in
   (build)
@@ -16,6 +22,9 @@ case "${cmd}" in
   (start)
     echo "Preparing Genesis UI in container."
     exec docker run \
+      -e VAULT_PREFIX="${VAULT_PREFIX}" \
+      -e VAULT_TOKEN="${VAULT_TOKEN}" \
+      -e VAULT_ADDR="${VAULT_ADDR}" \
       --detach \
       --name genesis-ui \
       --publish 3000:3000 \

@@ -2,16 +2,28 @@ package main
 
 import (
 	// "html/template"
-	// "os"
 	"crypto/sha256"
 	"crypto/subtle"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	vault "github.com/hashicorp/vault/api"
 )
 
 func main() {
+	config := &vault.Config{
+		Address: os.Getenv("VAULT_ADDR"),
+	} // modify for more granular configuration
+
+	client, err := vault.NewClient(config)
+	if err != nil {
+		fmt.Errorf("unable to initialize Vault client: %w", err)
+	}
+	client.SetToken(os.Getenv("VAULT_TOKEN"))
+	path := os.Getenv("VAULT_PREFIX")
+	// ver_name := "bosh"
 	router := gin.Default()
 
 	router.GET("/", func(context *gin.Context) {
@@ -48,7 +60,21 @@ func main() {
 	})
 
 	router.GET("/homepage", func(context *gin.Context) {
-		context.File("public/homepage.html")
+		//context.File("public/homepage.html")
+		//secret/exodus/snw-klin-lab/bosh:kit_version
+		name, err := client.Logical().Read("secret/exodus/snw-klin-lab/bosh:kit_version")
+
+		if err != nil {
+			fmt.Errorf("unable to access Vault client: %w", err)
+		}
+		fmt.Printf("%+v\n", name)
+		fmt.Print(path + "snw-klin-lab/bosh" + ":kit_name")
+		version, err := client.Logical().Read(path + "snw-klin-lab/bosh" + ":kit_version")
+		if err != nil {
+			fmt.Errorf("unable to access Vault client: %w", err)
+		}
+
+		context.JSON(http.StatusOK, gin.H{"name": name, "version": version})
 	})
 
 	router.Run(":3000") // listen on local host 0.0.0.0:3000

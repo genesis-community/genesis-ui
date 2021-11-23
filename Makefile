@@ -1,4 +1,4 @@
-all: stop build run
+all: stop build start
 
 stop:
 	./bin/docker stop
@@ -17,4 +17,3 @@ logs-tail:
 
 web:
 	./bin/docker web
-
