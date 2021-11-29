@@ -9,7 +9,7 @@ shift ||
 
 export VAULT_PREFIX="secret/exodus/"
 export VAULT_ADDR="https://10.128.4.5"
-
+export VAULT_SKIP_VERIFY="true"
 # vvv Makefile
 export VAULT_TOKEN="$(cat ~/.vault-token)"
 
@@ -23,6 +23,7 @@ case "${cmd}" in
     echo "Preparing Genesis UI in container."
     exec docker run \
       -e VAULT_PREFIX="${VAULT_PREFIX}" \
+      -e VAULT_SKIP_VERIFY="${VAULT_SKIP_VERIFY}" \
       -e VAULT_TOKEN="${VAULT_TOKEN}" \
       -e VAULT_ADDR="${VAULT_ADDR}" \
       --detach \
