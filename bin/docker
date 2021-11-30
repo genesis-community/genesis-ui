@@ -8,7 +8,7 @@ shift ||
   fail "Usage: $0: {stop,build,start}"
 
 export VAULT_PREFIX="secret/exodus/"
-export VAULT_ADDR="https://10.128.4.5"
+export VAULT_ADDR="https://10.128.4.5:443"
 export VAULT_SKIP_VERIFY="true"
 # vvv Makefile
 export VAULT_TOKEN="$(cat ~/.vault-token)"

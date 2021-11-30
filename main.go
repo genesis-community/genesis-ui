@@ -61,9 +61,21 @@ func main() {
 	})
 	router.StaticFile("/script.js", "./public/assets/js/script.js")
 	router.GET("/homepage", func(context *gin.Context) {
-		context.File("public/homepage.html")
+		fmt.Println(os.Getenv("VAULT_SKIP_VERIFY"))
+		if config.Error != nil {
+			fmt.Fprintf(os.Stderr, "config set up incorrect: %+v\n", config.Error)
+			return
+		}
+		//context.File("public/homepage.html")
+		//fmt.Print(os.Getenv("VAULT_TOKEN"))
+		Token := os.Getenv("VAULT_TOKEN")
+		fmt.Println(Token)
+		if Token[0] == '"' {
+			fmt.Print("contain quote\n")
+		}
+		fmt.Println("pass")
 		//secret/exodus/snw-klin-lab/bosh:kit_version
-		name, err := client.Logical().Read(path + "snw-klin-lab/bosh:kit_name")
+		name, err := client.Logical().Read(path + "snw-klin-lab/bosh:")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "client.Logical().Read(%s): %+v\n", path, err)
 			return
@@ -77,7 +89,7 @@ func main() {
 			return
 		}
 		fmt.Printf("%+v", version)
-		//context.JSON(http.StatusOK, gin.H{"name": name, "version": version})
+		context.JSON(http.StatusOK, gin.H{"name": name, "version": version})
 	})
 
 	router.Run(":3000") // listen on local host 0.0.0.0:3000
