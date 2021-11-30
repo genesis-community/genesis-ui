@@ -9,22 +9,11 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+
 	vault "github.com/hashicorp/vault/api"
 )
 
 func main() {
-	config := &vault.Config{
-		Address: os.Getenv("VAULT_ADDR"),
-	} // modify for more granular configuration
-
-	client, err := vault.NewClient(config)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "vault.NewClient(%+v): %+v\n", client, err)
-		return
-	}
-	client.SetToken(os.Getenv("VAULT_TOKEN"))
-	path := os.Getenv("VAULT_PREFIX")
-	// ver_name := "bosh"
 	router := gin.Default()
 
 	router.GET("/", func(context *gin.Context) {
@@ -61,35 +50,47 @@ func main() {
 	})
 	router.StaticFile("/script.js", "./public/assets/js/script.js")
 	router.GET("/homepage", func(context *gin.Context) {
-		fmt.Println(os.Getenv("VAULT_SKIP_VERIFY"))
+		config := &vault.Config{
+			Address: os.Getenv("VAULT_ADDR"),
+		} // modify for more granular configuration
+
+		client, err := vault.NewClient(config)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "vault.NewClient(%+v): %+v\n", client, err)
+			return
+		}
+		client.SetToken(os.Getenv("VAULT_TOKEN"))
+		path := os.Getenv("VAULT_PREFIX")
 		if config.Error != nil {
 			fmt.Fprintf(os.Stderr, "config set up incorrect: %+v\n", config.Error)
 			return
 		}
 		//context.File("public/homepage.html")
-		//fmt.Print(os.Getenv("VAULT_TOKEN"))
-		Token := os.Getenv("VAULT_TOKEN")
-		fmt.Println(Token)
-		if Token[0] == '"' {
-			fmt.Print("contain quote\n")
-		}
-		fmt.Println("pass")
 		//secret/exodus/snw-klin-lab/bosh:kit_version
-		name, err := client.Logical().Read(path + "snw-klin-lab/bosh:")
+
+		director := "snw-klin-lab" // TODO: How to pass this in as an option / parameter
+
+		secret, err := client.Logical().Read(path + director + "/bosh")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "client.Logical().Read(%s): %+v\n", path, err)
 			return
 		}
-		fmt.Print(os.Getenv("VAULT_TOKEN"))
-		fmt.Printf("%+v\n", name)
-		fmt.Print(path + "snw-ijupudy-lab/bosh" + ":kit_name")
-		version, err := client.Logical().Read(path + "snw-ijupudy-lab/bosh:kit_version")
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "client.Logical().Read(%s): %+v\n", path, err)
+		if secret == nil {
+			fmt.Fprintf(os.Stderr, "client.Logical().Read(%s): Secret not found!\n", path)
 			return
 		}
-		fmt.Printf("%+v", version)
-		context.JSON(http.StatusOK, gin.H{"name": name, "version": version})
+
+		data := secret.Data["data"].(map[string] interface{})
+
+		// Debugging, see what's in there :) 
+		//for k,v := range data{
+		//	fmt.Fprintf(os.Stderr, "%s: %+v\n", k, v)
+		//}
+
+		kit_name := data["kit_name"].(string)
+		kit_version := data["kit_version"].(string)
+
+		context.JSON(http.StatusOK, gin.H{"kit_name": kit_name, "kit_version": kit_version})
 	})
 
 	router.Run(":3000") // listen on local host 0.0.0.0:3000
