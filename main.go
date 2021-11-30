@@ -82,8 +82,8 @@ func main() {
 		}
 		fmt.Print(os.Getenv("VAULT_TOKEN"))
 		fmt.Printf("%+v\n", name)
-		fmt.Print(path + "snw-klin-lab/bosh" + ":kit_name")
-		version, err := client.Logical().Read(path + "snw-klin-lab/bosh:kit_version")
+		fmt.Print(path + "snw-ijupudy-lab/bosh" + ":kit_name")
+		version, err := client.Logical().Read(path + "snw-ijupudy-lab/bosh:kit_version")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "client.Logical().Read(%s): %+v\n", path, err)
 			return
