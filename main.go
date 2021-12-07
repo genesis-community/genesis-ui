@@ -64,6 +64,10 @@ func main() {
 		}
 	})
 
+	router.GET("/write_cookie", func(context *gin.Context) {
+		context.SetCookie("name", "ABC", 3600, "/", "127.0.0.1:3000", true, false)
+	})
+
 	router.GET("/bosh", func(context *gin.Context) {
 		config := &vault.Config{
 			Address: os.Getenv("VAULT_ADDR"),
@@ -83,7 +87,7 @@ func main() {
 
 		director := "snw-" + account_map["cookie/token"] + "-lab" // TODO: How to pass this in as an option / parameter
 
-		secret, err := client.Logical().Read(path + director + "/bosh")
+		secret, err := client.Logical().List("/secret") //+ director + "/bosh")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "client.Logical().Read(%s): %+v\n", path+director+"/bosh", err)
 			return
