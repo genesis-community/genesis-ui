@@ -87,7 +87,7 @@ func main() {
 
 		director := "snw-" + account_map["cookie/token"] + "-lab" // TODO: How to pass this in as an option / parameter
 
-		secret, err := client.Logical().List("/secret") //+ director + "/bosh")
+		secret, err := client.Logical().Read("/secret" + director + "/bosh")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "client.Logical().Read(%s): %+v\n", path+director+"/bosh", err)
 			return
