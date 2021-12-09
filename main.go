@@ -106,6 +106,8 @@ func main() {
 		kit_name := data["kit_name"].(string)
 		kit_version := data["kit_version"].(string)
 
+		//context.SetCookie("name", "ABC", 10, "/bosh", "localhost", false, false)
+
 		context.JSON(http.StatusOK, gin.H{"bosh_name": bosh_name, "deploy_date": deploy_date, "deployer_name": deployer_name, "kit_name": kit_name, "kit_version": kit_version})
 
 		// using cookie or token to look up evn/deployments

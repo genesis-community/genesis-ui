@@ -147,7 +147,31 @@
 		<div class="split left">
 			  <h3> Deployments</h3>
 			  <p> Region, etc</p>
+			  <div id="deploy"></div>
 			</div>
 		  </div>
 	</body>
 </html>
+
+<script>
+	const ul = document.getElementById('deploy');
+	const url = '/bosh';
+
+	fetch(url)
+	.then((resp) => resp.json())
+	.then(function(data) {
+		console.log(data)
+		//return function(data) {
+			//for (elem in data){
+				// let li = createNode('li');
+				// let span = createNode('span');
+				// span.innerHTML = `${elem}`;
+				// append(li, span);
+			//}
+			// append(ul, li);
+		//}
+	})
+	.catch(function(error) {
+		console.log(error);
+	});
+</script>
