@@ -116,7 +116,7 @@
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 		<script src="/script.js"></script>
 	</head>
-	<body>
+	<body onload="bttn()">
 		<div class="m-4">
 			<nav class="navbar navbar-expand-lg navbar-light bg-light">
 				<div class="container-fluid">
@@ -154,24 +154,37 @@
 </html>
 
 <script>
-	const ul = document.getElementById('deploy');
-	const url = '/bosh';
+	function bttn(){
+		const ul = document.getElementById('deploy');
+		const url = '/bosh';
 
-	fetch(url)
-	.then((resp) => resp.json())
-	.then(function(data) {
-		console.log(data)
-		//return function(data) {
-			//for (elem in data){
-				// let li = createNode('li');
-				// let span = createNode('span');
-				// span.innerHTML = `${elem}`;
-				// append(li, span);
+		fetch(url)
+		.then((resp) => resp.json())
+		.then(function(data) {
+			console.log(data)
+			//return function(data) {
+				for(elem in data){
+				// 	// let li = createNode('li');
+				// 	// let span = createNode('span');
+				// 	// span.innerHTML = `${elem}`;
+				// 	// append(li, span);
+				// 	// let btn = document.createElement("button");
+				// 	// btn.innerHTML = elem;
+				// 	// console.log(elem)
+					if(elem == "bosh_name"){
+						let btn = document.createElement("button");
+						btn.innerHTML = data[elem];
+						btn.onclick = function generateAlert(){alert(JSON.stringify(data))}
+						btn.name = data[elem];
+						ul.appendChild(btn);
+					}
+				}
+				// append(ul, li);
 			//}
-			// append(ul, li);
-		//}
-	})
-	.catch(function(error) {
-		console.log(error);
-	});
+		})
+		.catch(function(error) {
+			console.log(error);
+		});
+	}
+	
 </script>
