@@ -109,6 +109,12 @@
 		left: 0;
 		background-color:rgb(0, 140, 255);
 	}
+
+	.right {
+		left: 50%;
+		right: 0;
+		background-color: rgb(177, 212, 241);
+	}
 	</style>
 
 		<title>Homepage for deployments</title>
@@ -145,11 +151,13 @@
 			</nav>
 		</div>
 		<div class="split left">
-			  <h3> Deployments</h3>
-			  <p> Region, etc</p>
-			  <div id="deploy"></div>
-			</div>
-		  </div>
+			<h3> Deployments</h3>
+			<p> Click on the deployments to see more details: </p>
+			<div id="deploy"></div>
+		</div>
+		<div id="deploymentDetails" class="split right" hidden=true>
+			<h3> Selected deployment's details: </h3>
+		</div>
 	</body>
 </html>
 
@@ -174,7 +182,23 @@
 					if(elem == "bosh_name"){
 						let btn = document.createElement("button");
 						btn.innerHTML = data[elem];
-						btn.onclick = function generateAlert(){alert(JSON.stringify(data))}
+						btn.onclick = function generateAlert(){
+							table = document.createElement("table")
+							r = document.getElementById("deploymentDetails")
+							r.hidden = false
+							r.innerHTML = ""
+							h = document.createElement("h3")
+							h.innerHTML = " Selected deployment's details: "
+							r.appendChild(h)
+							r.appendChild(table);
+							details = document.createElement("div")
+							for (const [key, value] of Object.entries(data)) {
+								d = document.createElement("div")
+  								d.innerHTML = (`${key}: ${value}`);
+								details.appendChild(d)
+							}
+							table.appendChild(details)
+						}	
 						btn.name = data[elem];
 						ul.appendChild(btn);
 					}
