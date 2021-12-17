@@ -108,7 +108,25 @@ func main() {
 
 		//context.SetCookie("name", "ABC", 10, "/bosh", "localhost", false, false)
 
+		// commented out for new addition
 		context.JSON(http.StatusOK, gin.H{"bosh_name": bosh_name, "deploy_date": deploy_date, "deployer_name": deployer_name, "kit_name": kit_name, "kit_version": kit_version})
+
+		// *************************
+		// testing getting all deployments from inside buffalo-lab:
+		// secret_lab, err := client.Logical().Read(path + "buffalo-lab" + "/bosh")
+		// if err != nil {
+		// 	fmt.Fprintf(os.Stderr, "client.Logical().Read(%s): %+v\n", path+director+"/bosh", err)
+		// 	return
+		// }
+		// buf_lab_data := secret_lab.Data["data"].(map[string]interface{})
+
+		// bosh_buf := buf_lab_data["bosh"].(string)
+		// buf_kit_name := buf_lab_data["kit_name"].(string)
+		// buf_kit_version := buf_lab_data["kit_version"].(string)
+
+		// context.JSON(http.StatusOK, gin.H{"bosh_name": bosh_name, "deploy_date": deploy_date, "deployer_name": deployer_name, "kit_name": kit_name, "kit_version": kit_version, "bosh_buf": bosh_buf, "buf_kit_name": buf_kit_name, "buf_kit_version ": buf_kit_version})
+		// end of testing
+		// *************************
 
 		// using cookie or token to look up evn/deployments
 		// cookie, err := c.Cookie("gin_cookie")
