@@ -1,70 +1,16 @@
-package main
+package controllers
 
 import (
-	"crypto/sha256"
-	"crypto/subtle"
 	"fmt"
-	"html"
 	"net/http"
 	"os"
-
 	"github.com/gin-gonic/gin"
-
 	vault "github.com/hashicorp/vault/api"
+
 )
 
-func main() {
-	account_map := make(map[string]string)
-
-	router := gin.Default()
-
-	router.GET("/", func(context *gin.Context) {
-		context.File("public/login.html")
-	})
-
-	router.StaticFile("assets/images/S&W logo.png", "./public/assets/images/S&W logo.png")
-
-	router.GET("assets/images/titleBar.png", func(context *gin.Context) {
-		context.File("./public/assets/images/titleBar.png")
-	})
-
-	router.GET("/loginPage", func(context *gin.Context) {
-		context.File("public/loginPage.html")
-	})
-
-	router.StaticFile("/ytlogo.jpeg", "./public/assets/images/ytlogo.jpeg")
-
-	router.StaticFile("/script.js", "./public/assets/js/script.js")
-
-	router.GET("/homepage", func(context *gin.Context) {
-		context.File("public/homepage.html")
-	})
-
-	router.POST("/loginAuth", func(context *gin.Context) {
-		username := html.EscapeString(context.PostForm("uname"))
-		password := html.EscapeString(context.PostForm("psw"))
-
-		inputusernameHash := sha256.Sum256([]byte(username))
-		inputpasswordHash := sha256.Sum256([]byte(password))
-		// change to access DB in future
-		usernameInDB := username
-		passwordInDB := password
-		storedusernameHash := sha256.Sum256([]byte(usernameInDB))
-		storedpasswordHash := sha256.Sum256([]byte(passwordInDB))
-
-		usernameMatch := (subtle.ConstantTimeCompare(inputusernameHash[:], storedusernameHash[:]) == 1)
-		passwordMatch := (subtle.ConstantTimeCompare(inputpasswordHash[:], storedpasswordHash[:]) == 1)
-
-		account_map["cookie/token"] = username // add to map for later loop up
-
-		if usernameMatch && passwordMatch {
-			context.Redirect(http.StatusFound, "/homepage")
-		} else {
-			fmt.Println("Either Username or Password is Wrong! Please try again!")
-		}
-	})
-
-	router.GET("/bosh", func(context *gin.Context) {
+func LoadDeployments() gin.HandlerFunc {
+	return func(context *gin.Context) {
 		config := &vault.Config{
 			Address: os.Getenv("VAULT_ADDR"),
 		} // modify for more granular configuration
@@ -110,7 +56,7 @@ func main() {
 
 		// commented out for new addition
 		context.JSON(http.StatusOK, gin.H{"bosh_name": bosh_name, "deploy_date": deploy_date, "deployer_name": deployer_name, "kit_name": kit_name, "kit_version": kit_version})
-
+		return
 		// *************************
 		// testing getting all deployments from inside buffalo-lab:
 		// secret_lab, err := client.Logical().Read(path + "buffalo-lab" + "/bosh")
@@ -135,8 +81,5 @@ func main() {
 		//     cookie = "NotSet"
 		//     c.SetCookie("gin_cookie", "test", 3600, "/", "localhost", false, true)
 		// }
-
-	})
-
-	router.Run(":3000") // listen on local host 0.0.0.0:3000
+	}
 }

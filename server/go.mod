@@ -1,10 +1,10 @@
-module main.go
+module server
 
 go 1.17
 
 require (
-	github.com/gin-gonic/gin v1.7.4
-	github.com/hashicorp/vault/api v1.3.0
+	github.com/gin-gonic/gin v1.7.7
+	github.com/hashicorp/vault/api v1.4.1
 )
 
 require (
@@ -19,7 +19,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
-	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
+	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v0.16.2 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -34,7 +34,7 @@ require (
 	github.com/hashicorp/go-version v1.2.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/hashicorp/vault/sdk v0.3.0 // indirect
+	github.com/hashicorp/vault/sdk v0.4.1 // indirect
 	github.com/hashicorp/yamux v0.0.0-20180604194846-3520598351bb // indirect
 	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
