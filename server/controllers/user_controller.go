@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"html"
 	"net/http"
+
 	// "os"
 	"github.com/gin-gonic/gin"
 )
 
 var account_map = make(map[string]string)
-
 
 func ProcessLogin() gin.HandlerFunc {
 	return func(context *gin.Context) {
@@ -33,9 +33,9 @@ func ProcessLogin() gin.HandlerFunc {
 		if usernameMatch && passwordMatch {
 			context.Redirect(http.StatusFound, "/homepage")
 			// Need to know how frontend team is processing login info
-			} else {
+		} else {
 			fmt.Println("Either Username or Password is Wrong! Please try again!")
 		}
-		return 
+		//return
 	}
 }

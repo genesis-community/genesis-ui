@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
 	"github.com/gin-gonic/gin"
 	vault "github.com/hashicorp/vault/api"
-
 )
 
 func LoadDeployments() gin.HandlerFunc {
@@ -46,17 +46,35 @@ func LoadDeployments() gin.HandlerFunc {
 		//	fmt.Fprintf(os.Stderr, "%s: %+v\n", k, v)
 		//}
 
+		type deploy_data struct {
+			Bosh_name     string `json:"bosh_name"`
+			Deploy_date   string `json:"deploy_date"`
+			Deployer_name string `json:"deployer_name"`
+			Kit_name      string `json:"kit_name"`
+			Kit_version   string `json:"kit_version"`
+		}
+
 		bosh_name := data["bosh"].(string)
 		deploy_date := data["bosh-deployment-date"].(string)
 		deployer_name := data["deployer"].(string)
 		kit_name := data["kit_name"].(string)
 		kit_version := data["kit_version"].(string)
 
+		gen_deploy_data := deploy_data{Bosh_name: bosh_name, Deploy_date: deploy_date, Deployer_name: deployer_name, Kit_name: kit_name, Kit_version: kit_version}
+
 		//context.SetCookie("name", "ABC", 10, "/bosh", "localhost", false, false)
 
 		// commented out for new addition
-		context.JSON(http.StatusOK, gin.H{"bosh_name": bosh_name, "deploy_date": deploy_date, "deployer_name": deployer_name, "kit_name": kit_name, "kit_version": kit_version})
-		return
+		// generated_deploy_data := gin.H{"bosh_name": bosh_name, "deploy_date": deploy_date, "deployer_name": deployer_name, "kit_name": kit_name, "kit_version": kit_version}
+
+		generated_dummy_data := make([]deploy_data, 0)
+
+		for i := 0; i < 10; i++ {
+			generated_dummy_data = append(generated_dummy_data, gen_deploy_data)
+		}
+		diff_deployments := gin.H{"bosh": generated_dummy_data, "vault": generated_dummy_data}
+		context.JSON(http.StatusOK, gin.H{"buffalo-lab": diff_deployments, "genesis-lab": diff_deployments, "batman-lab": diff_deployments, "vengeance-lab": diff_deployments})
+		//return
 		// *************************
 		// testing getting all deployments from inside buffalo-lab:
 		// secret_lab, err := client.Logical().Read(path + "buffalo-lab" + "/bosh")
