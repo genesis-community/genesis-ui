@@ -15,6 +15,7 @@
 # vendor/
 
 .DS_Store
+server/oauth_secret.txt
 
 main
 genesis-ui

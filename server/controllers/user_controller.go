@@ -8,10 +8,20 @@ import (
 	"net/http"
 	// "os"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 )
 
-var account_map = make(map[string]string)
+var (
+	account_map = make(map[string]string)
+	client_secret = getOauthSecret()
+)
 
+const client_id = "d8ca7de576a6e29f75ca"
+func OauthLogin() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		//Add Ouath logic here
+	}
+}
 
 func ProcessLogin() gin.HandlerFunc {
 	return func(context *gin.Context) {
@@ -38,4 +48,12 @@ func ProcessLogin() gin.HandlerFunc {
 		}
 		return 
 	}
+}
+
+func getOauthSecret() string {
+	file, err := ioutil.ReadFile("oauth_secret.txt")
+	if err != nil {
+		fmt.Println("failed to open secret file")
+	}
+	return string(file)
 }
