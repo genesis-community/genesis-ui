@@ -6,10 +6,15 @@ import (
 	"fmt"
 	"html"
 	"net/http"
-	// "os"
+	"os"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
+	"json"
 )
+
+type OAuthAccessResponse struct {
+	AccessToken string `json:"access_token"`
+}
 
 var (
 	account_map = make(map[string]string)
@@ -17,38 +22,45 @@ var (
 )
 
 const client_id = "d8ca7de576a6e29f75ca"
+
 func OauthLogin() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		//Add Ouath logic here
-	}
-}
-
-func ProcessLogin() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		username := html.EscapeString(context.PostForm("uname"))
-		password := html.EscapeString(context.PostForm("psw"))
-
-		inputusernameHash := sha256.Sum256([]byte(username))
-		inputpasswordHash := sha256.Sum256([]byte(password))
-		// change to access DB in future
-		usernameInDB := username
-		passwordInDB := password
-		storedusernameHash := sha256.Sum256([]byte(usernameInDB))
-		storedpasswordHash := sha256.Sum256([]byte(passwordInDB))
-
-		usernameMatch := (subtle.ConstantTimeCompare(inputusernameHash[:], storedusernameHash[:]) == 1)
-		passwordMatch := (subtle.ConstantTimeCompare(inputpasswordHash[:], storedpasswordHash[:]) == 1)
-		account_map["cookie/token"] = username // add to map for later loop up
-
-		if usernameMatch && passwordMatch {
-			context.Redirect(http.StatusFound, "/homepage")
-			// Need to know how frontend team is processing login info
-			} else {
-			fmt.Println("Either Username or Password is Wrong! Please try again!")
+		code := context.Query("code")
+		reqURL := fmt.Sprintf("https://github.com/login/oauth/access_token?client_id=%s&client_secret=%s&code=%s", client_id, client_secret, code)
+		req, err := http.NewRequest(http.MethodPost, reqURL, nil)
+		if err != nil {
+			fmt.Fprintf(os.Stdout, "could not create HTTP request: %v", err)
+			context.JSON(400, gin.H{"error": err.Error()})
 		}
-		return 
+		// We set this header since we want the response
+		// as JSON
+		req.Header.Set("accept", "application/json")
+
+		// Send out the HTTP request
+		httpClient := http.Client{}
+		res, err := httpClient.Do(req)
+		if err != nil {
+			fmt.Fprintf(os.Stdout, "could not send HTTP request: %v", err)
+			context.String(500, "unknown")
+		}
+		defer res.Body.Close()
+
+		// Parse the request body into the `OAuthAccessResponse` struct
+		var t OAuthAccessResponse
+		if err := json.NewDecoder(res.Body).Decode(&t); err != nil {
+			fmt.Fprintf(os.Stdout, "could not parse JSON response: %v", err)
+			context.JSON(400, gin.H{"error": err.Error()})
+		}
+
+		// Finally, send a response to redirect the user to the homepage page with auth cookie set for 7 days
+		context.Header("Location", "/homepage")
+		//TODO: Update localhost to URL later
+		context.SetCookie("Token", t.AccessToken, 604800, "/", "localhost", true, true)
+		context.String(200, "")
+		return
 	}
 }
+
 
 func getOauthSecret() string {
 	file, err := ioutil.ReadFile("oauth_secret.txt")
