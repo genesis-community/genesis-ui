@@ -1,15 +1,15 @@
 package controllers
 
 import (
-	"crypto/sha256"
-	"crypto/subtle"
+	// "crypto/sha256"
+	// "crypto/subtle"
 	"fmt"
-	"html"
+	// "html"
 	"net/http"
 	"os"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
-	"json"
+	"encoding/json"
 )
 
 type OAuthAccessResponse struct {
@@ -35,7 +35,6 @@ func OauthLogin() gin.HandlerFunc {
 		// We set this header since we want the response
 		// as JSON
 		req.Header.Set("accept", "application/json")
-
 		// Send out the HTTP request
 		httpClient := http.Client{}
 		res, err := httpClient.Do(req)
@@ -52,11 +51,10 @@ func OauthLogin() gin.HandlerFunc {
 			context.JSON(400, gin.H{"error": err.Error()})
 		}
 
-		// Finally, send a response to redirect the user to the homepage page with auth cookie set for 7 days
-		context.Header("Location", "/homepage")
-		//TODO: Update localhost to URL later
-		context.SetCookie("Token", t.AccessToken, 604800, "/", "localhost", true, true)
-		context.String(200, "")
+		// Finally, send a response to redirect the user to the homepage page with github auth cookie set for 7 days
+		// TODO: Update localhost to URL later and change to Secure only
+		context.SetCookie("Token", t.AccessToken, 604800, "/", "localhost", false, true)
+		context.Redirect(302, "/homepage")
 		return
 	}
 }

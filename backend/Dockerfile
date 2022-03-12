@@ -5,13 +5,10 @@ ENV HOME /app
 
 WORKDIR /app
 
-COPY public/ /app/public/
-COPY server/ /app/server/
+COPY . .
 
-WORKDIR /app/server
 RUN go mod download
 RUN go build -o ./genesis-ui
-
 
 EXPOSE 8000
 

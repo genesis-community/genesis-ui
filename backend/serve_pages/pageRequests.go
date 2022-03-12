@@ -20,7 +20,7 @@ func ServeHomePage() gin.HandlerFunc{
 
 func ServeLoginPage() gin.HandlerFunc{
 	return func(context *gin.Context) {
-		context.HTML(200, "loginPage.html", nil)
+		context.HTML(200, "login-github.html", nil)
 		return
 	}
 }
