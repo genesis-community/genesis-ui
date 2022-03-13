@@ -7,6 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	vault "github.com/hashicorp/vault/api"
+
+	"math/rand"
+	"time"
 )
 
 func LoadDeployments() gin.HandlerFunc {
@@ -55,12 +58,12 @@ func LoadDeployments() gin.HandlerFunc {
 		}
 
 		bosh_name := data["bosh"].(string)
-		deploy_date := data["bosh-deployment-date"].(string)
+		// deploy_date := data["bosh-deployment-date"].(string)
 		deployer_name := data["deployer"].(string)
 		kit_name := data["kit_name"].(string)
 		kit_version := data["kit_version"].(string)
 
-		gen_deploy_data := deploy_data{Bosh_name: bosh_name, Deploy_date: deploy_date, Deployer_name: deployer_name, Kit_name: kit_name, Kit_version: kit_version}
+		// gen_deploy_data := deploy_data{Bosh_name: bosh_name, Deploy_date: deploy_date, Deployer_name: deployer_name, Kit_name: kit_name, Kit_version: kit_version}
 
 		//context.SetCookie("name", "ABC", 10, "/bosh", "localhost", false, false)
 
@@ -70,6 +73,8 @@ func LoadDeployments() gin.HandlerFunc {
 		generated_dummy_data := make([]deploy_data, 0)
 
 		for i := 0; i < 10; i++ {
+			deploy_date := randomTimestamp().String()
+			gen_deploy_data := deploy_data{Bosh_name: bosh_name, Deploy_date: deploy_date, Deployer_name: deployer_name, Kit_name: kit_name, Kit_version: kit_version}
 			generated_dummy_data = append(generated_dummy_data, gen_deploy_data)
 		}
 		diff_deployments := gin.H{"bosh": generated_dummy_data, "vault": generated_dummy_data}
@@ -100,4 +105,12 @@ func LoadDeployments() gin.HandlerFunc {
 		//     c.SetCookie("gin_cookie", "test", 3600, "/", "localhost", false, true)
 		// }
 	}
+}
+
+func randomTimestamp() time.Time {
+	randomTime := rand.Int63n(time.Now().Unix()-94608000) + 94608000
+
+	randomNow := time.Unix(randomTime, 0)
+
+	return randomNow
 }
