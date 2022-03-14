@@ -9,3 +9,146 @@
 .loginBox{
     color: grey;
 }
+
+body {font-family: Arial, Helvetica, sans-serif;}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+width: 100%;
+padding: 12px 20px;
+margin: 8px 0;
+display: inline-block;
+border: 1px solid #ccc;
+box-sizing: border-box;
+}
+
+/* Set a style for all buttons */
+button {
+background-color: #04AA6D;
+color: white;
+padding: 14px 20px;
+margin: 8px 0;
+border: none;
+cursor: pointer;
+width: 100%;
+}
+
+/* Center the image and position the close button */
+.imgcontainer {
+text-align: center;
+margin: 24px 0 12px 0;
+position: relative;
+}
+
+img.avatar {
+max-width: 40%;
+border-radius: 50%;
+}
+
+.container {
+padding: 16px;
+}
+
+span.psw {
+float: right;
+padding-top: 16px;
+}
+
+/* The Modal (background) */
+.modal {
+display: none; /* Hidden by default */
+position:relative; /* Stay in place */
+align-items: center;
+width: 50%; /* Full width */
+height: 50%; /* Full height */
+overflow: auto; /* Enable scroll if needed */
+background-color: rgb(0,0,0); /* Fallback color */
+background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+background-color: #fefefe;
+margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+border: 1px solid #888;
+width: 100%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+position: absolute;
+right: 25px;
+top: 0;
+color: #000;
+font-size: 35px;
+font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+color: red;
+cursor: pointer;
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+span.psw {
+    display: block;
+    float: none;
+}
+}
+
+.split {
+    height: 100%;
+    width: 25%;
+    position: fixed;
+    z-index: 4;
+    top: 5;
+    overflow-x: hidden;
+    padding-top: 20px;
+    }
+
+/* Control the left side */
+.left {
+    left: 0;
+    right:50%;
+    height: 200px;
+    width: 50%;
+    background-color:rgb(0, 140, 255);
+}
+.right {
+    left: 50%;
+    height: 200px;
+    width: 50%;
+    background-color: #a5e98af3;
+}
+.bottom {
+    width: 100%;
+    height: 380px;
+    position:fixed;
+    bottom: 0%;
+    background-color: rgb(177, 212, 241);
+}
+
+table{
+    font: 13;
+    align-content: space-between;
+    border: 2px solid black;
+    border-collapse: collapse;
+    columns: totals;
+    border-spacing:25px;
+}
+tr{
+    width: fit-content;
+    box-sizing: content-box;
+    column-span: 20px;
+    border-width: 3px solid black;
+    vertical-align: middle;
+}
+th, td{
+    padding: 5px 5px;
+    vertical-align: middle;
+    width:fit-content;
+    border: 2px solid #000;
+}
