@@ -14,8 +14,13 @@ services:
           - "8000:8000"
       depends_on:
         - postgres
+<<<<<<< HEAD
       env_file:
         - backend/.env
+=======
+      environment:
+          - POSTGRES_PASSWORD=postgres
+>>>>>>> e435cb8f048a98b3de6d3f30a64c4a0039f09c95
     
     client:
       stdin_open: true

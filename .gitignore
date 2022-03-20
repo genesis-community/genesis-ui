@@ -18,5 +18,6 @@
 server/oauth_secret.txt
 .idea
 main
+.env
 
 deployments/
