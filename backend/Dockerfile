@@ -1,8 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM golang:1-bullseye
 
-ENV HOME /app
-
 WORKDIR /app
 
 COPY . .

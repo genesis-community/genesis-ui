@@ -54,7 +54,7 @@ func OauthLogin() gin.HandlerFunc {
 		// Finally, send a response to redirect the user to the homepage page with github auth cookie set for 7 days
 		// TODO: Update localhost to URL later and change to Secure only
 		context.SetCookie("Token", t.AccessToken, 604800, "/", "localhost", false, true)
-		context.Redirect(302, "/homepage")
+		context.JSON(302, "/homepage")
 		return
 	}
 }

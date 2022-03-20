@@ -18,6 +18,5 @@
 server/oauth_secret.txt
 .idea
 main
-genesis-ui
 
 deployments/

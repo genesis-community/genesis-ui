@@ -13,7 +13,7 @@ func LoadDeployments() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		config := &vault.Config{
 			Address: os.Getenv("VAULT_ADDR"),
-		} // modify for more granular configuration
+		} 
 		// Gets client's github authorization token to fetch github info from github API 
 		token, _ := context.Cookie("Token")
 		fmt.Println("Token: " + token)
