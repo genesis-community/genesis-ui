@@ -6,11 +6,26 @@ services:
         environment:
             - POSTGRES_PASSWORD=postgres
     
-    server:
-        build: ./server
-        ports:
-            - "8000:8000"
-        depends_on:
-          - postgres
-        environment:
-            - POSTGRES_PASSWORD=postgres
+    api:
+      build: 
+        dockerfile: Dockerfile
+        context: "./backend"
+      ports:
+          - "8000:8000"
+      depends_on:
+        - postgres
+      env_file:
+        - backend/.env
+    
+    client:
+      stdin_open: true
+      build:
+        dockerfile: Dockerfile
+        context: "./client"
+      ports:
+        - "3000:3000"
+      # volumes:
+      #   - /app/node_modules
+      #   - ./client:/app
+      environment:
+        - CHOKIDAR_USEPOLLING=true

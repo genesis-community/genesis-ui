@@ -5,11 +5,12 @@ import (
 	// "crypto/subtle"
 	"fmt"
 	// "html"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"os"
+
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
-	"encoding/json"
 )
 
 type OAuthAccessResponse struct {
@@ -17,11 +18,10 @@ type OAuthAccessResponse struct {
 }
 
 var (
-	account_map = make(map[string]string)
-	client_secret = getOauthSecret()
+	account_map   = make(map[string]string)
+	client_id     = os.Getenv("CLIENT_ID")
+	client_secret = os.Getenv("CLIENT_SECRET")
 )
-
-const client_id = "d8ca7de576a6e29f75ca"
 
 func OauthLogin() gin.HandlerFunc {
 	return func(context *gin.Context) {
@@ -54,11 +54,10 @@ func OauthLogin() gin.HandlerFunc {
 		// Finally, send a response to redirect the user to the homepage page with github auth cookie set for 7 days
 		// TODO: Update localhost to URL later and change to Secure only
 		context.SetCookie("Token", t.AccessToken, 604800, "/", "localhost", false, true)
-		context.Redirect(302, "/homepage")
+		context.JSON(302, "/homepage")
 		return
 	}
 }
-
 
 func getOauthSecret() string {
 	file, err := ioutil.ReadFile("oauth_secret.txt")
