@@ -15,9 +15,8 @@
 # vendor/
 
 .DS_Store
-server/oauth_secret.txt
 .idea
 main
-.env
+backend/.env
 
 deployments/
