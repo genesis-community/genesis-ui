@@ -29,11 +29,7 @@ class Homepage extends Component {
                                     Genesis helps you build your cloud, leveraging our best practices for BOSH, credentials storage, Cloud Foundry, services, and more.
                                     It takes the guesswork out of deployments and upgrades, and gives you advanced automation workflows on top of that.
                                 </p>
-<<<<<<< HEAD
                                 <Button variant="success" href={"https://github.com/login/oauth/authorize?client_id=d8ca7de576a6e29f75ca&redirect_uri=http://localhost:3000/callback"} size={"lg"}>
-=======
-                                <Button variant="success" href={"https://github.com/login/oauth/authorize?client_id=d8ca7de576a6e29f75ca&redirect_uri=http://localhost:8000/oauth/redirect"} size={"lg"}>
->>>>>>> e435cb8f048a98b3de6d3f30a64c4a0039f09c95
                                     <FontAwesomeIcon icon={faGithub} />&nbsp;&nbsp;Login with <b>GitHub</b>
                                 </Button>
                             </Card.Body>

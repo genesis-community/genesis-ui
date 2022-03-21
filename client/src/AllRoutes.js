@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import Login from "./pages/auth/Login";
 import LandingPage from "./pages/dashboard/LandingPage";
 import Dashboard from "./pages/dashboard/Dashboard"
+import { ProcessToken } from "./pages/auth/ProcessToken";
 
 function AllRoutes() {
   const [userData, setUserData] = useState(null);
@@ -21,6 +22,7 @@ function AllRoutes() {
         <Route path={RouteMap.Login} exact element={<Login setUserData={setUserData}/>} />
         <Route path={RouteMap.LandingPage} exact element={<LandingPage userData={userData} />} />
         <Route path={RouteMap.Dashboard} exact element={<Dashboard userData={userData} />} />
+        <Route path={RouteMap.Callback} exact element={<ProcessToken/>} />
       </Routes>
     </BrowserRouter>
   );

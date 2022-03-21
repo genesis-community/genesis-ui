@@ -1,9 +1,10 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"server/controllers"
 	pages "server/serve_pages"
+
+	"github.com/gin-gonic/gin"
 	// "net/http"
 )
 
@@ -17,6 +18,6 @@ func HandleRoutes(router *gin.Engine) {
 	router.GET("/homepage", pages.ServeHomePage())
 	router.GET("/loginPage", pages.ServeLoginPage())
 	router.GET("/bosh", controllers.LoadDeployments())
-	router.GET("/oauth/redirect", controllers.OauthLogin())
+	router.GET("/auth", controllers.OauthLogin())
 
 }
