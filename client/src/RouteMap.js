@@ -3,7 +3,9 @@ let RouteMap = {
     LandingPage: "LandingPage",
     Dashboard: "Dashboard",
     Callback: "callback",
-    Error_404: "404-error"
+    Error_404: "404-error",
 }
+
+
 
 export default RouteMap

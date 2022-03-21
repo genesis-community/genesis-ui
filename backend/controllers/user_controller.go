@@ -23,6 +23,8 @@ var (
 	account_map   = make(map[string]string)
 	client_id     = os.Getenv("CLIENT_ID")
 	client_secret = os.Getenv("CLIENT_SECRET")
+	// client_id     = "d8ca7de576a6e29f75ca"
+	// client_secret = getOauthSecret()
 )
 
 func OauthLogin() gin.HandlerFunc {

@@ -24,7 +24,7 @@ function AllRoutes() {
         <Route path={RouteMap.Login} exact element={<Login setUserData={setUserData} />} />
         <Route path={RouteMap.LandingPage} exact element={<LandingPage userData={userData} />} />
         <Route path={RouteMap.Dashboard} exact element={<Dashboard userData={userData} />} />
-        <Route path={RouteMap.Callback} exact element={<ProcessToken />} />
+        <Route path={RouteMap.Callback} exact element={<ProcessToken />} userData={userData} />
         <Route path={RouteMap.Error_404} exact element={<Error_404 />} userData={userData} />
 
         <Route path="*" element={<Navigate to={RouteMap.Error_404} />} />
