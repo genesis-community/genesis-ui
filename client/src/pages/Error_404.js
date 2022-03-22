@@ -22,7 +22,7 @@ class Error_404 extends Component {
                     <Col>
                         <h4>Whoops! Looks like you are at the wrong place...&nbsp;&nbsp;Let me take you back!</h4>
                         <h3>Click the button below</h3>
-                        <Button variant="warning" as={Link} to={(this.props.userData === null) ? RouteMap.Dashboard : RouteMap.Login} size={"lg"} className="m-3" >Go back to homepage</Button>
+                        <Button variant="warning" as={Link} to={(this.props.userData === null || this.props.userData === "") ? RouteMap.Login : RouteMap.Dashboard} size={"lg"} className="m-3" >Go back to homepage</Button>
                     </Col>
                 </Row>
             </div>
