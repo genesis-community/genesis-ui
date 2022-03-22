@@ -7,7 +7,7 @@ import {
 
 import RouteMap from "./RouteMap";
 
-import React, { useState } from 'react';
+import React, {Component} from 'react';
 
 import Login from "./pages/auth/Login";
 import LandingPage from "./pages/dashboard/LandingPage";
@@ -15,22 +15,51 @@ import Dashboard from "./pages/dashboard/Dashboard"
 import Error_404 from "./pages/Error_404";
 import { ProcessToken } from "./pages/auth/ProcessToken";
 
-function AllRoutes() {
-  const [userData, setUserData] = useState(null);
 
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path={RouteMap.Login} exact element={<Login setUserData={setUserData} />} />
-        <Route path={RouteMap.LandingPage} exact element={<LandingPage userData={userData} />} />
-        <Route path={RouteMap.Dashboard} exact element={<Dashboard userData={userData} />} />
-        <Route path={RouteMap.Callback} exact element={<ProcessToken />} userData={userData} />
-        <Route path={RouteMap.Error_404} exact element={<Error_404 />} userData={userData} />
+class AllRoutes extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      userData: null
+    }
+  }
 
-        <Route path="*" element={<Navigate to={RouteMap.Error_404} />} />
-      </Routes>
-    </BrowserRouter>
-  );
+  fetchUserInfo = async (token) => {
+    await fetch(
+      (`https://api.github.com/user`),
+      {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: `application/vnd.github.v3+json`
+        }
+      }
+    )
+      .then((response) => {
+        console.log(response)
+        this.setState({
+          userData: response
+        })
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+  }
+
+  render() {
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path={RouteMap.Login} exact element={<Login />} />
+          <Route path={RouteMap.LandingPage} exact element={<LandingPage userData={this.state.userData} />} />
+          <Route path={RouteMap.Dashboard} exact element={<Dashboard userData={this.state.userData} />} />
+          <Route path={RouteMap.Callback} exact element={<ProcessToken fetchUserInfo={this.fetchUserInfo} />} />
+          <Route path={RouteMap.Error_404} exact element={<Error_404 />} userData={this.state.userData} />
+
+          <Route path="*" element={<Navigate to={RouteMap.Error_404} />} />
+        </Routes>
+      </BrowserRouter>
+    )
+  }
 }
 
 export default AllRoutes;

@@ -27,8 +27,11 @@ const parseParams = (querystring) => {
 
 export const ProcessToken = (props) => {
     const params = parseParams(window.location.search);
-    useEffect(() => {
-        getToken(params.code);
+    useEffect(async () => {
+        const token = await getToken(params.code);
+        localStorage.setItem("token", token);
+        await props.fetchUserInfo(token);
+        window.location.href = RouteMap.LandingPage;
     })
     return (
         <div>
@@ -51,19 +54,16 @@ export const ProcessToken = (props) => {
 }
 
 async function getToken(githubToken) {
-    try {
-        await fetch(
-            (`auth?code=${githubToken}`)
-        ).then(response => response.json())
-            .then((response) => {
-                console.log(response)
-                if (response.error) {
-                    throw Error(response);
-                }
-                localStorage.setItem("token", response.token);
-                window.location.href = RouteMap.LandingPage;
-            })
-    } catch (error) {
-        console.log(error);
-    }
+    return await fetch(
+        (`auth?code=${githubToken}`)
+    ).then(response => response.json())
+        .then((response) => {
+            if (response.error) {
+                throw Error(response);
+            }
+            return response.token
+        })
+        .catch((error) => {
+            console.log(error);
+        })
 }

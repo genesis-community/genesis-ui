@@ -16,6 +16,14 @@ class LandingPage extends Component {
         }
     }
 
+    componentDidUpdate = () => {
+        console.log('update from componentDidUpdate', this.props);
+    }
+
+    componentDidCatch = () => {
+        console.log('update from componentDidCatch', this.props);
+    }
+
     renderCurrentStep = () => {
         if (this.state.currentStep === -1) {
             return (

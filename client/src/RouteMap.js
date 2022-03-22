@@ -6,6 +6,4 @@ let RouteMap = {
     Error_404: "404-error",
 }
 
-
-
 export default RouteMap

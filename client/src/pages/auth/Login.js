@@ -5,7 +5,6 @@ import GenesisLogo from "../../assets/images/genesisLogo.png"
 import { Card, Button, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import RouteMap from "../../RouteMap";
 import Settings from "../../Settings";
 import "../../css/pages/landing_page.css";
 
