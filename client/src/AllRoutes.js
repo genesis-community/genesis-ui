@@ -13,7 +13,7 @@ import Login from "./pages/auth/Login";
 import LandingPage from "./pages/dashboard/LandingPage";
 import Dashboard from "./pages/dashboard/Dashboard"
 import Error_404 from "./pages/Error_404";
-import { ProcessToken } from "./pages/auth/ProcessToken";
+import ProcessToken from "./pages/auth/ProcessToken";
 
 
 class AllRoutes extends Component {
@@ -25,7 +25,7 @@ class AllRoutes extends Component {
   }
 
   fetchUserInfo = async (token) => {
-    await fetch(
+    return await fetch(
       (`https://api.github.com/user`),
       {
         headers: {
@@ -34,12 +34,7 @@ class AllRoutes extends Component {
         }
       }
     )
-      .then((response) => {
-        console.log(response)
-        this.setState({
-          userData: response
-        })
-      })
+      .then((response) => response.json())
       .catch((error) => {
         console.log(error);
       })
@@ -52,7 +47,7 @@ class AllRoutes extends Component {
           <Route path={RouteMap.Login} exact element={<Login />} />
           <Route path={RouteMap.LandingPage} exact element={<LandingPage userData={this.state.userData} />} />
           <Route path={RouteMap.Dashboard} exact element={<Dashboard userData={this.state.userData} />} />
-          <Route path={RouteMap.Callback} exact element={<ProcessToken fetchUserInfo={this.fetchUserInfo} />} />
+          <Route path={RouteMap.Callback} exact element={<ProcessToken fetchUserInfo={this.fetchUserInfo} setUserData={(data) => {this.setState({userData: data})}} />} />
           <Route path={RouteMap.Error_404} exact element={<Error_404 />} userData={this.state.userData} />
 
           <Route path="*" element={<Navigate to={RouteMap.Error_404} />} />

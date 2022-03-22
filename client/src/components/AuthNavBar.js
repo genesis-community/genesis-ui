@@ -1,4 +1,4 @@
-import { Navbar, Container, NavDropdown } from 'react-bootstrap';
+import { Navbar, Container, NavDropdown, Image, Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/components/navbar.css'
 import GenesisLogo from "../assets/images/genesisLogo.png"
@@ -8,9 +8,9 @@ import { faAngleUp, faQuestion, faQuestionCircle, faUser } from "@fortawesome/fr
 
 function AuthNavBar(props) {
     const userData = props.userData
-    // if(userData === null || typeof userData !== 'object'){
-    //     return "";
-    // }
+    if (userData === null || typeof userData !== 'object') {
+        return "";
+    }
 
     return (
         <>
@@ -23,20 +23,21 @@ function AuthNavBar(props) {
                             alt="Genesis Logo"
                         />
                     </Navbar.Brand>
-                    
+
+
                     <Navbar.Collapse className="justify-content-end">
-                    <NavDropdown title={"Prakshal Jain"} className='text-white'>
-                            <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
-                            <NavDropdown.Item href="#action4">Another action</NavDropdown.Item>
-                            <NavDropdown.Divider />
-                            <NavDropdown.Item href="#action5">
-                                Something else here
+                        <Image src={userData.avatar_url} roundedCircle={true} className="avatar" />
+                        <NavDropdown title={(userData.name === undefined || userData.name === null || userData.name.length === 0) ? userData.login : userData.name} className='text-white'>
+                            {/* <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
+                            <NavDropdown.Divider /> */}
+                            <NavDropdown.Item href={userData.html_url} target={"_blank"}>
+                                GitHub Profile
                             </NavDropdown.Item>
                         </NavDropdown>
 
-                        <Navbar.Text className='text-white mx-4'>
-                            Help&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} />
-                        </Navbar.Text>
+                        <Nav.Link className='mx-4 text-white' href="https://www.youtube.com/user/StarkAndWayne" target="_blank">
+                                Help&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} />
+                        </Nav.Link>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>

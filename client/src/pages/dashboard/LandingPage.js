@@ -2,10 +2,10 @@ import { Component } from "react";
 import { Card, Row, Col, Nav, Button } from 'react-bootstrap';
 import AuthNavBar from "../../components/AuthNavBar";
 import RouteMap from '../../RouteMap';
-import "../../css/pages/landing_page.css"
-import LandingHero from "../../assets/images/landingHero.png"
-import Confetti from 'react-confetti'
-import LandingPageSteps from "../../data/LandingPageSteps"
+import "../../css/pages/landing_page.css";
+import LandingHero from "../../assets/images/landingHero.png";
+import Confetti from 'react-confetti';
+import LandingPageSteps from "../../data/LandingPageSteps";
 
 class LandingPage extends Component {
     constructor(props) {
@@ -14,14 +14,6 @@ class LandingPage extends Component {
             steps: LandingPageSteps,
             currentStep: -1
         }
-    }
-
-    componentDidUpdate = () => {
-        console.log('update from componentDidUpdate', this.props);
-    }
-
-    componentDidCatch = () => {
-        console.log('update from componentDidCatch', this.props);
     }
 
     renderCurrentStep = () => {
@@ -89,7 +81,7 @@ class LandingPage extends Component {
                     height={window.innerHeight}
                     recycle={false}
                 />
-                <AuthNavBar />
+                <AuthNavBar userData={this.props.userData} />
 
                 <Row className="d-flex justify-content-center min-vh-50">
                     <Col xs={12} lg={9}>

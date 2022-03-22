@@ -2,3 +2,10 @@
     width: auto;
     height: 6vh;
 }
+
+.avatar {
+    vertical-align: middle;
+    width: 4vh;
+    height: 4vh;
+    border-radius: 50%;
+  }
