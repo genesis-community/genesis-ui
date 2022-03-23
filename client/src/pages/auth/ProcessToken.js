@@ -5,6 +5,7 @@ import verify from "../../assets/images/verify.svg"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { Link, Navigate } from 'react-router-dom';
+import Settings from '../../Settings';
 
 
 class ProcessToken extends Component {
@@ -17,12 +18,24 @@ class ProcessToken extends Component {
 
     componentDidMount = async () => {
         const params = this.parseParams(window.location.search);
+
         const token = await this.getToken(params.code);
-        // localStorage.setItem("token", token);
-        const data = await this.props.fetchUserInfo(token);
-        this.props.setUserData(data)
+
+        // Check localStorage to see if token needs to be remembered or not?
+        const isRemember = this.props.isRemember;
+        // If token needs to be remembered, it is in the localStorage as --> (remember_me: true). Otherwise, it does not exist in localStore.
+        
+        if(isRemember !== null){    // If it exist --> Store in localStorage
+            localStorage.setItem("token", token)
+            sessionStorage.removeItem("token")
+        }
+        else{   // Otherwise --> Store in sessionStorage
+            sessionStorage.setItem("token", token)
+            localStorage.removeItem("token")
+        }
+
+        await this.props.fetchUserInfo(token);
         this.setState({ loadComplete: true });
-        // window.location.href = RouteMap.LandingPage;
     }
 
     parseParams = (querystring) => {
@@ -62,7 +75,7 @@ class ProcessToken extends Component {
         if (this.state.loadComplete) {
             return (
                 <Navigate
-                    to={"/"+RouteMap.LandingPage}
+                    to={RouteMap.LandingPage}
                 />
             )
         }
