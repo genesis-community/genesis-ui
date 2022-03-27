@@ -38,24 +38,24 @@ class AllRoutes extends Component {
     const localStorage_token = localStorage.getItem("token");
     const sessionStorage_token = sessionStorage.getItem("token");
 
-      this.setState({ userData: true },
-        (async () => {
-          if (isRemember !== null && localStorage_token !== null) {   // When token is in localStorage
-            await this.fetchUserInfo(localStorage_token)
-          }
-          
-          else if (isRemember === null && sessionStorage_token !== null) {
-            await this.fetchUserInfo(sessionStorage_token)
-          }
+    this.setState({ userData: true },
+      (async () => {
+        if (isRemember !== null && localStorage_token !== null) {   // When token is in localStorage
+          await this.fetchUserInfo(localStorage_token)
+        }
 
-          this.setState({redirect: true});
-        })
-      );
+        else if (isRemember === null && sessionStorage_token !== null) {
+          await this.fetchUserInfo(sessionStorage_token)
+        }
+
+        this.setState({ redirect: true });
+      })
+    );
   }
 
 
   fetchUserInfo = async (token) => {
-    return await fetch(
+    return (await fetch(
       (`https://api.github.com/user`),
       {
         headers: {
@@ -64,13 +64,25 @@ class AllRoutes extends Component {
         }
       }
     )
-      .then((response) => response.json())
+      .then((response) => {
+        if(response.status === 200){
+          return response.json();
+        }
+        else{
+          throw new Error("An error occured while getting user info")
+        }
+      })
       .then(data => {
         this.setState({ userData: data })
       })
       .catch((error) => {
-        console.log(error);
+        console.log("Update")
+        sessionStorage.removeItem("token");
+        localStorage.removeItem("token");
+        localStorage.removeItem("remember_me");
+        window.location.href = RouteMap.Login;
       })
+    )
   }
 
   renderProtectedRoutes = () => {
@@ -99,7 +111,7 @@ class AllRoutes extends Component {
             <Route path="*" element={<Navigate to={this.state.redirectUrl} />} />
             :
             (() => {
-              if(!this.state.redirectUrl){
+              if (!this.state.redirectUrl) {
                 this.setState({ redirectUrl: RouteMap.Error_404 })
               }
               return "";

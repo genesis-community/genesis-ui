@@ -67,7 +67,7 @@ class ProcessToken extends Component {
                 return response.token
             })
             .catch((error) => {
-                console.log(error);
+                console.log(error)
             })
     }
 
