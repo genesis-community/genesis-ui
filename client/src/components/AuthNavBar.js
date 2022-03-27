@@ -6,7 +6,8 @@ import '../css/components/navbar.css'
 import GenesisLogo from "../assets/images/genesisLogo.png"
 import RouteMap from '../RouteMap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleUp, faQuestion, faQuestionCircle, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faSignOut, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 function AuthNavBar(props) {
 
@@ -38,17 +39,17 @@ function AuthNavBar(props) {
                     <Navbar.Collapse className="justify-content-end">
                         <Image src={userData.avatar_url} roundedCircle={true} className="avatar" />
                         <NavDropdown title={(userData.name === undefined || userData.name === null || userData.name.length === 0) ? userData.login : userData.name} className='text-white'>
-                        
+
                             <NavDropdown.Item href={userData.html_url} target={"_blank"}>
-                                GitHub Profile
+                                <FontAwesomeIcon icon={faGithub} />&nbsp;&nbsp;GitHub Profile
                             </NavDropdown.Item>
                             <NavDropdown.Divider />
-                            <NavDropdown.Item onClick={logOutUser} className={"text-danger"}>Log Out</NavDropdown.Item>
+                            <NavDropdown.Item onClick={logOutUser} className={"text-danger"}><FontAwesomeIcon icon={faSignOut} />&nbsp;&nbsp;Log Out</NavDropdown.Item>
 
                         </NavDropdown>
 
                         <Nav.Link className='mx-4 text-white' href="https://www.youtube.com/user/StarkAndWayne" target="_blank">
-                                Help&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} />
+                            Help&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} />
                         </Nav.Link>
                     </Navbar.Collapse>
                 </Container>

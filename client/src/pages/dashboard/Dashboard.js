@@ -1,5 +1,4 @@
 import { Component } from "react";
-import AuthNavBar from "../../components/AuthNavBar";
 import { Card, Button, Row, Col, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import RouteMap from '../../RouteMap';
@@ -8,7 +7,6 @@ class Dashboard extends Component {
     render() {
         return (
             <div>
-                <AuthNavBar />
                 <Row className="m-4">
                     <Col xs={9} lg={9}>
                         <Form.Control type="text" placeholder="Search" />
