@@ -7,7 +7,8 @@ cmd="$1"
 shift ||
   fail "Usage: $0: {stop,build,start}"
 
-export VAULT_PREFIX="secret/data/exodus/"
+export VAULT_DATA_PREFIX="secret/data/exodus/"
+export VAULT_LIST_PREFIX="secret/metadata/exodus/"
 export VAULT_ADDR="https://10.128.4.5:443"
 export VAULT_SKIP_VERIFY="true"
 # vvv Makefile
@@ -22,10 +23,11 @@ case "${cmd}" in
   (start)
     echo "Preparing Genesis UI in container."
     exec docker run \
-      -e VAULT_PREFIX="${VAULT_PREFIX}" \
+      -e VAULT_DATA_PREFIX="${VAULT_DATA_PREFIX}" \
       -e VAULT_SKIP_VERIFY="${VAULT_SKIP_VERIFY}" \
       -e VAULT_TOKEN="${VAULT_TOKEN}" \
       -e VAULT_ADDR="${VAULT_ADDR}" \
+      -e VAULT_LIST_PREFIX="${VAULT_LIST_PREFIX}" \
       --detach \
       --name genesis-ui \
       --publish 3000:3000 \

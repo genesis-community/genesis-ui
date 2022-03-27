@@ -17,7 +17,7 @@ func HandleRoutes(router *gin.Engine) {
 	router.GET("/", pages.ServeRootPage())
 	router.GET("/homepage", pages.ServeHomePage())
 	router.GET("/loginPage", pages.ServeLoginPage())
-	router.GET("/bosh", controllers.LoadDeployments())
+	router.GET("/list/*any", controllers.ListDeployments())
 	router.GET("/auth", controllers.OauthLogin())
 
 }
