@@ -11,6 +11,13 @@ services:
         - postgres
       env_file:
         - backend/.env
+      environment:
+        - VAULT_TOKEN
+        - VAULT_DATA_PREFIX
+        - VAULT_LIST_PREFIX
+        - VAULT_ADDR
+        - VAULT_SKIP_VERIFY
+
     # React frontend
     client:
       stdin_open: true
