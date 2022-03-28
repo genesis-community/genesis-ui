@@ -16,11 +16,13 @@ export VAULT_TOKEN="$(cat ~/.vault-token)"
 
 case "${cmd}" in
   (build)
+    cd backend
     echo "Building Genesis UI image from Dockerfile."
     docker build -t genesis-ui .
     echo "Genesis UI image is ready."
     ;;
   (start)
+    cd backend
     echo "Preparing Genesis UI in container."
     exec docker run \
       -e VAULT_DATA_PREFIX="${VAULT_DATA_PREFIX}" \
@@ -35,6 +37,7 @@ case "${cmd}" in
       genesis-ui
     ;;
   (stop)
+    cd backend
     echo "Stoping Genesis UI Container."
     docker stop genesis-ui || true
     docker rm genesis-ui || true
@@ -49,5 +52,14 @@ case "${cmd}" in
     ;;
   (open)
     open http://127.0.0.1:3000
+    ;;
+  (compose-build)
+    docker compose build
+    ;;
+  (compose-up)
+    docker compose up
+    ;;
+  (compose-stop)
+    docker compose stop
     ;;
 esac
