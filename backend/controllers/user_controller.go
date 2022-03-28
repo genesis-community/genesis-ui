@@ -21,8 +21,10 @@ type OAuthAccessResponse struct {
 
 var (
 	account_map   = make(map[string]string)
-	client_id     = os.Getenv("CLIENT_ID")
-	client_secret = os.Getenv("CLIENT_SECRET")
+	// client_id     = os.Getenv("CLIENT_ID")
+	// client_secret = os.Getenv("CLIENT_SECRET")
+	client_id     = "d8ca7de576a6e29f75ca"
+	client_secret = "6f9b62b7c734cad54ad49a8b851ebbbbbdd1375c"
 )
 
 func OauthLogin() gin.HandlerFunc {

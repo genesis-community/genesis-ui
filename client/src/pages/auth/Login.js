@@ -51,7 +51,7 @@ class Homepage extends Component {
                                         </Form>
                                     </div>
                                     :
-                                    <Button variant="success" as={Link} size={"lg"} to={RouteMap.LandingPage}>
+                                    <Button variant="warning" as={Link} size={"lg"} to={RouteMap.Dashboard}>
                                         Go to Dashboard
                                     </Button>
                                 }
