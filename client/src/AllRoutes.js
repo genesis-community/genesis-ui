@@ -23,7 +23,7 @@ class AllRoutes extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true,
+      // loading: true,
       userData: null,
       redirectUrl: null,
       redirect: false,
@@ -56,9 +56,9 @@ class AllRoutes extends Component {
       })
     );
 
-    setTimeout(() => {
-      this.setState({ loading: false });
-    }, 3000)
+    // setTimeout(() => {
+    //   this.setState({ loading: false });
+    // }, 3000)
   }
 
 
@@ -112,13 +112,13 @@ class AllRoutes extends Component {
   }
 
   render() {
-    if (this.state.loading) {
-      return (
-        <div className="d-flex justify-content-center align-items-center vh-100">
-          <Image src={borderedGenesis} className="img-thumbnail border-0 fade-in" />
-        </div>
-      )
-    }
+    // if (this.state.loading) {
+    //   return (
+    //     <div className="d-flex justify-content-center align-items-center vh-100">
+    //       <Image src={borderedGenesis} className="img-thumbnail border-0 fade-in" />
+    //     </div>
+    //   )
+    // }
 
     return (
       <BrowserRouter>
