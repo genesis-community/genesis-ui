@@ -32,7 +32,7 @@ case "${cmd}" in
       -e VAULT_LIST_PREFIX="${VAULT_LIST_PREFIX}" \
       --detach \
       --name genesis-ui \
-      --publish 3000:3000 \
+      --publish 8000:8000 \
       -v $PWD/images:/app/images \
       genesis-ui
     ;;
@@ -50,14 +50,11 @@ case "${cmd}" in
   (logs-tail)
     exec docker logs -f genesis-ui
     ;;
-  (open)
-    open http://127.0.0.1:3000
-    ;;
   (compose-build)
     docker compose build
     ;;
   (compose-up)
-    docker compose up
+    docker compose up --detach
     ;;
   (compose-stop)
     docker compose stop
