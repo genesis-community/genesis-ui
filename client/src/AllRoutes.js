@@ -27,6 +27,7 @@ class AllRoutes extends Component {
       userData: null,
       redirectUrl: null,
       redirect: false,
+      errorMessage: null,
     }
   }
 
@@ -35,6 +36,7 @@ class AllRoutes extends Component {
       userData: null,
       redirectUrl: null,
       redirect: false,
+      errorMessage: null,
     });
 
     // Get the token from localstore or sessionStorage
@@ -95,13 +97,14 @@ class AllRoutes extends Component {
 
   renderProtectedRoutes = () => {
     if (this.state.userData === null || this.state.userData === undefined) {
-      this.setState({ redirectUrl: RouteMap.Login });
+      this.setState({ redirectUrl: RouteMap.Login, errorMessage: "An error occured: Please try again or contact your administrator for more information." });
+      return "";
+    } else {
+      return ([
+        <Route path={RouteMap.LandingPage} exact element={this.RouteWithAuthNav(this.state.userData, LandingPage)} key="routeMap" />,
+        <Route path={RouteMap.Dashboard} exact element={this.RouteWithAuthNav(this.state.userData, Dashboard)} key="Dashboard" />
+      ])
     }
-
-    return ([
-      <Route path={RouteMap.LandingPage} exact element={this.RouteWithAuthNav(this.state.userData, LandingPage)} key="routeMap" />,
-      <Route path={RouteMap.Dashboard} exact element={this.RouteWithAuthNav(this.state.userData, Dashboard)} key="Dashboard" />
-    ])
   }
 
   RouteWithAuthNav = (userData, component) => {
@@ -123,7 +126,7 @@ class AllRoutes extends Component {
     return (
       <BrowserRouter>
         <Routes>
-          <Route path={RouteMap.Login} exact element={<Login userData={this.state.userData} />} key="Login" />
+          <Route path={RouteMap.Login} exact element={<Login userData={this.state.userData} errorMessage={this.state.errorMessage} />} key="Login" />
           <Route path={RouteMap.Callback} exact element={<ProcessToken fetchUserInfo={this.fetchUserInfo} isRemember={localStorage.getItem("remember_me")} />} key="ProcessToken" />
           <Route path={RouteMap.Error_404} exact element={<Error_404 />} key="Error_404" />
 
@@ -148,7 +151,7 @@ class AllRoutes extends Component {
 export default AllRoutes;
 
 /*
-This keeps track of all the pages. To add a page, 
+This keeps track of all the pages. To add a page,
 1. add its URL to the RouteMap.js file
 2. Add it as --> <Route path={RouteMap.SomeURL} exact element={<Component />} /> inside the <Routes></Routes>
 */

@@ -2,7 +2,7 @@ import { Component } from "react";
 import UnauthNavBar from "../../components/UnauthNavBar";
 import Hero from "../../assets/images/hero.jpeg";
 import GenesisLogo from "../../assets/images/genesisLogo.png"
-import { Card, Button, Row, Col, Form } from 'react-bootstrap';
+import { Card, Button, Row, Col, Form, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import Settings from "../../Settings";
@@ -13,6 +13,9 @@ import RouteMap from "../../RouteMap";
 class Homepage extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            closeAlert: false,
+        }
     }
 
     render() {
@@ -22,6 +25,13 @@ class Homepage extends Component {
 
                 <Row className="d-flex justify-content-center min-vh-50">
                     <Col xs={12} lg={9}>
+                        {this.props.errorMessage !== null ?
+                            <Alert variant="danger" onClose={() => this.setState({ closeAlert: true })} dismissible>
+                                {this.props.errorMessage}
+                            </Alert>
+                            : ""
+                        }
+                        
                         <Card className="m-4 h-100 mt-5 bg-opacity-75 text-center gradient_card" bg="dark" text="light">
                             <Card.Header><h1>Log In</h1></Card.Header>
                             <Card.Body>
