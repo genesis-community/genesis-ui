@@ -3,7 +3,7 @@ import { Card, Button, Row, Col, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import RouteMap from '../../RouteMap';
 import Select from 'react-select';
-// import makeAnimated from 'react-select/animated';
+import makeAnimated from 'react-select/animated';
 // import { colourOptions } from '../data';
 
 class Dashboard extends Component {
@@ -11,7 +11,7 @@ class Dashboard extends Component {
         super(props);
         this.state = {
             deploymentList: [],
-            // animatedComponents: makeAnimated(),
+            animatedComponents: makeAnimated(),
         }
     }
     
@@ -24,10 +24,11 @@ class Dashboard extends Component {
             <div>
                 <Row>
                     <Select 
-                    // closeMenuOnSelect={false}
-                    // components={this.state.animatedComponents}
+                    closeMenuOnSelect={false}
+                    components={this.state.animatedComponents}
                     // defaultValue={[colourOptions[4], colourOptions[5]]}
-                    // isMulti
+                    isMulti
+                    // onChange={opt => console.log(opt.value, opt.label)}
                     options={this.state.deploymentList}
                     ></Select>
                 </Row>
