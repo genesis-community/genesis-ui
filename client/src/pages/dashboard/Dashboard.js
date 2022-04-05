@@ -3,46 +3,33 @@ import { Card, Button, Row, Col, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import RouteMap from '../../RouteMap';
 import Select from 'react-select';
+// import makeAnimated from 'react-select/animated';
+// import { colourOptions } from '../data';
 
 class Dashboard extends Component {
     constructor(props) {
         super(props);
         this.state = {
             deploymentList: [],
-            selectOptions: [],
+            // animatedComponents: makeAnimated(),
         }
     }
-
+    
     componentDidMount = async () => {
         await this.fetchDeployments();
     }
-
-    // componentDidMount() {
-    //     const url = "/list";
-    //     await fetch(url)
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         this.setState({
-    //             deploymentList: data["deploy_list"]
-    //         })
-    //     })
-    //     .catch(error => console.log(error))
-    // }
 
     render() {
         return (
             <div>
                 <Row>
-                    <h1>{this.state.deploymentList}</h1>
-                    <Select options={this.state.selectOptions}></Select>
-                </Row>
-                <Row className="m-4">
-                    <Col xs={9} lg={9}>
-                        <Form.Control type="text" placeholder="Search" />
-                    </Col>
-                    <Col>
-                        <Button variant="success" className="w-100" onClick={() => {}}>Search</Button>
-                    </Col>
+                    <Select 
+                    // closeMenuOnSelect={false}
+                    // components={this.state.animatedComponents}
+                    // defaultValue={[colourOptions[4], colourOptions[5]]}
+                    // isMulti
+                    options={this.state.deploymentList}
+                    ></Select>
                 </Row>
             </div>
         )
@@ -53,10 +40,6 @@ class Dashboard extends Component {
         await fetch(url)
         .then(response => response.json())
         .then(data => {
-            // this.setState({
-            //     deploymentList: data["deploy_list"]
-            // })
-
             const depList = data["deploy_list"]
             const opt = []
             for(const dep of depList){
@@ -68,8 +51,7 @@ class Dashboard extends Component {
                 )
             }
             this.setState({
-                deploymentList: data["deploy_list"],
-                selectOptions: opt
+                deploymentList: opt
             })
         })
         .catch(error => console.log(error))
