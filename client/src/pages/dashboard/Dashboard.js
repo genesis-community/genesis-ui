@@ -2,7 +2,7 @@ import { Component } from "react";
 import { Card, Button, Row, Col, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import RouteMap from '../../RouteMap';
-import Select from 'react-select'
+import Select from 'react-select';
 
 class Dashboard extends Component {
     constructor(props) {
@@ -14,7 +14,7 @@ class Dashboard extends Component {
     }
 
     componentDidMount = async () => {
-        this.fetchDeployments();
+        await this.fetchDeployments();
     }
 
     // componentDidMount() {
@@ -53,13 +53,13 @@ class Dashboard extends Component {
         await fetch(url)
         .then(response => response.json())
         .then(data => {
-            this.setState({
-                deploymentList: data["deploy_list"]
-            })
+            // this.setState({
+            //     deploymentList: data["deploy_list"]
+            // })
 
             const depList = data["deploy_list"]
             const opt = []
-            for(var dep in depList){
+            for(const dep of depList){
                 opt.push(
                     {
                         value:dep,
@@ -68,6 +68,7 @@ class Dashboard extends Component {
                 )
             }
             this.setState({
+                deploymentList: data["deploy_list"],
                 selectOptions: opt
             })
         })
