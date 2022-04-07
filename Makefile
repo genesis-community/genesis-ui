@@ -1,19 +1,19 @@
 # Used to launch frontend, backend, and database
-all: compose-stop compose-build compose-up
+all: stop build up
 
 # Used to launch just backend for frontend dev purposes
-backend: stop build start
+backend: backend-stop backend-build backend-start
 
-stop:
+backend-stop:
 	./bin/docker stop
 
-build:
+backend-build:
 	./bin/docker build
 
-start:
+backend-start:
 	./bin/docker start
 
-logs:
+backend-logs:
 	./bin/docker logs
 
 logs-tail:
@@ -22,11 +22,11 @@ logs-tail:
 web:
 	./bin/docker web
 
-compose-build:
+build:
 	./bin/docker compose-build
 
-compose-up:
+up:
 	./bin/docker compose-up
 
-compose-stop:
+stop:
 	./bin/docker compose-stop
