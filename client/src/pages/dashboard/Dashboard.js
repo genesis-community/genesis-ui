@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import RouteMap from '../../RouteMap';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-// import { colourOptions } from '../data';
 
 class Dashboard extends Component {
     constructor(props) {
@@ -20,51 +19,51 @@ class Dashboard extends Component {
         await this.fetchDeployments();
     }
 
-    handleChange = function(e) {
-        this.setState({
-            selectedOptions: e,
-        });
-        console.log(this.state.selectedOptions);
+    fetchDeployments = async () => {
+        await fetch("list", {
+            headers: {
+                Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
+            },
+        })
+            .then(response => response.json())
+            .then(response => {
+                const options = response["deploy_list"].map(deployment => ({
+                    value: deployment,
+                    label: deployment
+                }))
+
+                this.setState({
+                    deploymentList: options
+                })
+            })
+            .catch(error => console.log(error))
+    }
+
+    addSelect = (option) => {
+        this.setState({ selectedOptions: option })
     }
 
     render() {
         return (
             <div>
-                <Row>
-                    <Select
-                        options={this.state.deploymentList}
-                        closeMenuOnSelect={false}
-                        components={this.state.animatedComponents}
-                        isClearable
-                        // defaultValue={[colourOptions[4], colourOptions[5]]}
-                        isMulti
-                        onChange={opt => this.handleChange(opt)}
-                    ></Select>
+                <Row className="m-4">
+                    <Col xs={9} lg={9}>
+                        <Select
+                            options={this.state.deploymentList}
+                            placeholder={"Select Deployments"}
+                            closeMenuOnSelect={false}
+                            components={this.state.animatedComponents}
+                            isClearable
+                            isMulti
+                            onChange={this.addSelect} />
+                    </Col>
+                    <Col>
+                        <Button variant="success" className="w-100">Show Deployments</Button>
+                    </Col>
                 </Row>
             </div>
         )
     }
-
-    fetchDeployments = async () => {
-        const url = "/list";
-        await fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                const depList = data["deploy_list"]
-                const opt = []
-                for (const dep of depList) {
-                    opt.push(
-                        {
-                            value: dep,
-                            label: dep
-                        }
-                    )
-                }
-                this.setState({
-                    deploymentList: opt
-                })
-            })
-            .catch(error => console.log(error))
-    }
 }
+
 export default Dashboard
