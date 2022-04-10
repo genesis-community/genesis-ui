@@ -64,7 +64,7 @@ class Dashboard extends Component {
                 })
                 .catch(error => console.log(error))
         }
-
+        console.log(this.state.deploymentData)
         this.setState({ loading: false });
     }
 

@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Table, Row, Col, Alert } from "react-bootstrap";
+import { Table, Row, Col, Alert, Badge } from "react-bootstrap";
 
 class DeploymentTable extends Component {
     constructor(props) {
@@ -15,7 +15,7 @@ class DeploymentTable extends Component {
                         <td>{deploymentName}</td>
                         <td>{this.props.deployments[deploymentName][subDeployments].kit_name ?? "-"}</td>
                         <td>{this.props.deployments[deploymentName][subDeployments].dated ?? "-"}</td>
-                        <td>{this.props.deployments[deploymentName][subDeployments].kit_version ?? "-"}</td>
+                        <td>{this.props.deployments[deploymentName][subDeployments].kit_version ?? "-"}  {this.props.deployments[deploymentName][subDeployments].kit_is_dev === "1" ? <Badge pill bg="dark" className="mx-2">Dev</Badge> : ""}</td>
                     </tr>
                 )
             }
