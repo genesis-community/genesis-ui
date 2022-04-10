@@ -15,41 +15,6 @@ export VAULT_SKIP_VERIFY="true"
 export VAULT_TOKEN="$(cat ~/.vault-token)"
 
 case "${cmd}" in
-  # (build)
-  #   cd backend
-  #   echo "Building Genesis UI image from Dockerfile."
-  #   docker build -t genesis-ui .
-  #   echo "Genesis UI image is ready."
-  #   ;;
-  # (start)
-  #   cd backend
-  #   echo "Preparing Genesis UI in container."
-  #   exec docker run \
-  #     -e VAULT_DATA_PREFIX="${VAULT_DATA_PREFIX}" \
-  #     -e VAULT_SKIP_VERIFY="${VAULT_SKIP_VERIFY}" \
-  #     -e VAULT_TOKEN="${VAULT_TOKEN}" \
-  #     -e VAULT_ADDR="${VAULT_ADDR}" \
-  #     -e VAULT_LIST_PREFIX="${VAULT_LIST_PREFIX}" \
-  #     --detach \
-  #     --name genesis-ui \
-  #     --publish 8000:8000 \
-  #     -v $PWD/images:/app/images \
-  #     genesis-ui
-  #   ;;
-  # (stop)
-  #   cd backend
-  #   echo "Stoping Genesis UI Container."
-  #   docker stop genesis-ui || true
-  #   docker rm genesis-ui || true
-  #   docker rmi genesis-ui || true
-  #   echo "Genesis UI Container Stopped."
-  #   ;;
-  # (logs)
-  #   exec docker logs genesis-ui
-  #   ;;
-  # (logs-tail)
-  #   exec docker logs -f genesis-ui
-  #   ;;
   (compose-build)
     docker compose build
     ;;
