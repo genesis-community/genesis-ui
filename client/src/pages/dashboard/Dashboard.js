@@ -48,8 +48,8 @@ class Dashboard extends Component {
 
 
     getDeploymentData = async () => {
-        this.setState({ loading: true });
-        const old_dep_data = [];
+        this.setState({ deploymentData: [], loading: true });
+        const old_dep_data = this.state.deploymentData;
 
         for (const dep of this.state.selectedDeployments) {
             await fetch(`list/${dep.value}`, {
@@ -59,11 +59,20 @@ class Dashboard extends Component {
             })
                 .then(response => response.json())
                 .then(data => {
-                    old_dep_data.push([dep.value, data])
+                    Object.keys(data).forEach(x => {
+                        data[x].deployment_name = dep.value
+                        old_dep_data.push(data[x])
+                    })
                 })
                 .catch(error => console.log(error))
         }
-        this.setState({ deploymentData: [...this.state.deploymentData, ...old_dep_data], loading: false });
+        this.setState({ deploymentData: old_dep_data, loading: false });
+    }
+
+    sortData = (key, sort_by) => {
+        console.log("commmmmmmee")
+        const backup = this.state.deploymentData.sort((a, b) => sort_by ? (a[key].localeCompare(b[key])) : (b[key].localeCompare(a[key])))
+        this.setState({deploymentData: backup})
     }
 
 
@@ -72,15 +81,8 @@ class Dashboard extends Component {
 
         // Remove those deployment data which are not selected anymore
         const checkList = option.map(x => x.value);
-
-        for (let i = 0; i < this.state.deploymentData.length; i++) {
-            const d = this.state.deploymentData[i][0]
-            if (checkList.indexOf(d) === -1) {
-                const backup = this.state.deploymentData;
-                backup.splice(i, 1);
-                this.setState({ deploymentData: backup });
-            }
-        }
+        const backup = this.state.deploymentData.filter(x => checkList.indexOf(x.deployment_name) !== -1)
+        this.setState({ deploymentData: backup });
     }
 
 
@@ -105,7 +107,7 @@ class Dashboard extends Component {
 
                 <Row>
                     <Col className="text-center">
-                        <DeploymentTable deployments={this.state.deploymentData} />
+                        <DeploymentTable deployments={this.state.deploymentData} sortData={this.sortData} />
 
                         {this.state.loading ?
                             <div><FontAwesomeIcon icon={faSpinner} spin /> &nbsp;&nbsp;Loading...</div>
