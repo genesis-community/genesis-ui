@@ -15,7 +15,7 @@ class Dashboard extends Component {
             deploymentList: [],
             selectedDeployments: [],
             animatedComponents: makeAnimated(),
-            deploymentData: {},
+            deploymentData: [],
             loading: false,
         }
     }
@@ -49,6 +49,7 @@ class Dashboard extends Component {
 
     getDeploymentData = async () => {
         this.setState({ loading: true });
+        const old_dep_data = [];
 
         for (const dep of this.state.selectedDeployments) {
             await fetch(`list/${dep.value}`, {
@@ -58,14 +59,11 @@ class Dashboard extends Component {
             })
                 .then(response => response.json())
                 .then(data => {
-                    const old_dep_data = this.state.deploymentData;
-                    old_dep_data[dep.value] = data
-                    this.setState({ deploymentData: old_dep_data });
+                    old_dep_data.push([dep.value, data])
                 })
                 .catch(error => console.log(error))
         }
-        console.log(this.state.deploymentData)
-        this.setState({ loading: false });
+        this.setState({ deploymentData: [...this.state.deploymentData, ...old_dep_data], loading: false });
     }
 
 
@@ -73,12 +71,13 @@ class Dashboard extends Component {
         this.setState({ selectedDeployments: option })
 
         // Remove those deployment data which are not selected anymore
-        for (const d in this.state.deploymentData) {
-            const checkList = option.map(x => x.value);
-            console.log(checkList)
+        const checkList = option.map(x => x.value);
+
+        for (let i = 0; i < this.state.deploymentData.length; i++) {
+            const d = this.state.deploymentData[i][0]
             if (checkList.indexOf(d) === -1) {
                 const backup = this.state.deploymentData;
-                delete backup[d];
+                backup.splice(i, 1);
                 this.setState({ deploymentData: backup });
             }
         }

@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Table, Row, Col, Alert, Badge } from "react-bootstrap";
+import { Table, Row, Col, Alert, Badge, Dropdown, ButtonGroup } from "react-bootstrap";
 
 class DeploymentTable extends Component {
     constructor(props) {
@@ -8,19 +8,19 @@ class DeploymentTable extends Component {
 
     renderTable = () => {
         const tableData = [];
-        for (const deploymentName in this.props.deployments) {
-            for (const subDeployments in this.props.deployments[deploymentName]) {
+        for (const [deployment, data] of this.props.deployments) {
+            for (const subDeployments in data) {
                 tableData.push(
                     <tr>
-                        <td>{deploymentName}</td>
-                        <td>{this.props.deployments[deploymentName][subDeployments].kit_name ?? "-"}</td>
-                        <td>{this.props.deployments[deploymentName][subDeployments].dated ?? "-"}</td>
-                        <td>{this.props.deployments[deploymentName][subDeployments].kit_version ?? "-"}  {this.props.deployments[deploymentName][subDeployments].kit_is_dev === "1" ? <Badge pill bg="dark" className="mx-2">Dev</Badge> : ""}</td>
+                        <td>{deployment}</td>
+                        <td>{data[subDeployments].kit_name ?? "-"}</td>
+                        <td>{data[subDeployments].dated ?? "-"}</td>
+                        <td>{data[subDeployments].kit_version ?? "-"}  {data[subDeployments].kit_is_dev === "1" ? <Badge pill bg="dark" className="mx-2">Dev</Badge> : ""}</td>
                     </tr>
                 )
             }
         }
-        return tableData
+        return tableData;
     }
 
     render() {
