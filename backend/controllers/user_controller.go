@@ -93,7 +93,6 @@ func OauthLogin() gin.HandlerFunc {
 			"gittoken": token,
 			"key":      uuid.New().String(),
 		}
-		fmt.Println(userDetails)
 		dbConn := database.ConnectDB()
 		result, existingUser := database.InsertRecords(dbConn, userDetails)
 
