@@ -32,14 +32,14 @@ func ConnectDB() *sql.DB {
 	return db
 }
 
-func InsertRecords(dbConn *sql.DB, userDetails map[string]string) string {
+func InsertRecords(dbConn *sql.DB, userDetails map[string]string) (string, bool) {
 
-	var isAuthenticated bool
-	err := dbConn.QueryRow(fmt.Sprintf("SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END FROM user_details WHERE username = '%s'", userDetails["username"])).Scan(&isAuthenticated)
+	var existingUser bool
+	err := dbConn.QueryRow(fmt.Sprintf("SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END FROM user_details WHERE username = '%s'", userDetails["username"])).Scan(&existingUser)
 	if err != nil {
-		return err.Error()
+		return err.Error(), false
 	}
-	if !isAuthenticated {
+	if !existingUser {
 		if userDetails["email"] == "" {
 			sqlStatement := `INSERT INTO user_details (username, name, email, gittoken, key, recent_login_at) VALUES ($1, $2, null, $3, $4, now())`
 			_, err = dbConn.Exec(sqlStatement, userDetails["username"], userDetails["name"], userDetails["gittoken"], userDetails["key"])
@@ -48,17 +48,17 @@ func InsertRecords(dbConn *sql.DB, userDetails map[string]string) string {
 			_, err = dbConn.Exec(sqlStatement, userDetails["username"], userDetails["name"], userDetails["email"], userDetails["gittoken"], userDetails["key"])
 		}
 		if err != nil {
-			return err.Error()
+			return err.Error(), false
 		}
 	} else {
 		sqlStatement := `UPDATE user_details SET recent_login_at = now(), key = $1 WHERE username = $2`
 		_, err = dbConn.Exec(sqlStatement, userDetails["key"], userDetails["username"])
 		if err != nil {
-			return err.Error()
+			return err.Error(), false
 		}
 	}
 	dbConn.Close()
-	return "true"
+	return "true", existingUser
 }
 
 func Logout(dbConn *sql.DB, key string) string {

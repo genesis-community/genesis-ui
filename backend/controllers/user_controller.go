@@ -95,16 +95,16 @@ func OauthLogin() gin.HandlerFunc {
 		}
 		fmt.Println(userDetails)
 		dbConn := database.ConnectDB()
-		result := database.InsertRecords(dbConn, userDetails)
+		result, existingUser := database.InsertRecords(dbConn, userDetails)
 
 		// Finally, send a response to redirect the user to the homepage page with github auth cookie set for 7 days
 		// TODO: Update localhost to URL later and change to Secure only
 		context.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		context.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		if result == "true" {
-			context.JSON(200, gin.H{"token": userDetails["key"]})
+			context.JSON(200, gin.H{"token": userDetails["key"], "existing_user": existingUser})
 		} else {
-			context.JSON(200, gin.H{"Message": result})
+			context.JSON(400, gin.H{"error": result})
 		}
 	}
 }
@@ -137,9 +137,9 @@ func Logout() gin.HandlerFunc {
 		context.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		result := database.Logout(dbConn, token)
 		if result == "true" {
-			context.JSON(200, gin.H{"Message": "Successfully logged out"})
+			context.JSON(200, gin.H{"message": "Successfully logged out"})
 		} else {
-			context.JSON(400, gin.H{"Message": result})
+			context.JSON(400, gin.H{"error": result})
 		}
 	}
 }
