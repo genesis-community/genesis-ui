@@ -31,7 +31,14 @@ services:
       #   - ./client:/app
       environment:
         - CHOKIDAR_USEPOLLING=true
-    
+
+    # Cronjob container - runs every hour
+    cron:
+      build:
+        context: .
+        dockerfile: Dockerfile
+
+
     #Postgres DB
     postgres:
       image: postgres
