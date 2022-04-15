@@ -12,5 +12,5 @@ func HandleRoutes(router *gin.Engine) {
 
 	router.GET("/list/*any", controllers.ListDeployments())
 	router.GET("/auth", controllers.OauthLogin())
-
+	router.GET("/logout", controllers.Logout())
 }
