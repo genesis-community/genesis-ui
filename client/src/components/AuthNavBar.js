@@ -6,8 +6,9 @@ import '../css/components/navbar.css'
 import GenesisLogo from "../assets/images/genesisLogo.png"
 import RouteMap from '../RouteMap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSignOut, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { faSignOut, faQuestionCircle, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import {Link} from "react-router-dom"
 
 function AuthNavBar(props) {
 
@@ -21,24 +22,6 @@ function AuthNavBar(props) {
         localStorage.removeItem("token");
         sessionStorage.removeItem("token")
         window.location.href = RouteMap.Login
-    }
-
-    const quickview = () => {
-        return (
-            <Navbar.Collapse>
-                <NavDropdown title="QuickView" className='text-white'>
-
-                    <NavDropdown.Item>
-                        buffalo-lab/
-                    </NavDropdown.Item>
-
-                    <NavDropdown.Item>
-                        genesis-lab/
-                    </NavDropdown.Item>
-
-                </NavDropdown>
-            </Navbar.Collapse>
-        )
     }
 
     return (
@@ -70,8 +53,12 @@ function AuthNavBar(props) {
                             Help&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} />
                         </Nav.Link>
 
-                        <Nav.Link className='mx-4 text-white' to={RouteMap.quickView}>
-                            QuickView
+                        <Nav.Link className='mx-4 text-white' as={Link} to={RouteMap.QuickView}>
+                            QuickView&nbsp;&nbsp;<FontAwesomeIcon icon={faPaperPlane} />
+                        </Nav.Link>
+
+                        <Nav.Link className='mx-4 text-white' as={Link} to={RouteMap.Dashboard}>
+                            Dashboard
                         </Nav.Link>
                     </Navbar.Collapse>
 

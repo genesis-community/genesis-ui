@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Card, Button, Row, Col, Alert } from 'react-bootstrap';
+import { Card, Button, Row, Col, Alert, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import RouteMap from '../../RouteMap';
 import Select from 'react-select';
@@ -137,10 +137,10 @@ class Dashboard extends Component {
                 const backup = this.state.quickViewDeployments;
                 backup.splice(i, 1);
                 this.setState({ quickViewDeployments: backup })
-                if(!backup.length){
+                if (!backup.length) {
                     localStorage.removeItem("quickview");
                 }
-                else{
+                else {
                     localStorage.setItem("quickview", JSON.stringify(backup));
                 }
                 return;
@@ -163,11 +163,18 @@ class Dashboard extends Component {
         }
         else {
             return (
-                <Row className="mx-4">
+                <Row className="mx-4"  className="d-flex justify-content-between">
                     <Col>
                         <Alert variant={"info"} onClick={this.addQuickView}>
-                            <FontAwesomeIcon icon={faStar} className="mx-2" />
-                            Add to Quick-View
+                            <h6 className="text-center">Add to Quick-View</h6>
+                            <Row>
+                                <Col xs={9} lg={9}>
+                                    <Form.Control type="text" placeholder="Give a cute name to these of deployments..." />
+                                </Col>
+                                <Col>
+                                    <Button variant="dark">Add</Button>
+                                </Col>
+                            </Row>
                         </Alert>
                     </Col>
                 </Row>

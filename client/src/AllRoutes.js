@@ -8,16 +8,15 @@ import {
 import RouteMap from "./RouteMap";
 
 import React, { Component } from 'react';
-import { Image, Row, Col } from 'react-bootstrap';
 
 import Login from "./pages/auth/Login";
 import LandingPage from "./pages/dashboard/LandingPage";
-import Dashboard from "./pages/dashboard/Dashboard"
+import Dashboard from "./pages/dashboard/Dashboard";
+import QuickView from "./pages/dashboard/QuickView";
 import Error_404 from "./pages/Error_404";
 import ProcessToken from "./pages/auth/ProcessToken";
 import AuthNavBar from "./components/AuthNavBar";
-import borderedGenesis from "./assets/images/borderedGenesis.png"
-import "./css/pages/loading.css"
+import "./css/pages/loading.css";
 
 class AllRoutes extends Component {
   constructor(props) {
@@ -57,10 +56,6 @@ class AllRoutes extends Component {
         this.setState({ redirect: true });
       })
     );
-
-    // setTimeout(() => {
-    //   this.setState({ loading: false });
-    // }, 3000)
   }
 
 
@@ -102,7 +97,8 @@ class AllRoutes extends Component {
     } else {
       return ([
         <Route path={RouteMap.LandingPage} exact element={this.RouteWithAuthNav(this.state.userData, LandingPage)} key="routeMap" />,
-        <Route path={RouteMap.Dashboard} exact element={this.RouteWithAuthNav(this.state.userData, Dashboard)} key="Dashboard" />
+        <Route path={RouteMap.Dashboard} exact element={this.RouteWithAuthNav(this.state.userData, Dashboard)} key="Dashboard" />,
+        <Route path={RouteMap.QuickView} exact element={this.RouteWithAuthNav(this.state.userData, QuickView)} key="QuickView" />
       ])
     }
   }
@@ -115,14 +111,6 @@ class AllRoutes extends Component {
   }
 
   render() {
-    // if (this.state.loading) {
-    //   return (
-    //     <div className="d-flex justify-content-center align-items-center vh-100">
-    //       <Image src={borderedGenesis} className="img-thumbnail border-0 fade-in" />
-    //     </div>
-    //   )
-    // }
-
     return (
       <BrowserRouter>
         <Routes>
