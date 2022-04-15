@@ -1,12 +1,12 @@
 import { Component } from "react";
-import { Card, Button, Row, Col, Form } from 'react-bootstrap';
+import { Card, Button, Row, Col, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import RouteMap from '../../RouteMap';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import DeploymentTable from "./DeploymentTable";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faSpinner, faStar, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 class Dashboard extends Component {
     constructor(props) {
@@ -17,11 +17,19 @@ class Dashboard extends Component {
             animatedComponents: makeAnimated(),
             deploymentData: [],
             loading: false,
+            quickViewDeployments: null,
         }
     }
 
 
     componentDidMount = async () => {
+        if (localStorage.getItem("quickview")) {
+            this.setState({ quickViewDeployments: JSON.parse(localStorage.getItem("quickview")) })
+        }
+        else {
+            this.setState({ quickViewDeployments: [] })
+        }
+
         await this.fetchDeployments();
     }
 
@@ -70,9 +78,8 @@ class Dashboard extends Component {
     }
 
     sortData = (key, sort_by) => {
-        console.log("commmmmmmee")
         const backup = this.state.deploymentData.sort((a, b) => sort_by ? (a[key].localeCompare(b[key])) : (b[key].localeCompare(a[key])))
-        this.setState({deploymentData: backup})
+        this.setState({ deploymentData: backup })
     }
 
 
@@ -83,6 +90,89 @@ class Dashboard extends Component {
         const checkList = option.map(x => x.value);
         const backup = this.state.deploymentData.filter(x => checkList.indexOf(x.deployment_name) !== -1)
         this.setState({ deploymentData: backup });
+    }
+
+    existInList = (selected) => {
+        for (let item of this.state.quickViewDeployments) {
+            let same = true;
+            for (let s of selected) {
+                if (!item.includes(s)) {
+                    same = false;
+                    break;
+                }
+            }
+            if (same) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    addQuickView = () => {
+        // Set to localstorage or send to server (in future)
+        const selected = this.state.selectedDeployments.map(x => x.value);
+        if (!(this.existInList(selected))) {
+            const backup = this.state.quickViewDeployments;
+            backup.push(selected);
+            this.setState({ quickViewDeployments: backup })
+            localStorage.setItem("quickview", JSON.stringify(backup));
+        }
+    }
+
+    removeQuickView = () => {
+        const selected = this.state.selectedDeployments.map(x => x.value);
+        console.log(this.state.quickViewDeployments)
+
+        for (let i = 0; i < this.state.quickViewDeployments.length; i++) {
+            const item = this.state.quickViewDeployments[i];
+            let same = true;
+            for (let s of selected) {
+                if (!item.includes(s)) {
+                    same = false;
+                    break;
+                }
+            }
+            if (same) {
+                console.log("same found")
+                const backup = this.state.quickViewDeployments;
+                backup.splice(i, 1);
+                this.setState({ quickViewDeployments: backup })
+                if(!backup.length){
+                    localStorage.removeItem("quickview");
+                }
+                else{
+                    localStorage.setItem("quickview", JSON.stringify(backup));
+                }
+                return;
+            }
+        }
+    }
+
+    renderQuickView = () => {
+        if (this.state.quickViewDeployments && (this.existInList(this.state.selectedDeployments.map(x => x.value)))) {
+            return (
+                <Row className="mx-4">
+                    <Col>
+                        <Alert variant={"danger"} onClick={this.removeQuickView}>
+                            <FontAwesomeIcon icon={faTrash} className="mx-2" />
+                            Delete from Quick-View
+                        </Alert>
+                    </Col>
+                </Row>
+            )
+        }
+        else {
+            return (
+                <Row className="mx-4">
+                    <Col>
+                        <Alert variant={"info"} onClick={this.addQuickView}>
+                            <FontAwesomeIcon icon={faStar} className="mx-2" />
+                            Add to Quick-View
+                        </Alert>
+                    </Col>
+                </Row>
+            )
+        }
     }
 
 
@@ -104,6 +194,12 @@ class Dashboard extends Component {
                         <Button variant="success" className="w-100" onClick={this.getDeploymentData}>Show Deployments</Button>
                     </Col>
                 </Row>
+
+                {this.state.deploymentData && this.state.deploymentData.length ?
+                    this.renderQuickView()
+                    :
+                    ""
+                }
 
                 <Row>
                     <Col className="text-center">

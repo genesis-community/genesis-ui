@@ -4,6 +4,7 @@ let RouteMap = {
     Dashboard: "/Dashboard",
     Callback: "/callback",
     Error_404: "/404-error",
+    quickView: "/quick-view"
 }
 
 export default RouteMap

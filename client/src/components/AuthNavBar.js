@@ -23,6 +23,24 @@ function AuthNavBar(props) {
         window.location.href = RouteMap.Login
     }
 
+    const quickview = () => {
+        return (
+            <Navbar.Collapse>
+                <NavDropdown title="QuickView" className='text-white'>
+
+                    <NavDropdown.Item>
+                        buffalo-lab/
+                    </NavDropdown.Item>
+
+                    <NavDropdown.Item>
+                        genesis-lab/
+                    </NavDropdown.Item>
+
+                </NavDropdown>
+            </Navbar.Collapse>
+        )
+    }
+
     return (
         <>
             <Navbar bg="dark">
@@ -51,7 +69,12 @@ function AuthNavBar(props) {
                         <Nav.Link className='mx-4 text-white' href="https://www.youtube.com/user/StarkAndWayne" target="_blank">
                             Help&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} />
                         </Nav.Link>
+
+                        <Nav.Link className='mx-4 text-white' to={RouteMap.quickView}>
+                            QuickView
+                        </Nav.Link>
                     </Navbar.Collapse>
+
                 </Container>
             </Navbar>
         </>
