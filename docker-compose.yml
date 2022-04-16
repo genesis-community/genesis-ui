@@ -26,9 +26,6 @@ services:
         context: "./client"
       ports:
         - "3000:3000"
-      # volumes:
-      #   - /app/node_modules
-      #   - ./client:/app
       environment:
         - CHOKIDAR_USEPOLLING=true
 
@@ -37,6 +34,12 @@ services:
       build:
         context: .
         dockerfile: Dockerfile
+      environment:
+        - VAULT_TOKEN
+        - VAULT_DATA_PREFIX
+        - VAULT_LIST_PREFIX
+        - VAULT_ADDR
+        - VAULT_SKIP_VERIFY
 
 
     #Postgres DB
