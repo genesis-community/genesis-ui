@@ -1,3 +1,0 @@
-#!/bin/sh
-./db-update 2>> var/log/cron.log
-echo "Script ran"
