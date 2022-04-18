@@ -11,10 +11,8 @@ import (
 )
 
 func main() {
-	vault_deploys := LoadDeployments()
-	log.Println("deployment example: map[\"deployname\":[ map[\"kit_name\"]:\"kit_name\" ]")
-	log.Println("buffalo-lab:", vault_deploys["buffalo-lab/"])
-	log.Println("Writing log")
+	CheckAndUpdateDeployments(LoadDeployments())
+	log.Println("Database updated")
 }
 
 func LoadDeployments() map[string][]map[string]string {

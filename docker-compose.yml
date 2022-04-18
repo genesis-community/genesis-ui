@@ -52,6 +52,8 @@ services:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
         - POSTGRES_DB=genesis-ui
+      volumes:
+        - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
 
     #GUI for Postgres
     pgadmin:

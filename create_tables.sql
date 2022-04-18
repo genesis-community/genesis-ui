@@ -1,4 +1,4 @@
-/* Table for User Details */
+-- Tables for User Details
 CREATE TABLE user_details (
     user_id serial PRIMARY KEY, 
     username VARCHAR ( 255 ) UNIQUE NOT NULL, 
@@ -10,15 +10,14 @@ CREATE TABLE user_details (
     recent_login_at TIMESTAMP NOT NULL
 );
 
-/* Table for Deployment Details */
+-- Table for Deployment Details
 CREATE TABLE deployment_details (
     id serial PRIMARY KEY, 
 	name VARCHAR ( 255 ) UNIQUE NOT NULL,
 	recent_update_at TIMESTAMP NOT NULL
 );
 
-
-/* Table for Kit Details */
+-- Table for Kit Details
 CREATE TABLE kit_details(
     id serial PRIMARY KEY,
 	name VARCHAR( 255 ) NOT NULL,
