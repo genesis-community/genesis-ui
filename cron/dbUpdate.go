@@ -116,13 +116,16 @@ func ConnectDB() *sql.DB {
 
 func CheckAndUpdateDeployments(deployment_details map[string][]map[string]string) string {
 	// example structure for deployment_details
-	// var deploy_details = make(map[string][]map[string]string)
-	// kit_details := map[string]string{
-	// 	"name":        "bosh",
-	// 	"version":     "1.1.2",
-	// 	"deployed_at": "2021-11-17 03:31:14 +0000",
+	// {
+	// 	buffalo-lab/:{
+	// 	dated:"2021-11-17 03:31:14 +0000",
+	// 	deployer:"xiujiao",
+	// 	features:"vsphere,proto,vault-credhub-proxy",
+	// 	kit_is_dev:0,
+	// 	kit_name:"bosh",
+	// 	kit_version:"2.2.1"
+	// 	}
 	// }
-	// deploy_details["buffalo-lab"] = append(deploy_details["buffalo-lab"], kit_details)
 
 	dbConn := ConnectDB()
 	for deployment_name, element := range deployment_details {
@@ -143,19 +146,22 @@ func CheckAndUpdateDeployments(deployment_details map[string][]map[string]string
 			if deployment_id > 0 {
 				var kit_id int
 				kit_id = 0
-
-				err := dbConn.QueryRow(fmt.Sprintf("SELECT CASE WHEN COUNT(*) > 0 THEN (SELECT id FROM kit_details WHERE name = '%s' and deployment_id = %d) ELSE 0 END FROM kit_details WHERE name = '%s' and deployment_id = %d", kit_details["name"], deployment_id, kit_details["name"], deployment_id)).Scan(&kit_id)
+				is_dev := 0
+				if kit_details["kit_is_dev"] != "0" {
+					is_dev = 1
+				}
+				err := dbConn.QueryRow(fmt.Sprintf("SELECT CASE WHEN COUNT(*) > 0 THEN (SELECT id FROM kit_details WHERE name = '%s' and deployment_id = %d) ELSE 0 END FROM kit_details WHERE name = '%s' and deployment_id = %d", kit_details["kit_name"], deployment_id, kit_details["kit_name"], deployment_id)).Scan(&kit_id)
 				if err != nil {
 					return err.Error()
 				}
 				fmt.Println("kit id", kit_id)
 				if kit_id == 0 {
-					err := dbConn.QueryRow(fmt.Sprintf("INSERT INTO kit_details (name, version, deployment_id, deployed_at, recent_update_at) VALUES ('%s', '%s', %d, '%s', now()) RETURNING id", kit_details["name"], kit_details["version"], deployment_id, kit_details["deployed_at"])).Scan(&kit_id)
+					err := dbConn.QueryRow(fmt.Sprintf("INSERT INTO kit_details (name, version, deployment_id, deployed_by, deployed_at, features, is_dev, recent_update_at) VALUES ('%s', '%s', %d, '%s', '%s', '%s', %d, now()) RETURNING id", kit_details["kit_name"], kit_details["kit_version"], deployment_id, kit_details["deployer"], kit_details["dated"], kit_details["features"], is_dev)).Scan(&kit_id)
 					if err != nil {
 						return err.Error()
 					}
 				} else if kit_id > 0 {
-					err := dbConn.QueryRow(fmt.Sprintf("UPDATE kit_details SET name='%s', version='%s', deployment_id=%d, deployed_at='%s', recent_update_at=now() WHERE deployment_id=%d and name = '%s'", kit_details["name"], kit_details["version"], deployment_id, kit_details["deployed_at"], deployment_id, kit_details["name"]))
+					err := dbConn.QueryRow(fmt.Sprintf("UPDATE kit_details SET name='%s', version='%s', deployment_id=%d, deployed_by='%s', deployed_at='%s', features='%s', is_dev=%d, recent_update_at=now() WHERE deployment_id=%d and name = '%s'", kit_details["kit_name"], kit_details["kit_version"], deployment_id, kit_details["deployer"], kit_details["dated"], kit_details["features"], is_dev, deployment_id, kit_details["kit_name"]))
 					if err != nil {
 						return "invalid update"
 					}
