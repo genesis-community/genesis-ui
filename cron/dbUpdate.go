@@ -21,7 +21,7 @@ func LoadDeployments() map[string][]map[string]interface{} {
 	client := CreatClient()
 	list_path := os.Getenv("VAULT_LIST_PREFIX")
 	if list_path == "" {
-		fmt.Fprintf(os.Stderr, "loadDeployment: empty perfix, please provide a valid prefix")
+		fmt.Fprintf(os.Stderr, "loadDeployment: empty prefix, please provide a valid prefix")
 	}
 	secret_list, err := client.Logical().List(list_path)
 	if err != nil {
