@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Card, Button, Row, Col, Alert, Form } from 'react-bootstrap';
+import { Button, Row, Col, Alert, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import RouteMap from '../../RouteMap';
 import Select from 'react-select';
@@ -18,6 +18,7 @@ class Dashboard extends Component {
             deploymentData: [],
             loading: false,
             quickViewDeployments: null,
+            quickviewName: null,
         }
     }
 
@@ -27,9 +28,8 @@ class Dashboard extends Component {
             this.setState({ quickViewDeployments: JSON.parse(localStorage.getItem("quickview")) })
         }
         else {
-            this.setState({ quickViewDeployments: [] })
+            this.setState({ quickViewDeployments: {} })
         }
-
         await this.fetchDeployments();
     }
 
@@ -89,11 +89,12 @@ class Dashboard extends Component {
         // Remove those deployment data which are not selected anymore
         const checkList = option.map(x => x.value);
         const backup = this.state.deploymentData.filter(x => checkList.indexOf(x.deployment_name) !== -1)
-        this.setState({ deploymentData: backup });
+        this.setState({ deploymentData: backup, quickviewName: null });
     }
 
     existInList = (selected) => {
-        for (let item of this.state.quickViewDeployments) {
+        const deployments = Object.values(this.state.quickViewDeployments);
+        for (let item of deployments) {
             let same = true;
             for (let s of selected) {
                 if (!item.includes(s)) {
@@ -101,8 +102,8 @@ class Dashboard extends Component {
                     break;
                 }
             }
-            if (same) {
-                return true;
+            if (same && selected.length === item.length) {
+                return true
             }
         }
         return false;
@@ -113,18 +114,17 @@ class Dashboard extends Component {
         const selected = this.state.selectedDeployments.map(x => x.value);
         if (!(this.existInList(selected))) {
             const backup = this.state.quickViewDeployments;
-            backup.push(selected);
-            this.setState({ quickViewDeployments: backup })
+            backup[this.state.quickviewName] = selected
+            this.setState({ quickViewDeployments: backup, quickviewName: null })
             localStorage.setItem("quickview", JSON.stringify(backup));
         }
     }
 
     removeQuickView = () => {
         const selected = this.state.selectedDeployments.map(x => x.value);
-        console.log(this.state.quickViewDeployments)
 
-        for (let i = 0; i < this.state.quickViewDeployments.length; i++) {
-            const item = this.state.quickViewDeployments[i];
+        for (let key in this.state.quickViewDeployments) {
+            const item = this.state.quickViewDeployments[key];
             let same = true;
             for (let s of selected) {
                 if (!item.includes(s)) {
@@ -132,12 +132,11 @@ class Dashboard extends Component {
                     break;
                 }
             }
-            if (same) {
-                console.log("same found")
+            if (same && selected.length === item.length) {
                 const backup = this.state.quickViewDeployments;
-                backup.splice(i, 1);
+                delete backup[key];
                 this.setState({ quickViewDeployments: backup })
-                if (!backup.length) {
+                if (!Object.keys(backup).length) {
                     localStorage.removeItem("quickview");
                 }
                 else {
@@ -153,7 +152,7 @@ class Dashboard extends Component {
             return (
                 <Row className="mx-4">
                     <Col>
-                        <Alert variant={"danger"} onClick={this.removeQuickView}>
+                        <Alert variant={"danger"} onClick={this.removeQuickView} role="button">
                             <FontAwesomeIcon icon={faTrash} className="mx-2" />
                             Delete from Quick-View
                         </Alert>
@@ -163,16 +162,16 @@ class Dashboard extends Component {
         }
         else {
             return (
-                <Row className="mx-4"  className="d-flex justify-content-between">
+                <Row className="mx-4">
                     <Col>
-                        <Alert variant={"info"} onClick={this.addQuickView}>
+                        <Alert variant={"info"} className={"mx-4"}>
                             <h6 className="text-center">Add to Quick-View</h6>
-                            <Row>
+                            <Row className="text-center">
                                 <Col xs={9} lg={9}>
-                                    <Form.Control type="text" placeholder="Give a cute name to these of deployments..." />
+                                    <Form.Control type="text" placeholder="Give a cute name to these of deployments..." onChange={(event) => this.setState({ quickviewName: event.target.value })} />
                                 </Col>
                                 <Col>
-                                    <Button variant="dark">Add</Button>
+                                    <Button variant="dark" className="w-100" onClick={this.addQuickView}>Add</Button>
                                 </Col>
                             </Row>
                         </Alert>
