@@ -79,6 +79,8 @@ func OauthLogin() gin.HandlerFunc {
 		bodyBytes, err = io.ReadAll(resUser.Body)
 		bodyString = string(bodyBytes)
 		resp = generateResponseMap(bodyString, true)
+		var profileDetails map[string]interface{}
+		json.Unmarshal([]byte(bodyString), &profileDetails)
 		if err != nil {
 			fmt.Fprintf(os.Stdout, "could not send HTTP request: %v", err)
 			context.String(500, "Error in parsing body of git user request")
@@ -101,7 +103,7 @@ func OauthLogin() gin.HandlerFunc {
 		context.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		context.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		if result == "true" {
-			context.JSON(200, gin.H{"token": userDetails["key"], "existing_user": existingUser})
+			context.JSON(200, gin.H{"token": userDetails["key"], "existing_user": existingUser, "profile_details": profileDetails})
 		} else {
 			context.JSON(400, gin.H{"error": result})
 		}
@@ -130,7 +132,7 @@ func generateResponseMap(bodyString string, useStruct bool) map[string]string {
 
 func Logout() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		token := context.Query("key")
+		token := context.Query("token")
 		dbConn := database.ConnectDB()
 		context.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		context.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
