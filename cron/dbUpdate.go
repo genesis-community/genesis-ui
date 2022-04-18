@@ -17,7 +17,7 @@ func main() {
 	log.Println("Writing log")
 }
 
-func LoadDeployments() map[string][]map[string]interface{} {
+func LoadDeployments() map[string][]map[string]string {
 	client := CreatClient()
 	list_path := os.Getenv("VAULT_LIST_PREFIX")
 	if list_path == "" {
@@ -30,7 +30,7 @@ func LoadDeployments() map[string][]map[string]interface{} {
 		fmt.Fprintf(os.Stderr, "client.Logical().List(%s): Secret List not found!\n", list_path)
 	} else {
 		deploys := secret_list.Data["keys"].([]interface{})
-		deploys_map := make(map[string][]map[string]interface{})
+		deploys_map := make(map[string][]map[string]string)
 		for _, deploy := range deploys {
 			directory := list_path + "/" + deploy.(string)
 			kit_list, err := client.Logical().List(directory)
@@ -41,9 +41,9 @@ func LoadDeployments() map[string][]map[string]interface{} {
 			} else {
 				kits := kit_list.Data["keys"].([]interface{})
 				data_path := os.Getenv("VAULT_DATA_PREFIX")
-				data_list := make([]map[string]interface{}, 0)
+				data_list := make([]map[string]string, 0)
 				for _, kit := range kits {
-					kits_map := make(map[string]interface{})
+					kits_map := make(map[string]string)
 					kit_path := data_path + deploy.(string) + "/" + kit.(string)
 					secret, err := client.Logical().Read(kit_path)
 					if err != nil {
@@ -52,11 +52,11 @@ func LoadDeployments() map[string][]map[string]interface{} {
 						fmt.Fprintf(os.Stderr, "client.Logical().Read(%s): Secret not found! at: %s\n", kit_path, kit_path)
 					} else {
 						data := secret.Data["data"].(map[string]interface{})
-						kits_map["kit_name"] = kit
+						kits_map["kit_name"] = kit.(string)
 						keys := []string{"kit_is_dev", "dated", "deployer", "kit_version", "features"}
 						for _, key := range keys {
 							if val, ok := data[key]; ok {
-								kits_map[key] = val
+								kits_map[key] = val.(string)
 							} else {
 								kits_map[key] = "N/A"
 							}
