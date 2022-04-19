@@ -1,6 +1,5 @@
 import { Component } from "react";
 import { Button, Row, Col, Alert, Form } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 import RouteMap from '../../RouteMap';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
@@ -30,12 +29,22 @@ class Dashboard extends Component {
         else {
             this.setState({ quickViewDeployments: {} })
         }
+
         await this.fetchDeployments();
     }
 
+    params = new URLSearchParams(window.location.search)
+
+    defaultSelections = (this.params.has('quickviewDeployments') && this.params.get('quickviewDeployments') !== null || this.params.get('quickviewDeployments') !== "null" || this.params.get('quickviewDeployments') !== "") ? JSON.parse(this.params.get('quickviewDeployments')).map(deployment => ({
+        value: deployment,
+        label: deployment
+    }))
+        :
+        []
+
 
     fetchDeployments = async () => {
-        await fetch("list", {
+        await fetch("/list", {
             headers: {
                 Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
             },
@@ -60,7 +69,7 @@ class Dashboard extends Component {
         const old_dep_data = this.state.deploymentData;
 
         for (const dep of this.state.selectedDeployments) {
-            await fetch(`list/${dep.value}`, {
+            await fetch(`/list/${dep.value}`, {
                 headers: {
                     Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
                 },
@@ -192,6 +201,7 @@ class Dashboard extends Component {
                             placeholder={"Select Deployments"}
                             closeMenuOnSelect={false}
                             components={this.state.animatedComponents}
+                            // defaultValue={this.defaultSelections}
                             isClearable
                             isMulti
                             onChange={this.addSelect} />

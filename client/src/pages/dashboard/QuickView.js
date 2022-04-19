@@ -2,6 +2,8 @@ import { Component } from "react";
 import { Row, Col, Badge, Card, CardGroup, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Link } from 'react-router-dom';
+import RouteMap from "../../RouteMap";
 
 class QuickView extends Component {
     constructor(props) {
@@ -38,12 +40,16 @@ class QuickView extends Component {
                         <Col>
                             <Card className="shadow p-3 mb-5 bg-white rounded m-3" role="button">
                                 <Card.Body>
-                                    <h6 className="text-center">{key}</h6>
-                                    <hr />
-                                    {value.map(x => (
-                                        <Badge bg="primary" key={`dep-${x}`} className={"mx-2"}>{x}</Badge>
-                                    ))}
-                                    <hr />
+                                    <Row as={Link} to={`${RouteMap.Dashboard}/?quickviewDeployments=${JSON.stringify(value)}`}>
+                                        <Col>
+                                            <h6 className="text-center">{key}</h6>
+                                            <hr />
+                                            {value.map(x => (
+                                                <Badge bg="primary" key={`dep-${x}`} className={"mx-2"}>{x}</Badge>
+                                            ))}
+                                            <hr />
+                                        </Col>
+                                    </Row>
                                     <Row>
                                         <Col className="d-flex flex-row-reverse">
                                             <FontAwesomeIcon icon={faTrash} className="mx-2 text-danger" onClick={() => this.removeQuickView(key)} />
