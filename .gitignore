@@ -18,6 +18,7 @@
 .idea
 main
 backend/.env
+cron/.env
 
 deployments/
 node_modules

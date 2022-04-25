@@ -26,12 +26,24 @@ services:
         context: "./client"
       ports:
         - "3000:3000"
-      # volumes:
-      #   - /app/node_modules
-      #   - ./client:/app
       environment:
         - CHOKIDAR_USEPOLLING=true
-    
+
+    # Cronjob container - runs every hour
+    cron:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      env_file:
+      - cron/.env
+      environment:
+        - VAULT_TOKEN
+        - VAULT_DATA_PREFIX
+        - VAULT_LIST_PREFIX
+        - VAULT_ADDR
+        - VAULT_SKIP_VERIFY
+
+
     #Postgres DB
     postgres:
       image: postgres
@@ -40,6 +52,8 @@ services:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
         - POSTGRES_DB=genesis-ui
+      volumes:
+        - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
 
     #GUI for Postgres
     pgadmin:
