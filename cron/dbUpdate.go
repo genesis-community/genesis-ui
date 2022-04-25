@@ -3,16 +3,21 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 
 	vault "github.com/hashicorp/vault/api"
 	_ "github.com/lib/pq"
+	"gopkg.in/yaml.v2"
 )
 
 func main() {
-	CheckAndUpdateDeployments(LoadDeployments())
-	log.Println("Database updated")
+	yresult := YamlParser("testing.yml")
+	fmt.Printf("result: %v\n", yresult)
+	fmt.Printf("kit_name: %v\n", yresult["buffalo-lab"]["kit_name"])
+	// CheckAndUpdateDeployments(LoadDeployments())
+	// log.Println("Database updated")
 }
 
 func LoadDeployments() map[string][]map[string]string {
@@ -172,3 +177,25 @@ func CheckAndUpdateDeployments(deployment_details map[string][]map[string]string
 	dbConn.Close()
 	return "Records imported successfullt!"
 }
+
+func YamlParser(Filename string) map[string]map[interface{}]interface{} {
+	yfile, err := ioutil.ReadFile(Filename)
+	if err != nil {
+		log.Fatal("ReadYaml - Read %s error: %+v\n", Filename, err)
+	}
+	ydata := make(map[interface{}]interface{})
+	err2 := yaml.Unmarshal(yfile, &ydata)
+	if err2 != nil {
+		log.Fatal("ReadYaml - yaml decode error: %+v\n", err2)
+	}
+	result := make(map[string]map[interface{}]interface{})
+	for k, v := range ydata {
+		if k == "exodus" {
+			deployment := ydata[k].(map[interface{}]interface{})["bosh"].(string)
+			result[deployment] = v.(map[interface{}]interface{})
+		}
+	}
+	return result
+}
+
+// func CheckSync()
