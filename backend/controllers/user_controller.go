@@ -144,3 +144,13 @@ func Logout() gin.HandlerFunc {
 		}
 	}
 }
+
+func QuickView() gin.HandlerFunc {
+	return func(context *gin.Context) {
+	}
+}
+
+func GetQuickViewList() gin.HandlerFunc {
+	return func(context *gin.Context) {
+	}
+}
