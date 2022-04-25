@@ -1,9 +1,10 @@
 package main
 
 import (
+	controller "cron/github"
 	"database/sql"
 	"fmt"
-	"log"
+
 	"os"
 
 	vault "github.com/hashicorp/vault/api"
@@ -11,8 +12,12 @@ import (
 )
 
 func main() {
-	CheckAndUpdateDeployments(LoadDeployments())
-	log.Println("Database updated")
+	// CheckAndUpdateDeployments(LoadDeployments())
+	// log.Println("Database updated")
+	//kits := controller.FetchDeploymentsInfo("starkandwayne", "deployments",
+	//	"jumpbox/.genesis/manifests/")
+	//fmt.Println(kits)
+	controller.GetDeploymentURLS()
 }
 
 func LoadDeployments() map[string][]map[string]string {
@@ -170,5 +175,5 @@ func CheckAndUpdateDeployments(deployment_details map[string][]map[string]string
 		}
 	}
 	dbConn.Close()
-	return "Records imported successfullt!"
+	return "Records imported successfully!"
 }
