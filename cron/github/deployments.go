@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -15,11 +16,10 @@ import (
 var token = os.Getenv("GITHUB_TOKEN")
 
 type Deployments struct {
-	DeploymentList []DeploymentInfo `json:"items"`
+	DeploymentList []DeploymentPath `json:"tree"`
 }
 
-type DeploymentInfo struct {
-	Name string `json:"name"`
+type DeploymentPath struct {
 	Path string `json:"path"`
 }
 
@@ -32,34 +32,43 @@ type FileContents struct {
 	FileInfo string `json:"content"`
 }
 
-func GetDeploymentURLS() {
-	reqURL := "https://api.github.com/search/code?q=extension:yml+repo:starkandwayne/deployments"
+func FetchAllKitInfo() map[string][]KitInfo {
+	deployments := getDeploymentURLS()
+	kits := getKitInfo(deployments)
+	return kits
+}
+
+// Gets all GitHub paths for .yml files
+func getDeploymentURLS() Deployments {
+	reqURL := "https://api.github.com/repos/starkandwayne/deployments/git/trees/master?recursive=1"
 	data := makeRequest(reqURL)
 	var deployments Deployments
 	json.Unmarshal(data, &deployments)
-
+	deployments.DeploymentList = filterDeployments(deployments)
+	return deployments
 }
 
-// Fetches deployment with Exodus kit info
-func FetchDeploymentsInfo(orgName string, repoName string, directoryPath string) map[string]KitInfo {
-	reqURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/contents/%s", orgName, repoName, directoryPath)
-	kits := make(map[string]KitInfo)
-	deployments := getDeployments(reqURL)
-	for _, deployment := range deployments {
-		kits[strings.Trim(deployment.Name, ".yml")] = getYamlContents(reqURL + deployment.Name)
+func getKitInfo(deployments Deployments) map[string][]KitInfo {
+	kits := make(map[string][]KitInfo)
+	for _, deployment := range deployments.DeploymentList {
+		kitName := getName(deployment.Path)
+		kits[kitName] = append(kits[kitName],
+			getYamlContents("https://api.github.com/repos/starkandwayne/deployments/contents/"+deployment.Path))
 	}
 	return kits
 }
 
-// Gets all deployments in directory
-func getDeployments(apiURL string) []DeploymentInfo {
-	body := makeRequest(apiURL)
-	var DeploymentsList []DeploymentInfo
-	err := json.Unmarshal(body, &DeploymentsList)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "could not parse deployments: %v", err)
+// Filters out irrelevant deployment paths
+func filterDeployments(deployments Deployments) []DeploymentPath {
+	var filteredDeployments []DeploymentPath
+	// Regex that checks if the path contains a .genesis/manifests subdirectory and the .yml file extension
+	reg, _ := regexp.Compile("^.*(\\.genesis\\/manifests\\/).*\\.(yml)$")
+	for _, deployment := range deployments.DeploymentList {
+		if reg.MatchString(deployment.Path) {
+			filteredDeployments = append(filteredDeployments, deployment)
+		}
 	}
-	return DeploymentsList
+	return filteredDeployments
 }
 
 // Parses yml file for exodus kit name and version
@@ -73,7 +82,7 @@ func getYamlContents(apiURL string) KitInfo {
 	return data["exodus"]
 }
 
-// Makes API request to Github
+// Makes API request to GitHub
 func makeRequest(url string) []byte {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	req.Header.Set("Accept", "application/vnd.github.v3+json")
@@ -89,4 +98,10 @@ func makeRequest(url string) []byte {
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
 	return body
+}
+
+// Trims .yml file name to get deployment name
+func getName(name string) string {
+	splits := strings.Split(name, "/")
+	return strings.Trim(splits[len(splits)-1], ".yml")
 }

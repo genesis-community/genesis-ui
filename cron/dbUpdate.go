@@ -4,6 +4,7 @@ import (
 	controller "cron/github"
 	"database/sql"
 	"fmt"
+	"log"
 
 	"os"
 
@@ -12,12 +13,9 @@ import (
 )
 
 func main() {
-	// CheckAndUpdateDeployments(LoadDeployments())
-	// log.Println("Database updated")
-	//kits := controller.FetchDeploymentsInfo("starkandwayne", "deployments",
-	//	"jumpbox/.genesis/manifests/")
-	//fmt.Println(kits)
-	controller.GetDeploymentURLS()
+	CheckAndUpdateDeployments(LoadDeployments())
+	log.Println("Database updated")
+	controller.FetchAllKitInfo()
 }
 
 func LoadDeployments() map[string][]map[string]string {
