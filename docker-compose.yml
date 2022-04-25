@@ -1,8 +1,8 @@
 version: '3.8'
 services:
-    # Go backend
+     Go backend
     api:
-      build: 
+      build:
         dockerfile: Dockerfile
         context: "./backend"
       ports:

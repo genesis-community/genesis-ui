@@ -86,7 +86,7 @@ func getYamlContents(apiURL string) KitInfo {
 func makeRequest(url string) []byte {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	req.Header.Set("Accept", "application/vnd.github.v3+json")
-	req.Header.Set("Authorization", token)
+	req.Header.Set("Authorization", "token " + token)
 	httpClient := http.Client{}
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "could not create HTTP request: %v", err)

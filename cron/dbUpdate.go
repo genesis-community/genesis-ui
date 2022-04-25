@@ -4,8 +4,6 @@ import (
 	controller "cron/github"
 	"database/sql"
 	"fmt"
-	"log"
-
 	"os"
 
 	vault "github.com/hashicorp/vault/api"
@@ -13,9 +11,9 @@ import (
 )
 
 func main() {
-	CheckAndUpdateDeployments(LoadDeployments())
-	log.Println("Database updated")
-	controller.FetchAllKitInfo()
+	//CheckAndUpdateDeployments(LoadDeployments())
+	//log.Println("Database updated")
+	fmt.Println(controller.FetchAllKitInfo())
 }
 
 func LoadDeployments() map[string][]map[string]string {
