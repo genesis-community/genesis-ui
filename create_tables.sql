@@ -34,3 +34,10 @@ CREATE TABLE kit_details(
 		REFERENCES deployment_details ( id )
 );
 
+-- Table for Quick View (Deployment) Details
+CREATE TABLE quickview_deployment_details (
+    id serial PRIMARY KEY, 
+	nickname VARCHAR ( 255 ) UNIQUE NOT NULL,
+	userToken VARCHAR ( 255 ) UNIQUE NOT NULL,
+	kitIDs FOREIGN KEY ( kit_details )
+);
