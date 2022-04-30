@@ -1,5 +1,10 @@
 import { Component } from "react";
 import { Table, Row, Col, Alert, Badge } from "react-bootstrap";
+import ShowMore from "./ShowMore";
+// import { Navigate } from 'react-router-dom';
+import {Link, Redirect} from "react-router-dom";
+import Settings from "../../Settings";
+import RouteMap from "../../RouteMap";
 
 class DeploymentTable extends Component {
     constructor(props) {
@@ -11,9 +16,15 @@ class DeploymentTable extends Component {
                 kit_name: true,
                 dated: true,
                 kit_version: true,
+                showComponent: false,
+
             }
         }
+
     }
+
+
+
 
     renderTable = () => {
         const tableData = [];
@@ -24,6 +35,10 @@ class DeploymentTable extends Component {
                         <td>{data.kit_name ?? "-"}</td>
                         <td>{data.dated ?? "-"}</td>
                         <td>{data.kit_version ?? "-"}  {data.kit_is_dev === "1" ? <Badge pill bg="dark" className="mx-2">Dev</Badge> : ""}</td>
+                        <td>
+                            <Link to={RouteMap.ShowMore+"?deployment="+data.deployment_name+"&index="+this.props.deployments.indexOf(data)} className="btn btn-primary">Show More</Link>
+                        </td>
+
                     </tr>
                 )
         }
@@ -50,6 +65,8 @@ class DeploymentTable extends Component {
                                         <th onClick={() => this.sortData("kit_name")}>Kit name&nbsp;&nbsp;<Badge pill bg="secondary" className="mx-2">{this.state.sorting.kit_name ? "Ascending" : "Decending"}</Badge></th>
                                         <th onClick={() => this.sortData("dated")}>Deployment date&nbsp;&nbsp;<Badge pill bg="secondary" className="mx-2">{this.state.sorting.dated ? "Ascending" : "Decending"}</Badge></th>
                                         <th onClick={() => this.sortData("kit_version")}>Kit version&nbsp;&nbsp;<Badge pill bg="secondary" className="mx-2">{this.state.sorting.kit_version ? "Ascending" : "Decending"}</Badge></th>
+                                        <th>Show More</th>
+
                                     </tr>
                                 </thead>
 
