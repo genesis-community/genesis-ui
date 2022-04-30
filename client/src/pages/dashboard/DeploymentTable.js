@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Table, Row, Col, Alert, Badge } from "react-bootstrap";
+import { Table, Row, Col, Alert, Badge, Button } from "react-bootstrap";
 import ShowMore from "./ShowMore";
 // import { Navigate } from 'react-router-dom';
 import {Link, Redirect} from "react-router-dom";
@@ -36,9 +36,8 @@ class DeploymentTable extends Component {
                         <td>{data.dated ?? "-"}</td>
                         <td>{data.kit_version ?? "-"}  {data.kit_is_dev === "1" ? <Badge pill bg="dark" className="mx-2">Dev</Badge> : ""}</td>
                         <td>
-                            <Link to={RouteMap.ShowMore+"?deployment="+data.deployment_name+"&index="+this.props.deployments.indexOf(data)} className="btn btn-primary">Show More</Link>
+                            <Button as={Link} to={RouteMap.ShowMore+"?deployment="+data.deployment_name+"&index="+this.props.deployments.indexOf(data)} size={"sm"} variant="warning">Show More</Button>
                         </td>
-
                     </tr>
                 )
         }

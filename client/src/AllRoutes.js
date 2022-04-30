@@ -28,6 +28,7 @@ class AllRoutes extends Component {
       redirectUrl: null,
       redirect: false,
       errorMessage: null,
+      existingUser: false,
     }
   }
 
@@ -44,14 +45,15 @@ class AllRoutes extends Component {
     const localStorage_token = localStorage.getItem("token");
     const sessionStorage_token = sessionStorage.getItem("token");
 
+    // todo
     this.setState({ userData: true },
       (async () => {
         if (isRemember !== null && localStorage_token !== null) {   // When token is in localStorage
-          await this.fetchUserInfo(localStorage_token)
+          await this.getUserInfo(localStorage_token)
         }
 
         else if (isRemember === null && sessionStorage_token !== null) {
-          await this.fetchUserInfo(sessionStorage_token)
+          await this.getUserInfo(sessionStorage_token)
         }
 
         this.setState({ redirect: true });
@@ -60,35 +62,20 @@ class AllRoutes extends Component {
   }
 
 
-  fetchUserInfo = async (token) => {
-    return (await fetch(
-      (`https://api.github.com/user`),
-      {
-        headers: {
-          Authorization: `token ${token}`,
-          Accept: `application/vnd.github.v3+json`
-        }
-      }
-    )
+  getUserInfo = async (githubToken) => {
+    return await fetch(
+      (`auth?code=${githubToken}`)
+    ).then(response => response.json())
       .then((response) => {
-        if (response.status === 200) {
-          return response.json();
+        if (response.error) {
+          throw Error(response);
         }
-        else {
-          throw new Error("An error occured while getting user info")
-        }
-      })
-      .then(data => {
-        this.setState({ userData: data })
+        this.setState({userData: response.profile_details, existingUser: response.existing_user});
+        return response.token
       })
       .catch((error) => {
-        console.log("Update")
-        sessionStorage.removeItem("token");
-        localStorage.removeItem("token");
-        localStorage.removeItem("remember_me");
-        window.location.href = RouteMap.Login;
+        console.log(error)
       })
-    )
   }
 
   renderProtectedRoutes = () => {
@@ -100,7 +87,7 @@ class AllRoutes extends Component {
         <Route path={RouteMap.LandingPage} exact element={this.RouteWithAuthNav(this.state.userData, LandingPage)} key="routeMap" />,
         <Route path={RouteMap.Dashboard} exact element={this.RouteWithAuthNav(this.state.userData, Dashboard)} key="Dashboard" />,
         <Route path={RouteMap.QuickView} exact element={this.RouteWithAuthNav(this.state.userData, QuickView)} key="QuickView" />,
-        <Route path={RouteMap.ShowMore} exact element={this.RouteWithAuthNav(this.state.userData, ShowMore)} key="ShowMore"  component={ShowMore}/>,
+        <Route path={RouteMap.ShowMore} exact element={this.RouteWithAuthNav(this.state.userData, ShowMore)} key="ShowMore" component={ShowMore} />,
 
       ])
     }
@@ -118,7 +105,7 @@ class AllRoutes extends Component {
       <BrowserRouter>
         <Routes>
           <Route path={RouteMap.Login} exact element={<Login userData={this.state.userData} errorMessage={this.state.errorMessage} />} key="Login" />
-          <Route path={RouteMap.Callback} exact element={<ProcessToken fetchUserInfo={this.fetchUserInfo} isRemember={localStorage.getItem("remember_me")} />} key="ProcessToken" />
+          <Route path={RouteMap.Callback} exact element={<ProcessToken getUserInfo={this.getUserInfo} existingUser={this.state.existingUser} isRemember={localStorage.getItem("remember_me")} />} key="ProcessToken" />
           <Route path={RouteMap.Error_404} exact element={<Error_404 />} key="Error_404" />
 
           {this.renderProtectedRoutes()}

@@ -31,11 +31,16 @@ class Dashboard extends Component {
         }
 
         await this.fetchDeployments();
+
+        if(this.defaultSelections && this.defaultSelections.length){
+            this.setState({selectedDeployments: this.defaultSelections})
+            this.getDeploymentData()
+        }
     }
 
     params = new URLSearchParams(window.location.search)
 
-    defaultSelections = (this.params.has('quickviewDeployments') && this.params.get('quickviewDeployments') !== null || this.params.get('quickviewDeployments') !== "null" || this.params.get('quickviewDeployments') !== "") ? JSON.parse(this.params.get('quickviewDeployments')).map(deployment => ({
+    defaultSelections = (this.params.has('quickviewDeployments') && this.params.get('quickviewDeployments') !== null && this.params.get('quickviewDeployments') !== "null" && this.params.get('quickviewDeployments') !== "") ? JSON.parse(this.params.get('quickviewDeployments')).map(deployment => ({
         value: deployment,
         label: deployment
     }))
@@ -198,13 +203,15 @@ class Dashboard extends Component {
                     <Col xs={9} lg={9}>
                         <Select
                             options={this.state.deploymentList}
+                            defaultValue={this.defaultSelections}
                             placeholder={"Select Deployments"}
                             closeMenuOnSelect={false}
                             components={this.state.animatedComponents}
                             // defaultValue={this.defaultSelections}
                             isClearable
                             isMulti
-                            onChange={this.addSelect} />
+                            onChange={this.addSelect}
+                        />
                     </Col>
                     <Col>
                         <Button variant="success" className="w-100" onClick={this.getDeploymentData}>Show Deployments</Button>

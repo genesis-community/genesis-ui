@@ -78,11 +78,15 @@ class QuickView extends Component {
                     Quickly access your favourite set of deployments here...
                 </h4>
 
-                <Row>
-                    <Col className="d-flex flex-row-reverse">
-                        <Button variant="secondary" size={"sm"} className="mx-4" onClick={this.clearAll}>Delete All</Button>
-                    </Col>
-                </Row>
+                {this.state.quickViewDeployments && Object.entries(this.state.quickViewDeployments).length ?
+                    <Row>
+                        <Col className="d-flex flex-row-reverse">
+                            <Button variant="secondary" size={"sm"} className="mx-4" onClick={this.clearAll}>Delete All</Button>
+                        </Col>
+                    </Row>
+                    :
+                    <h6 className="text-center">No quickviews yet. To add a quickview, go to <Link to={RouteMap.Dashboard}>Dashboard</Link>, select set of deployments, add a name, and add to quickview.</h6>
+                }
 
                 <CardGroup>
                     {this.renderQuickView()}
