@@ -61,34 +61,34 @@ class AllRoutes extends Component {
 
 
   fetchUserInfo = async (token) => {
-    // return (await fetch(
-    //   (`https://api.github.com/user`),
-    //   {
-    //     headers: {
-    //       Authorization: `token ${token}`,
-    //       Accept: `application/vnd.github.v3+json`
-    //     }
-    //   }
-    // )
-    //   .then((response) => {
-    //     if (response.status === 200) {
-    //       return response.json();
-    //     }
-    //     else {
-    //       throw new Error("An error occured while getting user info")
-    //     }
-    //   })
-    //   .then(data => {
-    //     this.setState({ userData: data })
-    //   })
-    //   .catch((error) => {
-    //     console.log("Update")
-    //     sessionStorage.removeItem("token");
-    //     localStorage.removeItem("token");
-    //     localStorage.removeItem("remember_me");
-    //     window.location.href = RouteMap.Login;
-    //   })
-    // )
+    return (await fetch(
+      (`https://api.github.com/user`),
+      {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: `application/vnd.github.v3+json`
+        }
+      }
+    )
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        }
+        else {
+          throw new Error("An error occured while getting user info")
+        }
+      })
+      .then(data => {
+        this.setState({ userData: data })
+      })
+      .catch((error) => {
+        console.log("Update")
+        sessionStorage.removeItem("token");
+        localStorage.removeItem("token");
+        localStorage.removeItem("remember_me");
+        window.location.href = RouteMap.Login;
+      })
+    )
   }
 
   renderProtectedRoutes = () => {
