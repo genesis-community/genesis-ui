@@ -6,8 +6,9 @@ import '../css/components/navbar.css'
 import GenesisLogo from "../assets/images/genesisLogo.png"
 import RouteMap from '../RouteMap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSignOut, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { faSignOut, faQuestionCircle, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import {Link} from "react-router-dom"
 
 function AuthNavBar(props) {
 
@@ -51,7 +52,16 @@ function AuthNavBar(props) {
                         <Nav.Link className='mx-4 text-white' href="https://www.youtube.com/user/StarkAndWayne" target="_blank">
                             Help&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} />
                         </Nav.Link>
+
+                        <Nav.Link className='mx-4 text-white' as={Link} to={RouteMap.QuickView}>
+                            QuickView&nbsp;&nbsp;<FontAwesomeIcon icon={faPaperPlane} />
+                        </Nav.Link>
+
+                        <Nav.Link className='mx-4 text-white' as={Link} to={RouteMap.Dashboard}>
+                            Dashboard
+                        </Nav.Link>
                     </Navbar.Collapse>
+
                 </Container>
             </Navbar>
         </>
