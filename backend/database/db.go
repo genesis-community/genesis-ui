@@ -61,7 +61,7 @@ func InsertRecords(dbConn *sql.DB, userDetails map[string]string) (string, bool)
 	return "true", existingUser
 }
 
-func Logout(dbConn *sql.DB, key string) string {
+func LogoutDB(dbConn *sql.DB, key string) string {
 	var resultSet *sql.Row
 	err := dbConn.QueryRow(fmt.Sprintf("UPDATE user_details SET key = null WHERE key = '%s'", key)).Scan(&resultSet)
 	if err != nil && err.Error() != "sql: no rows in result set" {
@@ -69,4 +69,14 @@ func Logout(dbConn *sql.DB, key string) string {
 	}
 	dbConn.Close()
 	return "true"
+}
+
+func GetUserDetailsDB(dbConn *sql.DB, key string) (string, string) {
+	var accessToken string
+	err := dbConn.QueryRow(fmt.Sprintf("SELECT gittoken FROM user_details WHERE key = '%s'", key)).Scan(&accessToken)
+	if err != nil {
+		return "false", err.Error()
+	}
+	dbConn.Close()
+	return "true", accessToken
 }

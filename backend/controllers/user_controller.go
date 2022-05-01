@@ -136,11 +136,54 @@ func Logout() gin.HandlerFunc {
 		dbConn := database.ConnectDB()
 		context.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		context.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		result := database.Logout(dbConn, token)
+		result := database.LogoutDB(dbConn, token)
 		if result == "true" {
 			context.JSON(200, gin.H{"message": "Successfully logged out"})
 		} else {
 			context.JSON(400, gin.H{"error": result})
+		}
+	}
+}
+
+func GetUserDetails() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		token := context.Query("token")
+		dbConn := database.ConnectDB()
+		accessToken := ""
+		result := "false"
+		result, accessToken = database.GetUserDetailsDB(dbConn, token)
+
+		// github user details fetching.
+		reqDataURL := "https://api.github.com/user"
+		reqUser, err := http.NewRequest(http.MethodGet, reqDataURL, nil)
+		if err != nil {
+			fmt.Fprintf(os.Stdout, "could not create HTTP request: %v", err)
+			context.JSON(400, gin.H{"error": err.Error()})
+		}
+		reqUser.Header.Set("accept", "application/vnd.github.v3+json")
+		reqUser.Header.Set("authorization", "token "+accessToken)
+		httpClient := http.Client{}
+		resUser, err := httpClient.Do(reqUser)
+		if err != nil {
+			fmt.Fprintf(os.Stdout, "could not send HTTP request: %v", err)
+			context.String(500, "Error in git user request")
+		}
+		bodyBytes, err := io.ReadAll(resUser.Body)
+		bodyString := string(bodyBytes)
+		var profileDetails map[string]interface{}
+		json.Unmarshal([]byte(bodyString), &profileDetails)
+		if err != nil {
+			fmt.Fprintf(os.Stdout, "could not send HTTP request: %v", err)
+			context.String(500, "Error in parsing body of git user request")
+		}
+		defer resUser.Body.Close()
+
+		context.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		context.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if result == "true" {
+			context.JSON(200, gin.H{"profile_details": profileDetails})
+		} else {
+			context.JSON(400, gin.H{"error": "Invalid token"})
 		}
 	}
 }
