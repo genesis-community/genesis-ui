@@ -64,7 +64,7 @@ class AllRoutes extends Component {
 
   getUserInfo = async (githubToken) => {
     return await fetch(
-      (`auth?code=${githubToken}`)
+      (`auth?token=${githubToken}`)
     ).then(response => response.json())
       .then((response) => {
         if (response.error) {
