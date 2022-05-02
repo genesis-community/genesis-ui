@@ -8,16 +8,16 @@ import {
 import RouteMap from "./RouteMap";
 
 import React, { Component } from 'react';
-import { Image, Row, Col } from 'react-bootstrap';
 
 import Login from "./pages/auth/Login";
 import LandingPage from "./pages/dashboard/LandingPage";
-import Dashboard from "./pages/dashboard/Dashboard"
+import Dashboard from "./pages/dashboard/Dashboard";
+import QuickView from "./pages/dashboard/QuickView";
 import Error_404 from "./pages/Error_404";
 import ProcessToken from "./pages/auth/ProcessToken";
+import ShowMore from "./pages/dashboard/ShowMore";
 import AuthNavBar from "./components/AuthNavBar";
-import borderedGenesis from "./assets/images/borderedGenesis.png"
-import "./css/pages/loading.css"
+import "./css/pages/loading.css";
 
 class AllRoutes extends Component {
   constructor(props) {
@@ -28,6 +28,7 @@ class AllRoutes extends Component {
       redirectUrl: null,
       redirect: false,
       errorMessage: null,
+      existingUser: false,
     }
   }
 
@@ -44,55 +45,37 @@ class AllRoutes extends Component {
     const localStorage_token = localStorage.getItem("token");
     const sessionStorage_token = sessionStorage.getItem("token");
 
+    // todo
     this.setState({ userData: true },
       (async () => {
         if (isRemember !== null && localStorage_token !== null) {   // When token is in localStorage
-          await this.fetchUserInfo(localStorage_token)
+          await this.getUserInfo(localStorage_token)
         }
 
         else if (isRemember === null && sessionStorage_token !== null) {
-          await this.fetchUserInfo(sessionStorage_token)
+          await this.getUserInfo(sessionStorage_token)
         }
 
         this.setState({ redirect: true });
       })
     );
-
-    // setTimeout(() => {
-    //   this.setState({ loading: false });
-    // }, 3000)
   }
 
 
-  fetchUserInfo = async (token) => {
-    return (await fetch(
-      (`https://api.github.com/user`),
-      {
-        headers: {
-          Authorization: `token ${token}`,
-          Accept: `application/vnd.github.v3+json`
-        }
-      }
-    )
+  getUserInfo = async (githubToken) => {
+    return await fetch(
+      (`auth?token=${githubToken}`)
+    ).then(response => response.json())
       .then((response) => {
-        if (response.status === 200) {
-          return response.json();
+        if (response.error) {
+          throw Error(response);
         }
-        else {
-          throw new Error("An error occured while getting user info")
-        }
-      })
-      .then(data => {
-        this.setState({ userData: data })
+        this.setState({userData: response.profile_details, existingUser: response.existing_user});
+        return response.token
       })
       .catch((error) => {
-        console.log("Update")
-        sessionStorage.removeItem("token");
-        localStorage.removeItem("token");
-        localStorage.removeItem("remember_me");
-        window.location.href = RouteMap.Login;
+        console.log(error)
       })
-    )
   }
 
   renderProtectedRoutes = () => {
@@ -102,7 +85,10 @@ class AllRoutes extends Component {
     } else {
       return ([
         <Route path={RouteMap.LandingPage} exact element={this.RouteWithAuthNav(this.state.userData, LandingPage)} key="routeMap" />,
-        <Route path={RouteMap.Dashboard} exact element={this.RouteWithAuthNav(this.state.userData, Dashboard)} key="Dashboard" />
+        <Route path={RouteMap.Dashboard} exact element={this.RouteWithAuthNav(this.state.userData, Dashboard)} key="Dashboard" />,
+        <Route path={RouteMap.QuickView} exact element={this.RouteWithAuthNav(this.state.userData, QuickView)} key="QuickView" />,
+        <Route path={RouteMap.ShowMore} exact element={this.RouteWithAuthNav(this.state.userData, ShowMore)} key="ShowMore" component={ShowMore} />,
+
       ])
     }
   }
@@ -115,19 +101,11 @@ class AllRoutes extends Component {
   }
 
   render() {
-    // if (this.state.loading) {
-    //   return (
-    //     <div className="d-flex justify-content-center align-items-center vh-100">
-    //       <Image src={borderedGenesis} className="img-thumbnail border-0 fade-in" />
-    //     </div>
-    //   )
-    // }
-
     return (
       <BrowserRouter>
         <Routes>
           <Route path={RouteMap.Login} exact element={<Login userData={this.state.userData} errorMessage={this.state.errorMessage} />} key="Login" />
-          <Route path={RouteMap.Callback} exact element={<ProcessToken fetchUserInfo={this.fetchUserInfo} isRemember={localStorage.getItem("remember_me")} />} key="ProcessToken" />
+          <Route path={RouteMap.Callback} exact element={<ProcessToken getUserInfo={this.getUserInfo} existingUser={this.state.existingUser} isRemember={localStorage.getItem("remember_me")} />} key="ProcessToken" />
           <Route path={RouteMap.Error_404} exact element={<Error_404 />} key="Error_404" />
 
           {this.renderProtectedRoutes()}

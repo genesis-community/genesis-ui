@@ -19,7 +19,7 @@ class ProcessToken extends Component {
     componentDidMount = async () => {
         const params = this.parseParams(window.location.search);
 
-        const token = await this.getToken(params.code);
+        const token = await this.props.getUserInfo(params.code);
 
         // Check localStorage to see if token needs to be remembered or not?
         const isRemember = this.props.isRemember;
@@ -34,7 +34,6 @@ class ProcessToken extends Component {
             localStorage.removeItem("token")
         }
 
-        await this.props.fetchUserInfo(token);
         this.setState({ loadComplete: true });
     }
 
@@ -56,26 +55,11 @@ class ProcessToken extends Component {
         return obj;
     };
 
-    getToken = async (githubToken) => {
-        return await fetch(
-            (`auth?code=${githubToken}`)
-        ).then(response => response.json())
-            .then((response) => {
-                if (response.error) {
-                    throw Error(response);
-                }
-                return response.token
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-    }
-
     render() {
         if (this.state.loadComplete) {
             return (
                 <Navigate
-                    to={RouteMap.LandingPage}
+                    to={this.props.existingUser ? RouteMap.Dashboard : RouteMap.LandingPage}
                 />
             )
         }
