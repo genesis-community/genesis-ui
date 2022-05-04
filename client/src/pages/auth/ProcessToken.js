@@ -19,7 +19,7 @@ class ProcessToken extends Component {
     componentDidMount = async () => {
         const params = this.parseParams(window.location.search);
 
-        const token = await this.props.getUserInfo(params.code);
+        const token = await this.props.getUserInfo(`auth?code=${params.code}`);
 
         // Check localStorage to see if token needs to be remembered or not?
         const isRemember = this.props.isRemember;
