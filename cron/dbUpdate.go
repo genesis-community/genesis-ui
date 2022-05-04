@@ -13,6 +13,8 @@ import (
 func main() {
 	CheckAndUpdateDeployments(LoadDeployments())
 	log.Println("Database updated")
+	// Need to integrate into DB query
+	//controller.FetchAllKitInfo()
 }
 
 func LoadDeployments() map[string][]map[string]string {
@@ -170,5 +172,5 @@ func CheckAndUpdateDeployments(deployment_details map[string][]map[string]string
 		}
 	}
 	dbConn.Close()
-	return "Records imported successfullt!"
+	return "Records imported successfully!"
 }
