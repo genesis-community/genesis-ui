@@ -35,9 +35,13 @@ CREATE TABLE kit_details(
 );
 
 -- Table for Quick View (Deployment) Details
-CREATE TABLE quickview_deployment_details (
+CREATE TABLE quickview_details (
     id serial PRIMARY KEY, 
-	nickname VARCHAR ( 255 ) UNIQUE NOT NULL,
-	userToken VARCHAR ( 255 ) UNIQUE NOT NULL,
-	kitIDs FOREIGN KEY ( kit_details )
+	name VARCHAR ( 255 ) UNIQUE NOT NULL,
+	user_id INT NOT NULL,
+	kit_details VARCHAR( 255 ) NOT NULL,
+	CONSTRAINT uniq_quickview UNIQUE (name, user_id),
+	CONSTRAINT fk_user_details
+		FOREIGN KEY ( user_id )
+		REFERENCES user_details ( user_id )
 );

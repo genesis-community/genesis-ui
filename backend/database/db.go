@@ -71,12 +71,31 @@ func LogoutDB(dbConn *sql.DB, key string) string {
 	return "true"
 }
 
-func GetUserDetailsDB(dbConn *sql.DB, key string) (string, string) {
+func GetUserDetailsDB(dbConn *sql.DB, key string, colName string) (string, string) {
 	var accessToken string
-	err := dbConn.QueryRow(fmt.Sprintf("SELECT gittoken FROM user_details WHERE key = '%s'", key)).Scan(&accessToken)
+	err := dbConn.QueryRow(fmt.Sprintf("SELECT %s FROM user_details WHERE key = '%s'", colName, key)).Scan(&accessToken)
 	if err != nil {
 		return "false", err.Error()
 	}
 	dbConn.Close()
 	return "true", accessToken
+}
+
+func InsertRecordsQuickView(name string, id int, kit_details string) (string, string) {
+	dbConn := ConnectDB()
+	err := dbConn.QueryRow(fmt.Sprintf("INSERT INTO quickview_details (name, user_id, kit_details) VALUES ('%s', %d, '%s') ON CONFLICT ON CONSTRAINT uniq_quickview DO UPDATE SET kit_details = '%s'", name, id, kit_details, kit_details))
+	if err.Err() != nil {
+		return "false", err.Err().Error()
+	}
+	dbConn.Close()
+	return "true", "Successfully inserted the records"
+}
+
+func DeleteQuickViewRecords(dbConn *sql.DB, name string, id int) (string, string) {
+	err := dbConn.QueryRow(fmt.Sprintf("DELETE FROM quickview_details WHERE name = '%s' AND user_id = %d", name, id))
+	if err.Err() != nil {
+		return "false", err.Err().Error()
+	}
+	dbConn.Close()
+	return "true", "Records Deleted Successfully."
 }

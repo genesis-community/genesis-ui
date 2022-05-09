@@ -3,10 +3,12 @@ package controllers
 import (
 	// "crypto/sha256"
 	// "crypto/subtle"
-	"bytes"
+
 	"fmt"
 	"io/ioutil"
 	database "server/database"
+	"strconv"
+	"strings"
 
 	// "html"
 	"encoding/json"
@@ -153,59 +155,86 @@ func Logout() gin.HandlerFunc {
 
 func QuickView() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		token := context.Query("token") // user_id instead of token
-		dbConn := database.ConnectDB()
-
-		// get JSON from the body of the request
-		// Read the Body content
-		var bodyBytes []byte
-		if context.Request.Body != nil {
-			bodyBytes, _ = ioutil.ReadAll(context.Request.Body)
-		}
-
-		// Restore the io.ReadCloser to its original state
-		context.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-
-		// Continue to use the Body, like Binding it to a struct:
 		data, err := ioutil.ReadAll(context.Request.Body)
 		var jsonData map[string]interface{}
-		json.Unmarshal([]byte(data), &data)
-
-		// Alternatively,
-		// bodyAsByteArray, _ := ioutil.ReadAll(context.Request.Body)
-		// jsonData := string(bodyAsByteArray)
-
+		json.Unmarshal(data, &jsonData)
 		if err != nil {
-			// Handle error
 			fmt.Printf("Error loading resource")
 		}
 
-		// jsonData = [ { 	"nickname1": [dep1, dep2, ..., dep5 ],
-		//   				"nickname2": [dep6, dep7, ..., dep9 ] }, ... ]
+		userId := ""
+		result := "false"
+		token := jsonData["token"]
+		dbConn := database.ConnectDB()
+		result, userId = database.GetUserDetailsDB(dbConn, token.(string), "user_id")
 
-		// CREATE TABLE quickview_deployment_details (
-		//     	id serial PRIMARY KEY,
-		// 		nickname VARCHAR ( 255 ) UNIQUE NOT NULL,
-		// 		userToken VARCHAR ( 255 ) UNIQUE NOT NULL,
-		// 		kitIDs FOREIGN KEY ( kit_details )
-		// );
+		context.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		context.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-		// for each nickname, loop through []:
-		for nickname, depArray := range jsonData { // goes through keys
-			// rec -> { "nickname1": [dep1, dep2, ..., dep5 ]
-			for index, kitid := range depArray {
-				sqlStatement := `INSERT INTO user_details (id, nickname, userToken, kitid) VALUES ($1, $2, $3, $4)`
-				_, err = dbConn.Exec(sqlStatement, client_id, nickname, token, kitid)
-
-			}
-
+		if result == "false" {
+			context.JSON(400, gin.H{"error": userId})
 		}
-		dbConn.Close()
+
+		id, err := strconv.Atoi(userId)
+		if err != nil {
+			context.JSON(400, gin.H{"error": err.Error()})
+		}
+
+		for name, depArray := range jsonData {
+			if name != "token" {
+				arr := depArray.([]interface{})
+				deployment_list := make([]string, len(arr))
+				for i, v := range arr {
+					deployment_list[i] = v.(string)
+				}
+				result, message := database.InsertRecordsQuickView(name, id, strings.Join(deployment_list, ","))
+				if result == "false" {
+					context.JSON(400, gin.H{"error": message})
+				}
+			}
+		}
+		context.JSON(200, gin.H{"message": "Successfully inserted the records"})
 	}
 }
 
 func GetQuickViewList() gin.HandlerFunc {
 	return func(context *gin.Context) {
+	}
+}
+
+func DeleteQuickView() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		data, err := ioutil.ReadAll(context.Request.Body)
+		var jsonData map[string]interface{}
+		json.Unmarshal(data, &jsonData)
+		if err != nil {
+			fmt.Printf("Error loading resource")
+		}
+
+		userId := ""
+		result := "false"
+		token := jsonData["token"]
+		dbConn := database.ConnectDB()
+		result, userId = database.GetUserDetailsDB(dbConn, token.(string), "user_id")
+
+		context.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		context.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if result == "false" {
+			context.JSON(400, gin.H{"error": userId})
+		}
+
+		id, err := strconv.Atoi(userId)
+		if err != nil {
+			context.JSON(400, gin.H{"error": err.Error()})
+		}
+
+		dbConn = database.ConnectDB()
+		resp, message := database.DeleteQuickViewRecords(dbConn, jsonData["name"].(string), id)
+		if resp == "false" {
+			context.JSON(400, gin.H{"error": message})
+		}
+		context.JSON(200, gin.H{"message": message})
 	}
 }
 
@@ -215,7 +244,7 @@ func GetUserDetails() gin.HandlerFunc {
 		dbConn := database.ConnectDB()
 		accessToken := ""
 		result := "false"
-		result, accessToken = database.GetUserDetailsDB(dbConn, token)
+		result, accessToken = database.GetUserDetailsDB(dbConn, token, "gittoken")
 
 		// github user details fetching.
 		reqDataURL := "https://api.github.com/user"
