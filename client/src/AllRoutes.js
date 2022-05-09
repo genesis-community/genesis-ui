@@ -49,11 +49,11 @@ class AllRoutes extends Component {
     this.setState({ userData: true },
       (async () => {
         if (isRemember !== null && localStorage_token !== null) {   // When token is in localStorage
-          await this.getUserInfo(localStorage_token)
+          await this.getUserInfo(`user?token=${localStorage_token}`)
         }
 
         else if (isRemember === null && sessionStorage_token !== null) {
-          await this.getUserInfo(sessionStorage_token)
+          await this.getUserInfo(`user?token=${sessionStorage_token}`)
         }
 
         this.setState({ redirect: true });
@@ -62,9 +62,9 @@ class AllRoutes extends Component {
   }
 
 
-  getUserInfo = async (githubToken) => {
+  getUserInfo = async (url) => {
     return await fetch(
-      (`auth?token=${githubToken}`)
+      (url)
     ).then(response => response.json())
       .then((response) => {
         if (response.error) {

@@ -8,7 +8,7 @@ import RouteMap from '../RouteMap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSignOut, faQuestionCircle, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom"
 
 function AuthNavBar(props) {
 
@@ -17,18 +17,35 @@ function AuthNavBar(props) {
         return "";
     }
 
-    const logOutUser = () => {
+    const logOutUser = async () => {
+        const token = localStorage.getItem("token") ?? sessionStorage.getItem("token");
         localStorage.removeItem("remember_me")
         localStorage.removeItem("token");
         sessionStorage.removeItem("token")
         window.location.href = RouteMap.Login
+        await logout(token);
     }
+
+    // logout
+    const logout = async (githubToken) => {
+        return await fetch(
+          (`logout?token=${githubToken}`)
+        ).then(response => response.json())
+          .then((response) => {
+            if (response.error) {
+              throw Error(response);
+            }
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      }
 
     return (
         <>
             <Navbar bg="dark">
                 <Container>
-                    <Navbar.Brand href={RouteMap.Login}>
+                    <Navbar.Brand as={Link} to={RouteMap.Dashboard}>
                         <img
                             src={GenesisLogo}
                             className="nav-logo d-inline-block align-top container"
@@ -55,10 +72,6 @@ function AuthNavBar(props) {
 
                         <Nav.Link className='mx-4 text-white' as={Link} to={RouteMap.QuickView}>
                             QuickView&nbsp;&nbsp;<FontAwesomeIcon icon={faPaperPlane} />
-                        </Nav.Link>
-
-                        <Nav.Link className='mx-4 text-white' as={Link} to={RouteMap.Dashboard}>
-                            Dashboard
                         </Nav.Link>
                     </Navbar.Collapse>
 

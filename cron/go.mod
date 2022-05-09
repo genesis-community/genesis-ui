@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/hashicorp/vault/api v1.5.0
 	github.com/lib/pq v1.10.5
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
 
 require (
