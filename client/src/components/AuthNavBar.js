@@ -29,17 +29,17 @@ function AuthNavBar(props) {
     // logout
     const logout = async (githubToken) => {
         return await fetch(
-          (`logout?token=${githubToken}`)
+            (`logout?token=${githubToken}`)
         ).then(response => response.json())
-          .then((response) => {
-            if (response.error) {
-              throw Error(response);
-            }
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-      }
+            .then((response) => {
+                if (response.error) {
+                    throw Error(response);
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
 
     return (
         <>
@@ -55,6 +55,15 @@ function AuthNavBar(props) {
 
 
                     <Navbar.Collapse className="justify-content-end">
+                        <Nav.Link className='text-white' href="https://www.youtube.com/user/StarkAndWayne" target="_blank">
+                            Help
+                        </Nav.Link>
+
+                        <Nav.Link className='me-4 text-white' as={Link} to={RouteMap.QuickView}>
+                            QuickView
+                        </Nav.Link>
+
+
                         <Image src={userData.avatar_url} roundedCircle={true} className="avatar" />
                         <NavDropdown title={(userData.name === undefined || userData.name === null || userData.name.length === 0) ? userData.login : userData.name} className='text-white'>
 
@@ -66,13 +75,6 @@ function AuthNavBar(props) {
 
                         </NavDropdown>
 
-                        <Nav.Link className='mx-4 text-white' href="https://www.youtube.com/user/StarkAndWayne" target="_blank">
-                            Help&nbsp;&nbsp;<FontAwesomeIcon icon={faQuestionCircle} />
-                        </Nav.Link>
-
-                        <Nav.Link className='mx-4 text-white' as={Link} to={RouteMap.QuickView}>
-                            QuickView&nbsp;&nbsp;<FontAwesomeIcon icon={faPaperPlane} />
-                        </Nav.Link>
                     </Navbar.Collapse>
 
                 </Container>

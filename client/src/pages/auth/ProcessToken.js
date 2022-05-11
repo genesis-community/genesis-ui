@@ -59,7 +59,8 @@ class ProcessToken extends Component {
         if (this.state.loadComplete) {
             return (
                 <Navigate
-                    to={this.props.existingUser ? RouteMap.Dashboard : RouteMap.LandingPage}
+                    // to={this.props.existingUser ? RouteMap.Dashboard : RouteMap.LandingPage}
+                    to={RouteMap.LandingPage}
                 />
             )
         }

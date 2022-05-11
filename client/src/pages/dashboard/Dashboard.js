@@ -163,16 +163,19 @@ class Dashboard extends Component {
 
     renderQuickView = () => {
         if (this.state.quickViewDeployments && (this.existInList(this.state.selectedDeployments.map(x => x.value)))) {
-            return (
-                <Row className="mx-4">
-                    <Col>
-                        <Alert variant={"danger"} onClick={this.removeQuickView} role="button">
-                            <FontAwesomeIcon icon={faTrash} className="mx-2" />
-                            Delete from Quick-View
-                        </Alert>
-                    </Col>
-                </Row>
-            )
+            return "";
+
+            // COMMENT OUT BELOW IF YOU WANT A "REMOVE FROM QUICKVIEW" on Dashboard.
+            // return (
+            //     <Row className="mx-4">
+            //         <Col>
+            //             <Alert variant={"light"} onClick={this.removeQuickView} role="button">
+            //                 <FontAwesomeIcon icon={faTrash} className="mx-2" />
+            //                 Delete from Quick-View
+            //             </Alert>
+            //         </Col>
+            //     </Row>
+            // )
         }
         else {
             return (

@@ -102,6 +102,7 @@ func OauthLogin() gin.HandlerFunc {
 		// TODO: Update localhost to URL later and change to Secure only
 		context.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		context.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		context.SetCookie("Token", token, 604800, "/", "localhost", false, true)
 		if result == "true" {
 			context.JSON(200, gin.H{"token": userDetails["key"], "existing_user": existingUser, "profile_details": profileDetails})
 		} else {
