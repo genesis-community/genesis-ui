@@ -38,8 +38,9 @@ The informational Interface will contains three web pages:
         VAULT_SKIP_VERIFY=true
     For the VAULT_TOKEN get the token value by doing `cat .svtoken` in you home directory
 3.Then create a symbolic link for the .env file to backend/.env and cron/.env file
-        ln -s  $PWD/.env backend/.env
-        ln -s  $PWD/.env cron/.env
+        ln -s  $PWD/.env backend/.env  and ln -s  $PWD/.env cron/.env
+
+
 4.Then do `make all`
 
 ## Make Commands
