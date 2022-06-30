@@ -19,15 +19,15 @@ services:
         - VAULT_SKIP_VERIFY
 
    # React frontend
-  #  client:
-  #    stdin_open: true
-  #    build:
-  #      dockerfile: Dockerfile
-  #      context: "./client"
-  #    ports:
-  #      - "3000:3000"
-  #    environment:
-  #      - CHOKIDAR_USEPOLLING=true
+    client:
+     stdin_open: true
+     build:
+       dockerfile: Dockerfile
+       context: "./client"
+     ports:
+       - "3000:3000"
+     environment:
+       - CHOKIDAR_USEPOLLING=true
 
     # Cronjob container - runs every hour
     cron:

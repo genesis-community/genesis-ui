@@ -32,6 +32,13 @@ class Dashboard extends Component {
 
         await this.fetchDeployments();
 
+        if (localStorage.getItem("selected")){
+            this.setState({selectedDeployments: JSON.parse(localStorage.getItem("selected"))})
+        }
+        else {
+            this.setState({selectedDeployments: {} })
+        }
+
         if(this.defaultSelections && this.defaultSelections.length){
             this.setState({selectedDeployments: this.defaultSelections})
             this.getDeploymentData()
@@ -46,6 +53,7 @@ class Dashboard extends Component {
     }))
         :
         []
+        
 
 
     fetchDeployments = async () => {
@@ -104,6 +112,7 @@ class Dashboard extends Component {
         const checkList = option.map(x => x.value);
         const backup = this.state.deploymentData.filter(x => checkList.indexOf(x.deployment_name) !== -1)
         this.setState({ deploymentData: backup, quickviewName: null });
+        localStorage.setItem("selected", JSON.stringify(backup));
     }
 
     existInList = (selected) => {
@@ -185,7 +194,7 @@ class Dashboard extends Component {
                             <h6 className="text-center">Add to Quick-View</h6>
                             <Row className="text-center">
                                 <Col xs={9} lg={9}>
-                                    <Form.Control type="text" placeholder="Give a cute name to these of deployments..." onChange={(event) => this.setState({ quickviewName: event.target.value })} />
+                                    <Form.Control type="text" placeholder="Give a cute name to these deployments..." onChange={(event) => this.setState({ quickviewName: event.target.value })} />
                                 </Col>
                                 <Col>
                                     <Button variant="dark" className="w-100" onClick={this.addQuickView}>Add</Button>

@@ -60,7 +60,7 @@ class DeploymentTable extends Component {
                             <Table responsive striped bordered hover>
                                 <thead>
                                     <tr>
-                                        <th onClick={() => this.sortData("deployment_name")}>Deployment name&nbsp;&nbsp;<Badge pill bg="secondary" className="mx-2">{this.state.sorting.deployment_name ? "Ascending" : "Decending"}</Badge></th>
+                                        <th onClick={() => this.sortData("deployment_name")}>Environment&nbsp;&nbsp;<Badge pill bg="secondary" className="mx-2">{this.state.sorting.deployment_name ? "Ascending" : "Decending"}</Badge></th>
                                         <th onClick={() => this.sortData("kit_name")}>Kit name&nbsp;&nbsp;<Badge pill bg="secondary" className="mx-2">{this.state.sorting.kit_name ? "Ascending" : "Decending"}</Badge></th>
                                         <th onClick={() => this.sortData("dated")}>Deployment date&nbsp;&nbsp;<Badge pill bg="secondary" className="mx-2">{this.state.sorting.dated ? "Ascending" : "Decending"}</Badge></th>
                                         <th onClick={() => this.sortData("kit_version")}>Kit version&nbsp;&nbsp;<Badge pill bg="secondary" className="mx-2">{this.state.sorting.kit_version ? "Ascending" : "Decending"}</Badge></th>
@@ -75,7 +75,7 @@ class DeploymentTable extends Component {
                             </Table>
                             :
                             <Alert variant="warning">
-                                Please select deployment(s) from above to see their details.
+                                Please select environment(s) from above to see their details.
                             </Alert>
                         }
                     </Col>
