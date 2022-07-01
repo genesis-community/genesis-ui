@@ -34,3 +34,30 @@ CREATE TABLE kit_details(
 		REFERENCES deployment_details ( id )
 );
 
+-- Table for Quickviews
+CREATE TABLE quickiews(
+	id serial PRIMARY KEY,
+	user_id VARCHAR ( 255 ) UNIQUE NOT NULL,
+	name VARCHAR( 255 ) NOT NULL,
+	created_at TIMESTAMP NOT NULL DEFAULT now(),
+	updated_at TIMESTAMP NOT NULL,
+	delete_at TIMESTAMP NOT NULL
+	CONSTRAINT fk_quickviews
+		FOREIGN KEY ( user_id )
+		REFERENCES user_details ( user_id )
+
+);
+
+-- Table for Quickviews Values
+CREATE TABLE quickviews_values(
+	id serial PRIMARY KEY,
+	quickview_id INT,
+	qv_value VARCHAR( 255 ) NOT NULL,
+	qv_value_type VARCHAR( 255 ) NOT NULL,
+	created_at TIMESTAMP NOT NULL DEFAULT now(),
+	updated_at TIMESTAMP NOT NULL,
+	delete_at TIMESTAMP NOT NULL
+	CONSTRAINT fk_quickview_values
+		FOREIGN KEY ( quickview_id )
+		REFERENCES quickiews ( id ) 
+);
