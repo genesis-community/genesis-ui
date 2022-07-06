@@ -7,6 +7,7 @@ import DeploymentTable from "./DeploymentTable";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faStar, faTrash } from "@fortawesome/free-solid-svg-icons";
 
+
 class Dashboard extends Component {
     constructor(props) {
         super(props);
@@ -66,6 +67,8 @@ class Dashboard extends Component {
                 this.setState({
                     deploymentList: options
                 })
+                console.log("this is deployement list")
+                console.log(this.state.deploymentList)
             })
             .catch(error => console.log(error))
     }
@@ -83,13 +86,16 @@ class Dashboard extends Component {
             })
                 .then(response => response.json())
                 .then(data => {
+                    
                     Object.keys(data).forEach(x => {
                         data[x].deployment_name = dep.value
                         old_dep_data.push(data[x])
                     })
                 })
+               
                 .catch(error => console.log(error))
         }
+        //console.log("devika ranade")
         this.setState({ deploymentData: old_dep_data, loading: false });
     }
 
@@ -98,6 +104,13 @@ class Dashboard extends Component {
         this.setState({ deploymentData: backup })
     }
 
+    filterData = (newData) => {
+        this.setState({deploymentData: newData})
+    
+        // const backup = this.state.deploymentData.filter(x => checkList.indexOf(x.deployments)!== 
+        // -1) 
+        // this.setState({deploymentData: backup})
+    }
 
     addSelect = (option) => {
         this.setState({ selectedDeployments: option })
@@ -222,7 +235,11 @@ class Dashboard extends Component {
                     <Col>
                         <Button variant="success" className="w-100" onClick={this.getDeploymentData}>Show Deployments</Button>
                     </Col>
+
+
                 </Row>
+
+   
 
                 {this.state.deploymentData && this.state.deploymentData.length ?
                     this.renderQuickView()
@@ -232,7 +249,7 @@ class Dashboard extends Component {
 
                 <Row>
                     <Col className="text-center">
-                        <DeploymentTable deployments={this.state.deploymentData} sortData={this.sortData} />
+                        <DeploymentTable filterData = {this.filterData} deployments={this.state.deploymentData} sortData={this.sortData} />
 
                         {this.state.loading ?
                             <div><FontAwesomeIcon icon={faSpinner} spin /> &nbsp;&nbsp;Loading...</div>
@@ -242,6 +259,9 @@ class Dashboard extends Component {
                     </Col>
                 </Row>
             </div>
+
+            
+
         )
     }
 }

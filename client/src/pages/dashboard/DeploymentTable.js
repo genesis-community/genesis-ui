@@ -5,6 +5,7 @@ import ShowMore from "./ShowMore";
 import {Link, Redirect} from "react-router-dom";
 import Settings from "../../Settings";
 import RouteMap from "../../RouteMap";
+import Select from 'react-select';
 
 class DeploymentTable extends Component {
     constructor(props) {
@@ -18,13 +19,41 @@ class DeploymentTable extends Component {
                 kit_version: true,
                 showComponent: false,
 
+            },
+            kit_names: []
+        }
+    }
+
+    getKits = () => {
+        const kits = [];
+        for(const data of this.props.deployments) {
+            if(!kits.find(obj => obj.value === data.kit_name)) {
+                kits.push({
+                    value: data.kit_name,
+                    label: data.kit_name
+                })
             }
         }
 
+        console.log(kits)
+        return(
+            <Select
+                options = {kits}
+                placeholder={"Select Deployments"}
+                //closeMenuOnSelect={false}
+                isClearable
+                isMulti
+                onChange={this.addFilterKits}
+                // onSelectResetsInput = {kits}
+                // closeMenuOnSelect = {kits}
+
+            />
+        )
     }
 
-
-
+    addFilterKits = (option) => {
+        this.filterKits(option);
+    }
 
     renderTable = () => {
         const tableData = [];
@@ -51,6 +80,22 @@ class DeploymentTable extends Component {
         this.setState({sorting: this.state.sorting});
     }
 
+    filterKits = (option) => {
+        let newData = []
+        for(var i=0; i < option.length; i++) {
+            for(var j=0; j<this.props.deployments.length; j++) {
+                if(option[i].value === this.props.deployments[j].kit_name) {
+                    newData.push(this.props.deployments[j])
+                    
+                }
+            }
+        }
+        // let newData = this.props.deployments.filter( element => element.kit_name.includes('bosh'))
+       // this.setState({ deployments : newData})
+       
+        this.props.filterData(newData)
+    }
+
     render() {
         return (
             <div>
@@ -59,6 +104,12 @@ class DeploymentTable extends Component {
                         {Object.keys(this.props.deployments).length ?
                             <Table responsive striped bordered hover>
                                 <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>
+                                            {this.getKits()}
+                                        </th>    
+                                    </tr>
                                     <tr>
                                         <th onClick={() => this.sortData("deployment_name")}>Deployment name&nbsp;&nbsp;<Badge pill bg="secondary" className="mx-2">{this.state.sorting.deployment_name ? "Ascending" : "Decending"}</Badge></th>
                                         <th onClick={() => this.sortData("kit_name")}>Kit name&nbsp;&nbsp;<Badge pill bg="secondary" className="mx-2">{this.state.sorting.kit_name ? "Ascending" : "Decending"}</Badge></th>
