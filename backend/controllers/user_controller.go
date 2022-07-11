@@ -29,10 +29,21 @@ type dataExtract struct {
 
 var (
 	//account_map   = make(map[string]string)
-	client_id     = os.Getenv("CLIENT_ID")
-	client_secret = os.Getenv("CLIENT_SECRET")
+	//client_id     = os.Getenv("CLIENT_ID")
+	//client_secret = os.Getenv("CLIENT_SECRET")
+	client_secret="27c5646e9c70d276c4b487fa9f5d17366f31f2b1"
+	client_id="cfa78f27867826309fb6"
 )
 
+type quickview struct{
+	Name string `json:"name"`
+	Deployments []string `json:"deployments"`
+	Kitname []string `json:"kitname"`
+}
+
+/*OauthLogin function will authenticate the user logging 
+in with the Github Oauth -web app flow using the client id and client secret for the registred application 
+and get the user details from github and save it to the database.*/
 func OauthLogin() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		// github token fetching with given code.
@@ -145,14 +156,18 @@ func Logout() gin.HandlerFunc {
 		}
 	}
 }
+/*GetUserDetails function fetches the user details using the github api call
+using the gitoken from the database for an existing user*/
 
 func GetUserDetails() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		token := context.Query("token")
 		dbConn := database.ConnectDB()
 		accessToken := ""
-		result := "false"
-		result, accessToken = database.GetUserDetailsDB(dbConn, token)
+		result := false
+		userDetails:=make(map[string]string)
+		result,userDetails= database.GetUserDetailsDB(dbConn, token)
+		accessToken=userDetails["accessToken"]
 
 		// github user details fetching.
 		reqDataURL := "https://api.github.com/user"
@@ -181,10 +196,67 @@ func GetUserDetails() gin.HandlerFunc {
 
 		context.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		context.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		if result == "true" {
+		if result == true {
 			context.JSON(200, gin.H{"profile_details": profileDetails})
 		} else {
 			context.JSON(400, gin.H{"error": "Invalid token"})
+		}
+	}
+}
+/*
+AddQuickView will add quickview 
+to the table quickviews and will create 
+records into table quickviews_values for each quickview type for each user 
+*/
+func AddQuickView() gin.HandlerFunc {
+	return func(context *gin.Context){
+		token := context.Query("token")
+		var qv quickview
+		
+		if err:=context.ShouldBindJSON(&qv);err!=nil{
+			return 
+		}
+		//need to add the userdetails map  as a parameter 
+		userDetails:=make(map[string]string)
+		quickview_map:=make(map[string][]string)
+		quickview_map["deployments"]=qv.Deployments
+		quickview_map["kitname"]=qv.Kitname
+		qv_name:=qv.Name
+		dbConn:=database.ConnectDB()
+		result:=false
+		result,userDetails= database.GetUserDetailsDB(dbConn, token)
+		dbConn=database.ConnectDB() 
+		msg,status:=database.AddQuickView(dbConn,qv_name,quickview_map,userDetails)
+
+		if status==true && result==true {
+			context.JSON(200,gin.H{"message":msg})
+		}else{
+			context.JSON(400,gin.H{"error":msg})
+		}
+
+		
+
+	}
+
+}
+/*
+GetUserQuickViews will give the list of quickviews available for 
+each user from the database
+*/
+func GetQuickViews() gin.HandlerFunc{
+	return func(context *gin.Context){
+		token := context.Query("token")
+		dbConn:=database.ConnectDB()
+		userDetails:=make(map[string]string)
+		result:=false
+		result,userDetails= database.GetUserDetailsDB(dbConn, token)
+        dbConn=database.ConnectDB()
+		status,qv,err:=database.GetUserQuickViews(dbConn,userDetails)
+		quickviews:=qv
+		if status==true && result==true {
+			context.JSON(200,gin.H{"quickviews":quickviews})
+		}else{
+			context.JSON(400,gin.H{"error":err})
 		}
 	}
 }

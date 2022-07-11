@@ -3,6 +3,7 @@ package configs
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -71,12 +72,126 @@ func LogoutDB(dbConn *sql.DB, key string) string {
 	return "true"
 }
 
-func GetUserDetailsDB(dbConn *sql.DB, key string) (string, string) {
-	var accessToken string
-	err := dbConn.QueryRow(fmt.Sprintf("SELECT gittoken FROM user_details WHERE key = '%s'", key)).Scan(&accessToken)
+func GetUserDetailsDB(dbConn *sql.DB, key string) (bool, map[string]string) {
+	var(
+		accessToken string
+		name string
+		username string
+	)
+	//var accessToken string
+	userDetails:=make(map[string]string)
+	err := dbConn.QueryRow(fmt.Sprintf("SELECT username,name,gittoken FROM user_details WHERE key = '%s'", key)).Scan(&username,&name,&accessToken)
 	if err != nil {
-		return "false", err.Error()
+		return false, nil
 	}
 	dbConn.Close()
-	return "true", accessToken
+	userDetails["accessToken"]=accessToken
+	userDetails["name"]=name
+	userDetails["username"]=username
+	return true, userDetails
+}
+
+/*
+AddQuickView will add quickview 
+to the table quickviews and will create 
+records into table quickviews_values for each quickview type for each user 
+*/
+func AddQuickView(dbConn *sql.DB,quickviewName string,quickview_info map[string][]string,userDetails map[string]string)(string,bool){
+	if quickviewName!="" && len(quickview_info)>0 {
+		
+		deployment_fltrs:=quickview_info["deployments"]
+		kitname_fltrs:=quickview_info["kitname"]
+		
+        var quickview_id int
+		err := dbConn.QueryRow(fmt.Sprintf("INSERT INTO quickviews (user_name,name,created_at) VALUES ('%s', '%s',now()) RETURNING id", userDetails["username"],quickviewName)).Scan(&quickview_id)
+				if err != nil {
+					return err.Error(),false
+				}
+		if(quickview_id>0){
+
+
+			if(len(deployment_fltrs)>0){
+				
+				deployments:=strings.Trim(strings.Join(strings.Fields(fmt.Sprint(deployment_fltrs)), ", "), "[]")
+				sqlStatement:=`INSERT INTO quickviews_values(quickview_id,qv_value,qv_value_type,created_at) VALUES ($1,$2,$3,now())`
+				_, err=dbConn.Exec(sqlStatement,quickview_id,deployments,"deployments")
+				if err !=nil{
+					return err.Error(),false
+				}
+			}
+
+			if(len(kitname_fltrs)>0){
+				
+				kitnames:=strings.Trim(strings.Join(strings.Fields(fmt.Sprint(kitname_fltrs)), ", "), "[]")
+				sqlStatement:=`INSERT INTO quickviews_values(quickview_id,qv_value,qv_value_type,created_at) VALUES ($1,$2,$3,now())`
+				_, err=dbConn.Exec(sqlStatement,quickview_id,kitnames,"kitname")
+				if err !=nil{
+					return err.Error(),false
+				}
+
+			}
+	    }
+
+		return "Quickview added",true
+
+
+
+	} else{
+		return "Quickview creation failed",false
+	}
+}
+
+/*
+GetUserQuickViews will give the list of quickviews available for 
+each user from the database
+*/
+
+func GetUserQuickViews(dbConn *sql.DB,userDetails map[string]string) (bool,map[string]map[string][]string,error){
+	quickviews:=make(map[string]map[string][]string)
+	username:=userDetails["username"]
+	if username !=""{
+        rows,err:=dbConn.Query(fmt.Sprintf("SELECT id,name FROM quickviews WHERE user_name='%s'",username))
+		if err!=nil{
+			return false,nil,err
+		}
+		fmt.Println(rows)
+		defer rows.Close()
+		for rows.Next(){
+			var(
+				qv_name string
+			    qv_id string
+			)
+			if err :=rows.Scan(&qv_id,&qv_name);err!=nil{
+				return false,nil,err
+			}
+			qv,err:=dbConn.Query(fmt.Sprintf("SELECT qv_value_type,qv_value FROM quickviews_values WHERE quickview_id='%s'",qv_id))
+			if err!=nil{
+				return false,nil,err
+			}
+			defer qv.Close()
+			qvtype:=make(map[string][]string)
+			for qv.Next(){
+				var(
+					qvt string
+					values string
+				)
+				if err:=qv.Scan(&qvt,&values);err!=nil{
+					return false,nil,err
+				}
+				qvtype[qvt]=strings.Split(values,",")
+			}
+			if err=qv.Err();err!=nil{
+				return false,nil,err
+			}
+			quickviews[qv_name]=qvtype
+		}
+		if err=rows.Err();err!=nil{
+			return false,nil,err
+		}
+		return true,quickviews,nil
+	}else{
+		return false,nil,nil
+	}
+
+
 }
