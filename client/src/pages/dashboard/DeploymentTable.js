@@ -75,7 +75,7 @@ class DeploymentTable extends Component {
                             </Table>
                             :
                             <Alert variant="warning">
-                                Please select deployment(s) from above to see their details.
+                                Please select environment(s) from above to see their details.
                             </Alert>
                         }
                     </Col>
