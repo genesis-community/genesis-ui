@@ -43,6 +43,9 @@ class Dashboard extends Component {
             this.setState({selectedDeployments: this.defaultSelections})
             this.getDeploymentData()
         }
+        else{
+            this.setState({selectedDeployments:{}})
+        }
     }
 
     params = new URLSearchParams(window.location.search)
@@ -51,8 +54,7 @@ class Dashboard extends Component {
         value: deployment,
         label: deployment
     }))
-        :
-        []
+        :JSON.parse(sessionStorage.getItem("selectedDeployments"))
         
 
 
@@ -107,7 +109,8 @@ class Dashboard extends Component {
 
     addSelect = (option) => {
         this.setState({ selectedDeployments: option })
-
+        //store the selectedDeployments into sessionstorage 
+        sessionStorage.setItem("selectedDeployments", JSON.stringify(option));
         // Remove those deployment data which are not selected anymore
         const checkList = option.map(x => x.value);
         const backup = this.state.deploymentData.filter(x => checkList.indexOf(x.deployment_name) !== -1)
