@@ -54,8 +54,7 @@ class Dashboard extends Component {
         value: deployment,
         label: deployment
     }))
-        :JSON.parse(sessionStorage.getItem("selectedDeployments"))
-        
+       :JSON.parse(sessionStorage.getItem("selectedDeployments"))
 
 
     fetchDeployments = async () => {

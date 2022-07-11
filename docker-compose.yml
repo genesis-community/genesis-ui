@@ -18,7 +18,7 @@ services:
         - VAULT_ADDR
         - VAULT_SKIP_VERIFY
 
-   # React frontend
+  # React frontend
     client:
      stdin_open: true
      build:
