@@ -7,6 +7,7 @@ import DeploymentTable from "./DeploymentTable";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faStar, faTrash } from "@fortawesome/free-solid-svg-icons";
 
+
 class Dashboard extends Component {
     constructor(props) {
         super(props);
@@ -15,13 +16,12 @@ class Dashboard extends Component {
             selectedDeployments: [],
             animatedComponents: makeAnimated(),
             deploymentData: [],
+            initialKits: [],
             loading: false,
             quickViewDeployments: null,
             quickviewName: null,
         }
     }
-
-
     componentDidMount = async () => {
         if (localStorage.getItem("quickview")) {
             this.setState({ quickViewDeployments: JSON.parse(localStorage.getItem("quickview")) })
@@ -73,11 +73,12 @@ class Dashboard extends Component {
                 this.setState({
                     deploymentList: options
                 })
+                console.log("this is deployement list")
+                console.log(this.state.deploymentList)
             })
             .catch(error => console.log(error))
     }
-
-
+    
     getDeploymentData = async () => {
         this.setState({ deploymentData: [], loading: true });
         const old_dep_data = this.state.deploymentData;
@@ -95,9 +96,10 @@ class Dashboard extends Component {
                         old_dep_data.push(data[x])
                     })
                 })
+               
                 .catch(error => console.log(error))
         }
-        this.setState({ deploymentData: old_dep_data, loading: false });
+        this.setState({ deploymentData: old_dep_data, loading: false, initialKits: old_dep_data});
     }
 
     sortData = (key, sort_by) => {
@@ -105,13 +107,25 @@ class Dashboard extends Component {
         this.setState({ deploymentData: backup })
     }
 
+    filterData = (newData) => {   
+         this.setState({deploymentData: newData})
+       // }
+        //else{
+          //  this.state({deploymentData: this.state.initialKits})
+        //}
+        // const backup = this.state.deploymentData.filter(x => checkList.indexOf(x.deployments)!== 
+        // -1) 
+        // this.setState({deploymentData: backup})
+    }
 
     addSelect = (option) => {
         this.setState({ selectedDeployments: option })
         //store the selectedDeployments into sessionstorage 
         sessionStorage.setItem("selectedDeployments", JSON.stringify(option));
         // Remove those deployment data which are not selected anymore
+        console.log(option)
         const checkList = option.map(x => x.value);
+        console.log(checkList)
         const backup = this.state.deploymentData.filter(x => checkList.indexOf(x.deployment_name) !== -1)
         this.setState({ deploymentData: backup, quickviewName: null });
         localStorage.setItem("selected", JSON.stringify(backup));
@@ -175,7 +189,6 @@ class Dashboard extends Component {
     renderQuickView = () => {
         if (this.state.quickViewDeployments && (this.existInList(this.state.selectedDeployments.map(x => x.value)))) {
             return "";
-
             // COMMENT OUT BELOW IF YOU WANT A "REMOVE FROM QUICKVIEW" on Dashboard.
             // return (
             //     <Row className="mx-4">
@@ -208,8 +221,6 @@ class Dashboard extends Component {
             )
         }
     }
-
-
     render() {
         return (
             <div>
@@ -231,7 +242,6 @@ class Dashboard extends Component {
                         <Button variant="success" className="w-100" onClick={this.getDeploymentData}>Show Deployments</Button>
                     </Col>
                 </Row>
-
                 {this.state.deploymentData && this.state.deploymentData.length ?
                     this.renderQuickView()
                     :
@@ -240,8 +250,7 @@ class Dashboard extends Component {
 
                 <Row>
                     <Col className="text-center">
-                        <DeploymentTable deployments={this.state.deploymentData} sortData={this.sortData} />
-
+                        <DeploymentTable filterData = {this.filterData} deployments={this.state.deploymentData} sortData={this.sortData} initialKits={this.state.initialKits}/>
                         {this.state.loading ?
                             <div><FontAwesomeIcon icon={faSpinner} spin /> &nbsp;&nbsp;Loading...</div>
                             :
