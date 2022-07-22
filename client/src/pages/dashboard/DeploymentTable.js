@@ -1,10 +1,10 @@
 import { Component } from "react";
 import { Table, Row, Col, Alert, Badge, Button } from "react-bootstrap";
 import ShowMore from "./ShowMore";
-// import { Navigate } from 'react-router-dom';
 import {Link, Redirect} from "react-router-dom";
 import Settings from "../../Settings";
 import RouteMap from "../../RouteMap";
+ 
 
 class DeploymentTable extends Component {
     constructor(props) {
@@ -18,13 +18,18 @@ class DeploymentTable extends Component {
                 kit_version: true,
                 showComponent: false,
 
-            }
+            },
+            modalShow: false,
+            modalOpen: Array(this.props.deployments.length).fill(false),
+            kit_names: [],
+            
         }
-
     }
 
 
-
+    openModal = (index) => {
+        console.log(this.state.modalOpen)
+    }
 
     renderTable = () => {
         const tableData = [];
@@ -36,7 +41,11 @@ class DeploymentTable extends Component {
                         <td>{data.dated ?? "-"}</td>
                         <td>{data.kit_version ?? "-"}  {data.kit_is_dev === "1" ? <Badge pill bg="dark" className="mx-2">Dev</Badge> : ""}</td>
                         <td>
-                            <Button as={Link} to={RouteMap.ShowMore+"?deployment="+data.deployment_name+"&index="+this.props.deployments.indexOf(data)} size={"sm"} variant="warning">Show More</Button>
+                        <ShowMore
+                            deployment = {data.deployment_name}
+                            index = {this.props.deployments.indexOf(data)}
+                            data = {data}
+                        />
                         </td>
                     </tr>
                 )
