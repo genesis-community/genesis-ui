@@ -106,7 +106,7 @@ class QuickView extends Component {
                                     </Row>
                                     <Row>
                                         <Col className="d-flex flex-row-reverse">
-                                            <FontAwesomeIcon icon={faTrash} alt={"Trash It"} className="mx-2 text-danger" onClick={() => this.removeQuickView(key)} />
+                                            <FontAwesomeIcon icon={faTrash} alt={"Trash Can"} className="mx-2 text-danger" onClick={() => this.removeQuickView(key)} />
                                         </Col> 
                                     </Row>
                                 </Card.Body>
