@@ -77,8 +77,12 @@ class Dashboard extends Component {
             .catch(error => console.log(error))
     }
 
+   
+
+
 
     getDeploymentData = async () => {
+        'use strict';
         this.setState({ deploymentData: [], loading: true });
         const old_dep_data = this.state.deploymentData;
 
@@ -134,16 +138,43 @@ class Dashboard extends Component {
         return false;
     }
 
-    addQuickView = () => {
+    addQuickView = async () => {
         // Set to localstorage or send to server (in future)
         const selected = this.state.selectedDeployments.map(x => x.value);
         if (!(this.existInList(selected))) {
             const backup = this.state.quickViewDeployments;
             backup[this.state.quickviewName] = selected
             this.setState({ quickViewDeployments: backup, quickviewName: null })
-            localStorage.setItem("quickview", JSON.stringify(backup));
+            // localStorage.setItem("quickview", JSON.stringify(backup));
+            
+            const localStorage_token = localStorage.getItem("token");
+            const sessionStorage_token = sessionStorage.getItem("token");
+
+            console.log(this.state.quickviewName)
+            console.log(this.state.quickViewDeployments)
+            console.log(selected)
+            await fetch(`addQuickView?token=${localStorage_token}`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
+                    
+                },
+                body: JSON.stringify({
+                    name:this.state.quickviewName,
+                    deployments:selected,
+                    kitname:["k","1","2"]
+                })
+            })
+                .then(response => response.json())
+                .then(response => {
+                  console.log(response)
+                    })
+                .catch(error => console.log(error))
         }
-    }
+    
+            
+        }
+    
 
     removeQuickView = () => {
         const selected = this.state.selectedDeployments.map(x => x.value);
