@@ -27,10 +27,30 @@ CREATE TABLE kit_details(
 	deployed_at VARCHAR( 255 ) NOT NULL,
 	features VARCHAR( 255 ),
 	is_dev INT,
+	sync_with_github boolean
 	recent_update_at TIMESTAMP NOT NULL,
 	UNIQUE (name, deployment_id),
 	CONSTRAINT fk_kit_deployment
 		FOREIGN KEY ( deployment_id )
 		REFERENCES deployment_details ( id )
 );
+
+------Table for Deployment deatils from the GitHub Repo -------
+CREATE TABLE deployment_details_github(
+	id serial PRIMARY KEY,
+	deployment_name VARCHAR ( 255 ) NOT NULL,
+	kit_name VARCHAR(255) NOT NULL,
+	deployment_id int NOT NULL,
+	version VARCHAR( 255 ) NOT NULL,
+	deployed_by VARCHAR( 255 ),
+	deployed_at VARCHAR( 255 ) NOT NULL,
+	features VARCHAR( 255 ),
+	is_dev INT,
+	recent_update_at TIMESTAMP NOT NULL,
+    UNIQUE (kit_name, deployment_id),
+	CONSTRAINT fk_kit_deployment
+		FOREIGN KEY ( deployment_id )
+		REFERENCES deployment_details ( id )
+
+)
 
