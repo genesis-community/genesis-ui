@@ -10,14 +10,16 @@ class QuickView extends Component {
         super(props);
 
         this.state = {
-            quickViewDeployments: null
+            quickViewDeployments:  null
         }
     }
 
-    componentDidMount = () => {
-        if (localStorage.getItem("quickview")) {
-            this.setState({ quickViewDeployments: JSON.parse(localStorage.getItem("quickview")) })
-        }
+    componentDidMount = async () =>{
+        await this.fetchQuickviews();
+        // if (localStorage.getItem("quickview")) {
+        //     this.setState({ quickViewDeployments: JSON.parse(localStorage.getItem("quickview")) })
+        //     console.log(this.state.quickViewDeployments)
+        // }
     }
 
     removeQuickView = (key) => {
@@ -32,34 +34,86 @@ class QuickView extends Component {
         }
     }
 
+    fetchQuickviews = async () => {
+        const localStorage_token = localStorage.getItem("token");
+        await fetch(`quickviews?token=${localStorage_token}`, {
+            method: "GET",
+            headers: {
+                Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
+                
+            },
+        })
+            .then(response => response.json())
+            .then(response => {
+              console.log(response)
+
+              const data = response["quickviews"] //break up JSON response into smaller bits inorder to access nested levels
+
+            //   console.log(data["meeting"]) uncomment these to see how the data looks and different ways to access it
+            //   console.log(data.meeting.deployments)
+ 
+              this.setState({
+                quickViewDeployments: data
+              })
+
+            //   console.log(Object.keys(data))
+            //   console.log(this.state.quickViewDeployments)
+              
+                })
+            .catch(error => console.log(error))
+    }
+
     renderQuickView = () => {
         if (this.state.quickViewDeployments) {
+            // console.log(Object.entries(this.state.quickViewDeployments)) takes the two below and puts them into a big array
+            // console.log(Object.keys(this.state.quickViewDeployments))  returns all the names of the quickviews
+            // console.log(Object.values(this.state.quickViewDeployments.meeting.deployments)) returns the deployments and kitname arrays
+            // console.log(this.state.quickViewDeployments)
+            const data =  Object.keys(this.state.quickViewDeployments)
             return (
-                Object.entries(this.state.quickViewDeployments).map(([key, value]) => (
+
+            // key = qv names, value = idx
+               data.map((key, value) => ( 
                     <Row className="w-50">
                         <Col>
                             <Card className="shadow p-3 mb-5 bg-white rounded m-3" role="button">
                                 <Card.Body>
-                                    <Row as={Link} to={`${RouteMap.Dashboard}/?quickviewDeployments=${JSON.stringify(value)}`}>
+                                    {/* take all deployments in the array and use them as a link back to displaying them on the dashboard */}
+                                    <Row as={Link} to={`${RouteMap.Dashboard}/?quickviewDeployments=${JSON.stringify(this.state.quickViewDeployments[key].deployments)}`}>
+
                                         <Col>
-                                            <h6 className="text-center">{key}</h6>
+                                            <h6 key={key} className="text-center">{key}</h6>
                                             <hr />
-                                            {value.map(x => (
+                                        <Row>
+                                        <h6 className="text-left">Deployments:</h6>
+                                        </Row>
+                                        {/* Object.values(this.state...) takes all the information associated with the key(qv names). 
+                                        in this case, the deployment array and the kitname array. Doing .deployment or .kitname 
+                                        lets the map act on one at a time. Note that maps automatically loop thru arrays.
+                                        This is the equivalent of doing nested for-loops */}
+                                                {Object.values(this.state.quickViewDeployments[key].deployments).map((x) => (
                                                 <Badge bg="primary" key={`dep-${x}`} className={"mx-2"}>{x}</Badge>
-                                            ))}
-                                            <hr />
+                                                 ))}
+                                                <hr />
+                                        <Row>
+                                        <h6 className="text-left">Kit Names:</h6>
+                                        </Row>
+                                                {Object.values(this.state.quickViewDeployments[key].kitname).map((x) => (
+                                                <Badge bg="primary" key={`dep-${x}`} className={"mx-2"}>{x}</Badge>
+                                                 ))}
+                                                <hr />
                                         </Col>
                                     </Row>
                                     <Row>
                                         <Col className="d-flex flex-row-reverse">
-                                            <FontAwesomeIcon icon={faTrash} className="mx-2 text-danger" onClick={() => this.removeQuickView(key)} />
-                                        </Col>
+                                            <FontAwesomeIcon icon={faTrash} alt={"Trash It"} className="mx-2 text-danger" onClick={() => this.removeQuickView(key)} />
+                                        </Col> 
                                     </Row>
                                 </Card.Body>
                             </Card>
                         </Col>
                     </Row>
-                ))
+               ))
             )
         }
     }
