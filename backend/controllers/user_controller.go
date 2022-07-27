@@ -260,3 +260,25 @@ func GetQuickViews() gin.HandlerFunc{
 		}
 	}
 }
+
+func DeleteQuickViews() gin.HandlerFunc{
+	return func(context *gin.Context){
+		token := context.Query("token")
+		var qv quickview
+		if err:=context.ShouldBindJSON(&qv);err!=nil{
+			return 
+		}
+		qv_name:=qv.Name
+		dbConn:=database.ConnectDB()
+		userDetails:=make(map[string]string)
+		result:=false
+		result,userDetails= database.GetUserDetailsDB(dbConn, token)
+        dbConn=database.ConnectDB()
+		msg,status:=database.DeleteQuickViews(dbConn,qv_name,userDetails)
+		if status==true && result==true {
+			context.JSON(200,gin.H{"message":msg})
+		}else{
+			context.JSON(400,gin.H{"error":msg})
+		}
+	}
+}

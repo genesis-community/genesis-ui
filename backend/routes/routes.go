@@ -14,7 +14,8 @@ func HandleRoutes(router *gin.Engine) {
 	router.GET("/auth", controllers.OauthLogin())
 	router.GET("/logout", controllers.Logout())
 	router.GET("/user", controllers.GetUserDetails())
-	router.POST("/addQuickView",controllers.AddQuickView())
+	router.POST("/addQuickview",controllers.AddQuickView())
 	router.GET("/quickviews", controllers.GetQuickViews())
+	router.POST("/deleteQuickview", controllers.DeleteQuickViews())
 	
 }
