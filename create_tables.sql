@@ -40,7 +40,7 @@ CREATE TABLE quickviews(
 	user_name VARCHAR ( 255 ) NOT NULL,
 	name VARCHAR( 255 ) NOT NULL,
 	created_at TIMESTAMP NOT NULL DEFAULT now(),
-	
+	UNIQUE(name,user_name)
 	CONSTRAINT fk_quickviews
 		FOREIGN KEY ( user_name )
 		REFERENCES user_details ( username )
