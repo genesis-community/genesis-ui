@@ -14,7 +14,7 @@ import (
 )
 
 //var token = os.Getenv("GITHUB_TOKEN")
-var token="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"
+var token="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"
 
 type Deployments struct {
 	DeploymentList []DeploymentPath `json:"tree"`

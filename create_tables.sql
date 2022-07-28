@@ -27,7 +27,7 @@ CREATE TABLE kit_details(
 	deployed_at VARCHAR( 255 ) NOT NULL,
 	features VARCHAR( 255 ),
 	is_dev INT,
-	sync_with_github boolean
+	sync_with_github BOOLEAN,
 	recent_update_at TIMESTAMP NOT NULL,
 	UNIQUE (name, deployment_id),
 	CONSTRAINT fk_kit_deployment

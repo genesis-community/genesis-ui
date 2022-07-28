@@ -28,9 +28,8 @@ func main() {
 	kits:=github.FetchAllKitInfo()
 	fmt.Println("kit details fetched from repo")
 	//update the github_deployment_deatils DB table with details feteched from github
-	outstr:=CheckAndUpdateGitHubDeployments(kits)
-	fmt.Println(outstr)
-	//compare the kit details from the vault table with github kit detail DB 
+	fmt.Println(CheckAndUpdateGitHubDeployments(kits))
+	//compare the kit details from the vault table with github kit details DB 
 	fmt.Println(CompareAndUpdateDeployments())
 }
 
@@ -51,12 +50,18 @@ func LoadDeployments() map[string][]map[string]string {
 		for _, deploy := range deploys {
 			directory := list_path + "/" + deploy.(string)
 			kit_list, err := client.Logical().List(directory)
+			fmt.Println(directory)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "client.Logical().List(%s): %+v\n", directory, err)
 			} else if kit_list == nil {
 				fmt.Fprintf(os.Stderr, "client.Logical().List(%s): Secret List not found!\n", directory)
 			} else {
-				kits := kit_list.Data["keys"].([]interface{})
+				kits,ok := kit_list.Data["keys"].([]interface{})
+			    //error hdanling for interface conversion
+					if !ok{
+						log.Println(directory)
+						continue;
+					}
 				data_path := os.Getenv("VAULT_DATA_PREFIX")
 				data_list := make([]map[string]string, 0)
 				for _, kit := range kits {
@@ -68,7 +73,12 @@ func LoadDeployments() map[string][]map[string]string {
 					} else if secret == nil {
 						fmt.Fprintf(os.Stderr, "client.Logical().Read(%s): Secret not found! at: %s\n", kit_path, kit_path)
 					} else {
-						data := secret.Data["data"].(map[string]interface{})
+						data,ok:= secret.Data["data"].(map[string]interface{})
+						//error handling for interface conversion
+							if !ok{
+								log.Println(directory)
+								continue;
+							}
 						kits_map["kit_name"] = kit.(string)
 						keys := []string{"kit_is_dev", "dated", "deployer", "kit_version", "features"}
 						for _, key := range keys {
@@ -273,24 +283,25 @@ func CompareAndUpdateDeployments() (string){
 	if sc!=nil{
 		return sc.Error()
 	}
+	dbConn.Close()
     for index,item:=range kits{
-		fmt.Println(item)
 		fmt.Println("Comparing Kit index",index)
-		res,msg:=CompareKitDetails(dbConn,item)
+		res,msg:=CompareKitDetails(item)
+		dbConn=ConnectDB()
 		if res{
-			err := dbConn.QueryRow(fmt.Sprintf("UPDATE kit_details SET sync_with_github='%t' WHERE id='%s'", res, kitId))
+			err := dbConn.QueryRow(fmt.Sprintf("UPDATE kit_details SET sync_with_github='%t' WHERE id=%d", res, item.Id))
 			if err != nil {
-				log.Println("invalid update for kit id",kitId)
+				log.Println("invalid update for kit id",item.Id)
 			}
 
 		}else{
 			log.Println("Deployment not in sync/comparison failed with message",msg)
-			err := dbConn.QueryRow(fmt.Sprintf("UPDATE kit_details SET sync_with_github='%t' WHERE id='%s'", res, kitId))
+			err := dbConn.QueryRow(fmt.Sprintf("UPDATE kit_details SET sync_with_github='%t' WHERE id=%d", res, item.Id))
 			if err != nil {
-				log.Println("invalid update for kit id",kitId)
+				log.Println("invalid update for kit id",item.Id)
 			}
 		}
-		
+		dbConn.Close()
 	}
     
 	return "Deployment Comparison job completed"
@@ -299,15 +310,17 @@ func CompareAndUpdateDeployments() (string){
 
 }
 
-func CompareKitDetails(dbConn *sql.DB,kit Kit)(bool,string){
-
-	var kit_id int
+func CompareKitDetails(kit Kit)(bool,string){
+	dbConn:=ConnectDB()
+    var kit_id int
     err := dbConn.QueryRow(fmt.Sprintf("SELECT CASE WHEN COUNT(*) > 0 THEN (SELECT id FROM deployment_details_github WHERE kit_name = '%s' and deployment_id = %d) ELSE 0 END FROM deployment_details_github WHERE kit_name = '%s' and deployment_id = %d", kit.Name, kit.Deployment_id, kit.Name, kit.Deployment_id)).Scan(&kit_id)
 	if err != nil {
+		dbConn.Close()
 		return false,err.Error()
 	}
 	fmt.Println("kit id", kit_id)
 	if kit_id == 0 {
+		dbConn.Close()
 		return false,"Kit doesn't exist in GitHub"
 	}else{
 		var(
@@ -315,16 +328,19 @@ func CompareKitDetails(dbConn *sql.DB,kit Kit)(bool,string){
 			git_deployed_at string
 			git_kit_features string
 		)
-		err:=dbConn.QueryRow(fmt.Sprintf("SELECT version,  deployed_at, features, FROM deployment_details_github WHERE deployment_id=%d and kit_name = '%s'",kit.Deployment_id, kit.Name)).Scan(&git_kit_version,&git_deployed_at,&git_kit_features)
+		err:=dbConn.QueryRow(fmt.Sprintf("SELECT version,  deployed_at, features FROM deployment_details_github WHERE deployment_id=%d and kit_name = '%s'",kit.Deployment_id, kit.Name)).Scan(&git_kit_version,&git_deployed_at,&git_kit_features)
 		if err!=nil{
+			dbConn.Close()
 			return false,err.Error()
 		}
 
 		//compare the kit version ,deployment date and features 
 
 		if (kit.Version==git_kit_version) && (kit.Deployed_at==git_deployed_at)&&(kit.Features==git_kit_features){
+			dbConn.Close()
 			return true,"Kit Details Matches"
 		}else{
+			dbConn.Close()
 			return false,"Kit Details doesn't match:"+"Kit Version match:"+strconv.FormatBool(kit.Version==git_kit_version)+",Kit Deployment date match:"+strconv.FormatBool(kit.Deployed_at==git_deployed_at)+",Kit Deployment features match:"+strconv.FormatBool(kit.Features==git_kit_features)
 		}
 
