@@ -154,7 +154,6 @@ func GetUserQuickViews(dbConn *sql.DB,userDetails map[string]string) (bool,map[s
 		if err!=nil{
 			return false,nil,err
 		}
-		fmt.Println(rows)
 		defer rows.Close()
 		for rows.Next(){
 			var(
@@ -269,3 +268,37 @@ func GetDeploymentDetails(dbConn *sql.DB,deployment_name string)(bool,map[string
 	}
 }
 
+/*Function to delete a quickview */
+
+func DeleteQuickViews(dbConn *sql.DB,quickviewName string,userDetails map[string]string)(string,bool){
+
+	if quickviewName!=""{
+		username:=userDetails["username"]
+		var quickview_id int
+		fmt.Println(username,quickviewName)
+		err:=dbConn.QueryRow(fmt.Sprintf("SELECT id FROM quickviews WHERE user_name='%s' and name='%s'",username,quickviewName)).Scan(&quickview_id)
+		if err!=nil{
+			return err.Error(),false
+		}
+
+	    sqlStatement:=`DELETE FROM quickviews_values WHERE quickview_id=$1`
+		_, err=dbConn.Exec(sqlStatement,quickview_id)
+				if err !=nil{
+					return err.Error(),false
+				}
+
+		sqlStatement=`DELETE FROM quickviews WHERE id=$1`
+		_, err=dbConn.Exec(sqlStatement,quickview_id)
+				if err !=nil{
+					return err.Error(),false
+				}
+
+		return "success -quickview deleted",true
+
+
+
+	}else{
+		return "no quickview name provided to delete",false
+	}
+
+}
