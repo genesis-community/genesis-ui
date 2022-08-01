@@ -46,8 +46,8 @@ class QuickView extends Component {
             .then(response => response.json())
             .then(response => {
               console.log(response)
-
-              const data = response["quickviews"] //break up JSON response into smaller bits inorder to access nested levels
+                
+              var data = response["quickviews"] //break up JSON response into smaller bits inorder to access nested levels
 
             //   console.log(data["meeting"]) uncomment these to see how the data looks and different ways to access it
             //   console.log(data.meeting.deployments)
@@ -76,10 +76,10 @@ class QuickView extends Component {
                data.map((key, value) => ( 
                     <Row className="w-50">
                         <Col>
-                            <Card className="shadow p-3 mb-5 bg-white rounded m-3" role="button">
+                            <Card key={key} className="shadow p-3 mb-5 bg-white rounded m-3" role="button">
                                 <Card.Body>
                                     {/* take all deployments in the array and use them as a link back to displaying them on the dashboard */}
-                                    <Row as={Link} to={`${RouteMap.Dashboard}/?quickviewDeployments=${JSON.stringify(this.state.quickViewDeployments[key].deployments)}`}>
+                                    <Row as={Link} to={`${RouteMap.Dashboard}/?quickviewDeployments=${JSON.stringify(this.state.quickViewDeployments[key].deployments).replaceAll(' ',"")}`}>
 
                                         <Col>
                                             <h6 key={key} className="text-center">{key}</h6>
