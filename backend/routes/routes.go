@@ -10,7 +10,7 @@ import (
 func HandleRoutes(router *gin.Engine) {
 	// router.Static("/assets", "public/assets")
 
-	router.GET("/list/*any", controllers.ListDeployments())
+	router.GET("/list/*any", controllers.GetDeployments())
 	router.GET("/auth", controllers.OauthLogin())
 	router.GET("/logout", controllers.Logout())
 	router.GET("/user", controllers.GetUserDetails())

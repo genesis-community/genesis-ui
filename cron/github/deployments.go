@@ -13,7 +13,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var token = os.Getenv("GITHUB_TOKEN")
+//var token = os.Getenv("GITHUB_TOKEN")
+var token="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"
 
 type Deployments struct {
 	DeploymentList []DeploymentPath `json:"tree"`
@@ -26,13 +27,29 @@ type DeploymentPath struct {
 type KitInfo struct {
 	Name    string `yaml:"kit_name"`
 	Version string `yaml:"kit_version"`
+	Deployer string `yaml:"deployer"`
+	Features string `yaml:"features"`
+	Kit_Is_Dev string `yaml:"kit_is_dev"`
+	Dated string `yaml:"dated"`
+
 }
 
 type FileContents struct {
 	FileInfo string `json:"content"`
 }
 
-func FetchAllKitInfo() map[string][]KitInfo {
+func FetchAllKitInfo() map[string][]map[string]string {
+	// example structure for kits
+	// {
+	// 	buffalo-lab/:{
+	// 	dated:"2021-11-17 03:31:14 +0000",
+	// 	deployer:"xiujiao",
+	// 	features:"vsphere,proto,vault-credhub-proxy",
+	// 	kit_is_dev:0,
+	// 	kit_name:"bosh",
+	// 	kit_version:"2.2.1"
+	// 	}
+	// }
 	deployments := getDeploymentURLS()
 	kits := getKitInfo(deployments)
 	return kits
@@ -48,12 +65,32 @@ func getDeploymentURLS() Deployments {
 	return deployments
 }
 
-func getKitInfo(deployments Deployments) map[string][]KitInfo {
-	kits := make(map[string][]KitInfo)
+func getKitInfo(deployments Deployments) map[string][]map[string]string {
+	// example structure for kits
+	// {
+	// 	buffalo-lab/:{
+	// 	dated:"2021-11-17 03:31:14 +0000",
+	// 	deployer:"xiujiao",
+	// 	features:"vsphere,proto,vault-credhub-proxy",
+	// 	kit_is_dev:0,
+	// 	kit_name:"bosh",
+	// 	kit_version:"2.2.1"
+	// 	}
+	// }
+	kits := make(map[string][]map[string]string)
 	for _, deployment := range deployments.DeploymentList {
 		kitName := getName(deployment.Path)
-		kits[kitName] = append(kits[kitName],
-			getYamlContents("https://api.github.com/repos/starkandwayne/deployments/contents/"+deployment.Path))
+		var exodus_data KitInfo
+		exodus_data=getYamlContents("https://api.github.com/repos/starkandwayne/deployments/contents/"+deployment.Path)
+        kit_details:=make(map[string]string)
+		kit_details["deployment_name"]=kitName+"/"
+		kit_details["kit_name"]=exodus_data.Name
+		kit_details["kit_version"]=exodus_data.Version
+		kit_details["deployer"]=exodus_data.Deployer
+		kit_details["features"]=exodus_data.Features
+		kit_details["kit_is_dev"]=exodus_data.Kit_Is_Dev
+		kit_details["dated"]=exodus_data.Dated
+		kits[kitName] = append(kits[kitName],kit_details)
 	}
 	return kits
 }

@@ -195,3 +195,77 @@ func GetUserQuickViews(dbConn *sql.DB,userDetails map[string]string) (bool,map[s
 
 
 }
+/*ListDeployment function to get all available deployments 
+from the local Database*/
+func ListDeployments(dbConn *sql.DB) (bool,[]string){
+	
+	var deployment_list []string
+	rows,err:=dbConn.Query(fmt.Sprintf("SELECT name from deployment_details"))
+			if err!=nil{
+				return false,nil
+			}
+			defer rows.Close()
+			for rows.Next(){
+				var deployment_name string
+				if err :=rows.Scan(&deployment_name);err!=nil{
+					return false,nil
+				}
+				deployment_list=append(deployment_list,deployment_name)
+			}
+			if err=rows.Err();err!=nil{
+				return false,nil
+			}
+	dbConn.Close()
+	return true,deployment_list
+			
+	
+
+}
+/*GetDeploymentDetails function to get the kit information 
+for a given deployment deployment */
+func GetDeploymentDetails(dbConn *sql.DB,deployment_name string)(bool,map[string]interface{}){
+	deployment_details:=make(map[string]interface{})
+	var deployment_id int
+	err:=dbConn.QueryRow(fmt.Sprintf("SELECT id FROM deployment_details WHERE name= '%s'",deployment_name)).Scan(&deployment_id)
+	if err != nil {
+		return false,nil
+	}
+	if deployment_id>0{
+		rows,err:=dbConn.Query(fmt.Sprintf("SELECT name,version,is_dev,features,deployed_by,deployed_at from kit_details WHERE deployment_id='%d'",deployment_id))
+				if err!=nil{
+					return false,nil
+				}
+				defer rows.Close()
+					for rows.Next(){
+						kit:=make(map[string]string)
+						var(
+							kit_name string
+							kit_version string
+							kit_is_dev string
+							features string
+							deployer string
+							dated string
+						)
+						if err:=rows.Scan(&kit_name,&kit_version,&kit_is_dev,&features,&deployer,&dated);err!=nil{
+							return false,nil
+						}
+						kit["kit_name"]=kit_name
+						kit["kit_version"]=kit_version
+						kit["kit_is_dev"]=kit_is_dev
+						kit["features"]=features
+						kit["deployer"]=deployer
+						kit["dated"]=dated
+						deployment_details[kit_name]=kit
+					}
+					if err=rows.Err();err!=nil{
+						return false,nil
+					}
+			dbConn.Close()
+			return true,deployment_details
+
+				
+	}else{
+		return false,nil
+	}
+}
+
