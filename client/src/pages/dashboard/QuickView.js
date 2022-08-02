@@ -23,18 +23,54 @@ class QuickView extends Component {
     }
 
     removeQuickView = (key) => {
+        if (localStorage.getItem("token")){
         const backup = this.state.quickViewDeployments;
         delete backup[key];
         this.setState({ quickViewDeployments: backup })
-        if (!Object.keys(backup).length) {
-            localStorage.removeItem("quickview");
-        }
-        else {
-            localStorage.setItem("quickview", JSON.stringify(backup));
-        }
-    }
+        const localStorage_token = localStorage.getItem("token");
 
+            // localStorage.removeItem("quickview");
+            fetch(`deleteQuickview?token=${localStorage_token}`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
+                    
+                },
+                body: JSON.stringify({
+                    name:key,
+                })
+            })
+                .then(response => response.json())
+                .then(response => {
+                  console.log(response)
+                    })
+                .catch(error => console.log(error))
+
+    }else{
+        const backup = this.state.quickViewDeployments;
+        delete backup[key];
+        this.setState({ quickViewDeployments: backup })
+        const sessionStorage_token = sessionStorage.getItem("token");
+
+            fetch(`deleteQuickview?token=${sessionStorage_token}`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
+                    
+                },
+                body: JSON.stringify({
+                    name:key,
+                })
+            })
+                .then(response => response.json())
+                .then(response => {
+                  console.log(response)
+                    })
+                .catch(error => console.log(error))
+    }
+}
     fetchQuickviews = async () => {
+        if (localStorage.getItem("token")){
         const localStorage_token = localStorage.getItem("token");
         await fetch(`quickviews?token=${localStorage_token}`, {
             method: "GET",
@@ -61,7 +97,37 @@ class QuickView extends Component {
               
                 })
             .catch(error => console.log(error))
+    }else if((sessionStorage.getItem)){
+        const sessionStorage_token = sessionStorage.getItem("token");
+        await fetch(`quickviews?token=${sessionStorage_token}`, {
+            method: "GET",
+            headers: {
+                Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
+                
+            },
+        })
+            .then(response => response.json())
+            .then(response => {
+              console.log(response)
+                
+              var data = response["quickviews"] //break up JSON response into smaller bits inorder to access nested levels
+
+            //   console.log(data["meeting"]) uncomment these to see how the data looks and different ways to access it
+            //   console.log(data.meeting.deployments)
+ 
+              this.setState({
+                quickViewDeployments: data
+              })
+
+            //   console.log(Object.keys(data))
+            //   console.log(this.state.quickViewDeployments)
+              
+                })
+            .catch(error => console.log(error))
+    }else{
+        alert("Something is wrong...  Log out and log back in")
     }
+}
 
     renderQuickView = () => {
         if (this.state.quickViewDeployments) {
@@ -119,12 +185,55 @@ class QuickView extends Component {
     }
 
     clearAll = () => {
-        if (localStorage.getItem("quickview")) {
-            localStorage.removeItem("quickview");
-            this.setState({ quickViewDeployments: null });
-        }
-    }
+        if (localStorage.getItem("token")){
+        const localStorage_token = localStorage.getItem("token");
+        let i=0;
+        this.setState({ quickViewDeployments: null });
+            for(i;i<Object.keys(this.state.quickViewDeployments).length;i++){
+                fetch(`deleteQuickview?token=${localStorage_token}`, {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
+                        
+                    },
+                    body: JSON.stringify({
+                        name:Object.keys(this.state.quickViewDeployments)[i],
+                    })
+                })
+                    .then(response => response.json())
+                    .then(response => {
+                      console.log(response)
+                        })
+                    .catch(error => console.log(error))
+            }
+           
+    }else if (sessionStorage.getItem("token")){
+        const sessionStorage_token = sessionStorage.getItem("token");
+        let i=0;
+        this.setState({ quickViewDeployments: null });
+            for(i;i<Object.keys(this.state.quickViewDeployments).length;i++){
+                fetch(`deleteQuickview?token=${sessionStorage_token}`, {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
+                        
+                    },
+                    body: JSON.stringify({
+                        name:Object.keys(this.state.quickViewDeployments)[i],
+                    })
+                })
+                    .then(response => response.json())
+                    .then(response => {
+                      console.log(response)
+                      console.log(this.state.quickViewDeployments)
+                        })
+                    .catch(error => console.log(error))
+            }
 
+    }else{
+        alert("Something is wrong...  Log out and log back in")
+    }
+}
     render() {
         return (
             <div>

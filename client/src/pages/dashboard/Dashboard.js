@@ -140,68 +140,95 @@ class Dashboard extends Component {
 
     addQuickView = async () => {
         // Set to localstorage or send to server (in future)
-        const selected = this.state.selectedDeployments.map(x => x.value);
-        if (!(this.existInList(selected))) {
-            const backup = this.state.quickViewDeployments;
-            backup[this.state.quickviewName] = selected
-            this.setState({ quickViewDeployments: backup, quickviewName: null })
-            // localStorage.setItem("quickview", JSON.stringify(backup));
-            
-            const localStorage_token = localStorage.getItem("token");
-            const sessionStorage_token = sessionStorage.getItem("token");
-
-            console.log(this.state.quickviewName)
-            console.log(this.state.quickViewDeployments)
-            console.log(selected)
-            await fetch(`addQuickView?token=${localStorage_token}`, {
-                method: "POST",
-                headers: {
-                    Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
-                    
-                },
-                body: JSON.stringify({
-                    name:this.state.quickviewName,
-                    deployments:selected,
-                    kitname:["k","1","2"]
-                })
-            })
-                .then(response => response.json())
-                .then(response => {
-                  console.log(response)
-                    })
-                .catch(error => console.log(error))
-        }
-    
-            
-        }
-    
-
-    removeQuickView = () => {
-        const selected = this.state.selectedDeployments.map(x => x.value);
-
-        for (let key in this.state.quickViewDeployments) {
-            const item = this.state.quickViewDeployments[key];
-            let same = true;
-            for (let s of selected) {
-                if (!item.includes(s)) {
-                    same = false;
-                    break;
-                }
-            }
-            if (same && selected.length === item.length) {
+        if (localStorage.getItem("token")){
+                const selected = this.state.selectedDeployments.map(x => x.value);
+            if (!(this.existInList(selected))) {
                 const backup = this.state.quickViewDeployments;
-                delete backup[key];
-                this.setState({ quickViewDeployments: backup })
-                if (!Object.keys(backup).length) {
-                    localStorage.removeItem("quickview");
-                }
-                else {
-                    localStorage.setItem("quickview", JSON.stringify(backup));
-                }
-                return;
+                backup[this.state.quickviewName] = selected
+                this.setState({ quickViewDeployments: backup, quickviewName: null })
+                const localStorage_token = localStorage.getItem("token");
+
+                console.log(this.state.quickviewName)
+                console.log(this.state.quickViewDeployments)
+                console.log(selected)
+                await fetch(`addQuickview?token=${localStorage_token}`, {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
+                        
+                    },
+                    body: JSON.stringify({
+                        name:this.state.quickviewName,
+                        deployments:selected,
+                        kitname:["k","1","2"]
+                    })
+                })
+                    .then(response => response.json())
+                    .then(response => {
+                      console.log(response)
+                        })
+                    .catch(error => console.log(error))
             }
+        }else if (sessionStorage.getItem("token")){
+            const selected = this.state.selectedDeployments.map(x => x.value);
+            if (!(this.existInList(selected))) {
+                const backup = this.state.quickViewDeployments;
+                backup[this.state.quickviewName] = selected
+                this.setState({ quickViewDeployments: backup, quickviewName: null })
+                const sessionStorage_token = sessionStorage.getItem("token");
+
+                console.log(this.state.quickviewName)
+                console.log(this.state.quickViewDeployments)
+                console.log(selected)
+                await fetch(`addQuickview?token=${sessionStorage_token}`, {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
+                        
+                    },
+                    body: JSON.stringify({
+                        name:this.state.quickviewName,
+                        deployments:selected,
+                        kitname:["placeholder1", "placeholder2"]
+                    })
+                })
+                    .then(response => response.json())
+                    .then(response => {
+                      console.log(response)
+                        })
+                    .catch(error => console.log(error))
+            } 
+        }else{
+            alert("Something is wrong...  Log out and log back in")
         }
-    }
+    }    
+
+    // removeQuickView = () => {
+    //     const selected = this.state.selectedDeployments.map(x => x.value);
+
+    //     for (let key in this.state.quickViewDeployments) {
+    //         const item = this.state.quickViewDeployments[key];
+    //         let same = true;
+    //         for (let s of selected) {
+    //             if (!item.includes(s)) {
+    //                 same = false;
+    //                 break;
+    //             }
+    //         }
+    //         if (same && selected.length === item.length) {
+    //             const backup = this.state.quickViewDeployments;
+    //             delete backup[key];
+    //             this.setState({ quickViewDeployments: backup })
+    //             if (!Object.keys(backup).length) {
+    //                 localStorage.removeItem("quickview");
+    //             }
+    //             else {
+    //                 localStorage.setItem("quickview", JSON.stringify(backup));
+    //             }
+    //             return;
+    //         }
+    //     }
+    
 
     renderQuickView = () => {
         if (this.state.quickViewDeployments && (this.existInList(this.state.selectedDeployments.map(x => x.value)))) {
