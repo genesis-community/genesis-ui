@@ -12,6 +12,8 @@ export VAULT_LIST_PREFIX="secret/metadata/exodus/"
 export VAULT_ADDR="https://10.128.4.5:443"
 export VAULT_SKIP_VERIFY="true"
 export VAULT_TOKEN="$(cat ~/.vault-token)"
+export CLIENT_ID="cfa78f27867826309fb6"
+export CLIENT_SECRET="27c5646e9c70d276c4b487fa9f5d17366f31f2b1"
 
 case "${cmd}" in
   (compose-build)

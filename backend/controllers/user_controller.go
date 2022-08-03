@@ -29,10 +29,9 @@ type dataExtract struct {
 
 var (
 	//account_map   = make(map[string]string)
-	//client_id     = os.Getenv("CLIENT_ID")
-	//client_secret = os.Getenv("CLIENT_SECRET")
-	client_secret="27c5646e9c70d276c4b487fa9f5d17366f31f2b1"
-	client_id="cfa78f27867826309fb6"
+	client_id     = os.Getenv("CLIENT_ID")
+	client_secret = os.Getenv("CLIENT_SECRET")
+
 )
 
 type quickview struct{
