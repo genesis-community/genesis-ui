@@ -38,20 +38,6 @@ class DeploymentTable extends Component {
     }
   
     getKits = () => {
-        // Helps in getting the Kitnames in the Dropdown Box and Also has the react front End
-        // if(this.props.deployments.length == this.props.initialKits.length){
-        //     this.state.fCountKitName= 0
-        //     this.state.fCountKitVersion = 0
-        //     this.state.fCountDate = 0
-        //     this.state.deployedWithOutKitName= []
-        //     this.state.deployedWithOutKitVersion= []
-        //     this.state.deployedWithOutDate= []
-        //     this.state.kitVersionValue= null
-        //     this.state.kitOperatorValue= null
-        //     this.state.kitNamesValue= null
-        //     this.state.nosDay= null
-        //     this.state.dateVal= null
-        // }
         var filtercounter= this.state.fCountDate + this.state.fCountKitVersion
         const kits = [];
 
@@ -220,19 +206,6 @@ class DeploymentTable extends Component {
     getDates = () => { 
         // Helps in getting the Kitnames in the Dropdown Box and Also has the react front End
         var filtercounter= this.state.fCountKitName + this.state.fCountKitVersion
-        // if(this.props.deployments.length == this.props.initialKits.length){
-        //     this.state.fCountKitName= 0
-        //     this.state.fCountKitVersion = 0
-        //     this.state.fCountDate = 0
-        //     this.state.deployedWithOutKitName= []
-        //     this.state.deployedWithOutKitVersion= []
-        //     this.state.deployedWithOutDate= []
-        //     this.state.kitVersionValue= null
-        //     this.state.kitOperatorValue= null
-        //     this.state.kitNamesValue= null
-        //     this.state.nosDay= null
-        //     this.state.dateVal= null
-        // }
         const kits = [];
         const inLast = [
             {value: 60, label: "60 Days"},
@@ -627,32 +600,7 @@ class DeploymentTable extends Component {
     }
 
     filterKitsVersion = () => {
-        var newData = []
-        // THIS CODE COULD BE UNCOMMENTED IF WE WANT KIT VERSION TO WORK TOGETHER WITH THE OTHER FILTERS - IT HAS THE BASIC LOGIC
-        //var filtercounter = this.state.fCountDate + this.state.fCountKitName
-        // if(option == null && filtercounter == 0){
-        //     newData = this.props.initialKits
-        // }
-        // else if(option == null && filtercounter != 0){
-        //     if(this.state.deployedWithOutKitVersion == []){
-        //         newData = this.props.deployments
-        //     }
-        //     else{
-        //         newData = this.state.deployedWithOutKitVersion
-        //     }
-        // }
-        // else if(option != null && filtercounter != 0){
-        //     var kitname = option.label.substring(0,(option.label.indexOf(':')))
-        //     //console.log(kitname == this.state.deployedWithOutKitVersion[j].kit_name)
-        //     for(var j=0; j < this.state.deployedWithOutKitVersion.length; j++) {
-        //         //console.log(kitname == this.state.deployedWithOutKitVersion[j].kit_name)
-        //         if(option.value === this.state.deployedWithOutKitVersion[j].kit_version && kitname == this.state.deployedWithOutKitVersion[j].kit_name) {
-        //             newData.push(this.state.deployedWithOutKitVersion[j])
-        //         }
-        //     }       
-        // }
-        // else if(option != null && filtercounter == 0){
-        //     var kitname = option.label.substring(0,(option.label.indexOf(':')))     
+        var newData = []    
         var kitname = this.state.kitVersionValue.label.substring(0,(this.state.kitVersionValue.label.indexOf(':')))     
         for(var data of this.props.initialKits) {
             if(kitname == data.kit_name) {
