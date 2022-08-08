@@ -104,44 +104,6 @@ class Dashboard extends Component {
     sortData = (key, sort_by) => {
         const backup = this.state.deploymentData.sort((a, b) => sort_by ? (a[key].localeCompare(b[key])) : (b[key].localeCompare(a[key])))
         const backup1 = this.state.initialKits.sort((a, b) => sort_by ? (a[key].localeCompare(b[key])) : (b[key].localeCompare(a[key])))
-        // var kitNameArray = []
-        // var kitNameArray1 = []
-        // var kitname = ""
-        // var kitname1 = ""
-        // if(key == "kit_name"){
-        //     var retArr = []
-        //     var retArr1 = []
-        //     if(kitNameArray == []){
-        //         var kitname = backup[0].kit_name
-        //     }
-        //     for(const data of backup){
-        //         if(kitname == data.kit_name){
-        //             kitNameArray.push(data)
-        //         }
-        //         else{
-        //             retArr = retArr.concat(this.sortKit(kitNameArray))
-        //             kitname = data.kit_name
-        //             kitNameArray = []
-        //             kitNameArray.push(data)
-        //         }
-        //     }
-        //     if(kitNameArray1 == []){
-        //         kitname1 = backup[0].kit_name
-        //     }
-        //     for(const data of backup1){
-        //         if(kitname1 == data.kit_name){
-        //            kitNameArray1.push(data)
-        //         }
-        //         else{
-        //             retArr1 = retArr1.concat(this.sortKit(kitNameArray1))
-        //             kitname1 = data.kit_name
-        //             kitNameArray1 = []
-        //             kitNameArray1.push(data)
-        //         }
-        //     }
-        //     this.setState({deploymentData : retArr, initialKits : retArr1});
-        // }
-        // else{
         var sortedNameVer = []
         var sortedNameVer1 = []
         if(key == "kit_name"){

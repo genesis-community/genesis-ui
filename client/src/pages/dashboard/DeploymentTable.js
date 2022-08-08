@@ -31,7 +31,7 @@ class DeploymentTable extends Component {
             deployedWithOutDate: [],
             kitVersionValue: null,
             kitOperatorValue: null,
-            kitNamesOption: null,
+            kitNamesValue: null,
             nosDay: null,
             dateVal: null,
         }
@@ -39,6 +39,19 @@ class DeploymentTable extends Component {
   
     getKits = () => {
         // Helps in getting the Kitnames in the Dropdown Box and Also has the react front End
+        if(this.props.deployments.length == this.props.initialKits.length){
+            this.state.fCountKitName= 0
+            this.state.fCountKitVersion = 0
+            this.state.fCountDate = 0
+            this.state.deployedWithOutKitName= []
+            this.state.deployedWithOutKitVersion= []
+            this.state.deployedWithOutDate= []
+            this.state.kitVersionValue= null
+            this.state.kitOperatorValue= null
+            this.state.kitNamesValue= null
+            this.state.nosDay= null
+            this.state.dateVal= null
+        }
         var filtercounter= this.state.fCountDate + this.state.fCountKitVersion
         const kits = [];
 
@@ -91,15 +104,15 @@ class DeploymentTable extends Component {
                     placeholder={"Select Kit Name"}
                     isClearable
                     isMulti
-                    onChange={this.setFilterName}
+                    onChange={this.setKitName}
                 />
             )
         }
     }
 
-    setFilterName = (option) => {
+    setKitName = (option) => {
         // We do this inorder to store the values selected in a state variable because we need it late
-        this.state.setFilterName = option
+        this.state.kitNamesValue = option
         this.filterKits()
     }
 
@@ -111,72 +124,81 @@ class DeploymentTable extends Component {
                                             Kitname has no filter and no there are other filters
                                             Kitname has filter and no there are other filters
                                             Kitname has no filter and there are other filters */
-        if(this.state.setFilterName.length == 0 && filtercounter == 0){
+        if(this.state.kitNamesValue.length == 0 && filtercounter == 0){
             newData = this.props.initialKits
             this.state.fCountDate = 0
             this.state.fCountKitName = 0
             this.state.fCountKitVersion = 0
         }
-        else if(this.state.setFilterName.length == 0 && filtercounter != 0){
+        else if(this.state.kitNamesValue.length == 0 && filtercounter != 0){
             // If there is no Kitname Filter and there is a Date filter => We filter data based of Dates
-            if(this.state.nosDay.value == 60){
-                let dateOption = new Date(this.state.dateVal.value);
-                let dateLast = new Date(this.state.dateVal.value);
-                dateLast.setDate(dateLast.getDate() - 60)
-                for(let data of this.props.initialKits){
-                    let kitsDate = new Date(data.dated.substring(0,10))
-                    console.log(kitsDate.toString())
-                    if(kitsDate >= dateLast && kitsDate <= dateOption){
-                        newData.push(data)
+            if(this.state.nosDay != null && this.state.dateVal != null){
+                if(this.state.nosDay.value == 60){
+                    let dateOption = new Date(this.state.dateVal.value);
+                    let dateLast = new Date(this.state.dateVal.value);
+                    dateLast.setDate(dateLast.getDate() - 60)
+                    for(let data of this.props.initialKits){
+                        let kitsDate = new Date(data.dated.substring(0,10))
+                        console.log(kitsDate.toString())
+                        if(kitsDate >= dateLast && kitsDate <= dateOption){
+                            newData.push(data)
+                        }
+                    }
+                }
+                else if(this.state.nosDay.value == 30){
+                    let dateOption = new Date(this.state.dateVal.value);
+                    let dateLast = new Date(this.state.dateVal.value);
+                    dateLast.setDate(dateLast.getDate() - 30)
+                    for(let data of this.props.initialKits){
+                        let kitsDate = new Date(data.dated.substring(0,10))
+                        console.log(kitsDate.toString())
+                        if(kitsDate >= dateLast && kitsDate <= dateOption){
+                            newData.push(data)
+                        }
+                    }
+                }
+                else if(this.state.nosDay.value == 15){
+                    let dateOption = new Date(this.state.dateVal.value);
+                    let dateLast = new Date(this.state.dateVal.value);
+                    dateLast.setDate(dateLast.getDate() - 15)
+                    for(let data of this.props.initialKits){
+                        let kitsDate = new Date(data.dated.substring(0,10))
+                        console.log(kitsDate.toString())
+                        if(kitsDate >= dateLast && kitsDate <= dateOption){
+                            newData.push(data)
+                        }
                     }
                 }
             }
-            else if(this.state.nosDay.value == 30){
-                let dateOption = new Date(this.state.dateVal.value);
-                let dateLast = new Date(this.state.dateVal.value);
-                dateLast.setDate(dateLast.getDate() - 30)
-                for(let data of this.props.initialKits){
-                    let kitsDate = new Date(data.dated.substring(0,10))
-                    console.log(kitsDate.toString())
-                    if(kitsDate >= dateLast && kitsDate <= dateOption){
-                        newData.push(data)
-                    }
-                }
-            }
-            else if(this.state.nosDay.value == 15){
-                let dateOption = new Date(this.state.dateVal.value);
-                let dateLast = new Date(this.state.dateVal.value);
-                dateLast.setDate(dateLast.getDate() - 15)
-                for(let data of this.props.initialKits){
-                    let kitsDate = new Date(data.dated.substring(0,10))
-                    console.log(kitsDate.toString())
-                    if(kitsDate >= dateLast && kitsDate <= dateOption){
-                        newData.push(data)
-                    }
-                }
-            }
-        }
-        else if(this.state.setFilterName.length != 0 && filtercounter != 0){
-            for(var i=0; i < this.state.setFilterName.length; i++) {
-                //Filtering data based of the data which has already been filtered by other filters this.state.deployedWithOutKitName stores deployments when Kitname filter is not activated
-                for(var j=0; j < this.state.deployedWithOutKitName.length; j++) {
-                    if(this.state.setFilterName[i].value == this.state.deployedWithOutKitName[j].kit_name) {
-                        newData.push(this.state.deployedWithOutKitName[j])
-                    }
-                }
-            }
-        }
-        else if(this.state.setFilterName.length != 0 && filtercounter == 0){
-            for(var i=0; i < this.state.setFilterName.length; i++) {
-                //this.props.initialKits stores data from the initial deployments
+            else if(this.state.nosDay == null && this.state.dateVal != null){
                 for(var j=0; j < this.props.initialKits.length; j++) {
-                    if(this.state.setFilterName[i].value == this.props.initialKits[j].kit_name) {
+                    if(this.state.dateVal.value == this.props.initialKits[j].dated.substring(0,10)) {
                         newData.push(this.props.initialKits[j])
                     }
                 }
             }
         }
-        this.state.fCountKitName = this.state.setFilterName.length
+        else if(this.state.kitNamesValue.length != 0 && filtercounter != 0){
+            for(var i=0; i < this.state.kitNamesValue.length; i++) {
+                //Filtering data based of the data which has already been filtered by other filters this.state.deployedWithOutKitName stores deployments when Kitname filter is not activated
+                for(var j=0; j < this.state.deployedWithOutKitName.length; j++) {
+                    if(this.state.kitNamesValue[i].value == this.state.deployedWithOutKitName[j].kit_name) {
+                        newData.push(this.state.deployedWithOutKitName[j])
+                    }
+                }
+            }
+        }
+        else if(this.state.kitNamesValue.length != 0 && filtercounter == 0){
+            for(var i=0; i < this.state.kitNamesValue.length; i++) {
+                //this.props.initialKits stores data from the initial deployments
+                for(var j=0; j < this.props.initialKits.length; j++) {
+                    if(this.state.kitNamesValue[i].value == this.props.initialKits[j].kit_name) {
+                        newData.push(this.props.initialKits[j])
+                    }
+                }
+            }
+        }
+        this.state.fCountKitName = this.state.kitNamesValue.length
         
         if(newData.length == 0){
             this.setState({fCountKitName: 0,
@@ -187,7 +209,7 @@ class DeploymentTable extends Component {
                 deployedWithOutDate: [],
                 kitVersionValue: null,
                 kitOperatorValue: null,
-                kitNamesOption: null,
+                kitNamesValue: null,
                 nosDay: null,
                 dateVal: null});
                 alert("No Deploments to be shown")
@@ -198,6 +220,19 @@ class DeploymentTable extends Component {
     getDates = () => { 
         // Helps in getting the Kitnames in the Dropdown Box and Also has the react front End
         var filtercounter= this.state.fCountKitName + this.state.fCountKitVersion
+        if(this.props.deployments.length == this.props.initialKits.length){
+            this.state.fCountKitName= 0
+            this.state.fCountKitVersion = 0
+            this.state.fCountDate = 0
+            this.state.deployedWithOutKitName= []
+            this.state.deployedWithOutKitVersion= []
+            this.state.deployedWithOutDate= []
+            this.state.kitVersionValue= null
+            this.state.kitOperatorValue= null
+            this.state.kitNamesValue= null
+            this.state.nosDay= null
+            this.state.dateVal= null
+        }
         const kits = [];
         const inLast = [
             {value: 60, label: "60 Days"},
@@ -275,13 +310,17 @@ class DeploymentTable extends Component {
             this.state.fCountDate = 1
             this.filterDates()
         }
+        else if(option != null && this.state.nosDay == null){
+            this.filterDates1Date()
+            this.state.fCountDate = 1
+        }
         else{
             let newData = []
             this.state.fCountDate = 0
             if(this.state.fCountKitName != 0){
-                for(var i=0; i < this.state.setFilterName.length; i++) {
+                for(var i=0; i < this.state.kitNamesValue.length; i++) {
                     for(var j=0; j < this.props.initialKits.length; j++) {
-                        if(this.state.setFilterName[i].value == this.props.initialKits[j].kit_name) {
+                        if(this.state.kitNamesValue[i].value == this.props.initialKits[j].kit_name) {
                             newData.push(this.props.initialKits[j])
                         }
                     }
@@ -294,21 +333,86 @@ class DeploymentTable extends Component {
         }
     }
 
+    filterDates1Date = () => {
+        let newData = []
+        let newDa = []
+        var filtercounter = this.state.fCountKitName + this.state.fCountKitVersion
+        if(this.state.dateVal == null && filtercounter == 0){
+            newData = this.props.initialKits
+            this.state.fCountDate = 0
+            this.state.fCountKitName = 0
+            this.state.fCountKitVersion = 0
+        }
+        else if(this.state.dateVal == null && filtercounter != 0){
+            for(var i=0; i < this.state.kitNamesValue.length; i++) {
+                for(var j=0; j < this.props.initialKits.length; j++) {
+                    if(this.state.kitNamesValue[i].value == this.props.initialKits[j].kit_name) {
+                        newData.push(this.props.initialKits[j])
+                    }
+                }
+            }
+        }
+        else if(this.state.dateVal != null && filtercounter != 0){
+            //Filtering data based of the data which has already been filtered by other filters this.state.deployedWithOutKitName stores deployments when Kitname filter is not activated
+                for(var i of this.state.kitNamesValue){
+                    for(var j of this.props.initialKits){
+                        if(i.value == j.kit_name){
+                            newDa.push(j)
+                        }
+                    }
+                }
+                for(var i of newDa){
+                    if(this.state.dateVal.value == i.dated.substring(0,10)) {
+                        newData.push(i)
+                }
+            }
+        }
+        else if(this.state.dateVal != null && filtercounter == 0){
+                //this.props.initialKits stores data from the initial deployments
+                for(var j=0; j < this.props.initialKits.length; j++) {
+                    if(this.state.dateVal.value == this.props.initialKits[j].dated.substring(0,10)) {
+                        newData.push(this.props.initialKits[j])
+                    }
+                }
+             }
+    
+        if(newData.length == 0){
+            this.setState({fCountKitName: 0,
+                fCountKitVersion: 0,
+                fCountDate: 0,
+                deployedWithOutKitName: [],
+                deployedWithOutKitVersion: [],
+                deployedWithOutDate: [],
+                kitVersionValue: null,
+                kitOperatorValue: null,
+                kitNamesValue: null,
+                nosDay: null,
+                dateVal: null});
+        }
+        this.props.filterData(newData)
+    }
+    
+
     setDays = (option) => {
         this.state.nosDay = option
          //Only Call filterDates when there is a option selected in both dropdowns
 
         if(option != null && this.state.dateVal != null){
             this.state.fCountDate = 1
+            console.log("reached")
             this.filterDates()
+        }
+        else if(option == null && this.state.dateVal != null){
+            this.filterDates1Date()
+            this.state.fCountDate = 1
         }
         else{
             let newData = []
             this.state.fCountDate = 0
             if(this.state.fCountKitName != 0){
-                for(var i=0; i < this.state.setFilterName.length; i++) {
+                for(var i=0; i < this.state.kitNamesValue.length; i++) {
                     for(var j=0; j < this.props.initialKits.length; j++) {
-                        if(this.state.setFilterName[i].value == this.props.initialKits[j].kit_name) {
+                        if(this.state.kitNamesValue[i].value == this.props.initialKits[j].kit_name) {
                             newData.push(this.props.initialKits[j])
                         }
                     }
@@ -336,9 +440,9 @@ class DeploymentTable extends Component {
             this.state.fCountKitVersion = 0
         }
         else if(this.state.fCountDate == 0 && filtercounter != 0){
-            for(var i=0; i < this.state.setFilterName.length; i++) {
+            for(var i=0; i < this.state.kitNamesValue.length; i++) {
                 for(var j=0; j < this.props.initialKits.length; j++) {
-                    if(this.state.setFilterName[i].value == this.props.initialKits[j].kit_name) {
+                    if(this.state.kitNamesValue[i].value == this.props.initialKits[j].kit_name) {
                         newData.push(this.props.initialKits[j])
                     }
                 }
@@ -387,7 +491,7 @@ class DeploymentTable extends Component {
                 let dateOption = new Date(this.state.dateVal.value);
                 let dateLast = new Date(this.state.dateVal.value);
                 dateLast.setDate(dateLast.getDate() - 60)
-                for(let data of this.props.deployments){
+                for(let data of this.state.deployedWithOutDate){
                     let kitsDate = new Date(data.dated.substring(0,10))
                     console.log(kitsDate.toString())
                     if(kitsDate >= dateLast && kitsDate <= dateOption){
@@ -399,7 +503,7 @@ class DeploymentTable extends Component {
                 let dateOption = new Date(this.state.dateVal.value);
                 let dateLast = new Date(this.state.dateVal.value);
                 dateLast.setDate(dateLast.getDate() - 30)
-                for(let data of this.props.deployments){
+                for(let data of this.state.deployedWithOutDate){
                     let kitsDate = new Date(data.dated.substring(0,10))
                     if(kitsDate >= dateLast && kitsDate <= dateOption){
                         newData.push(data)
@@ -410,7 +514,7 @@ class DeploymentTable extends Component {
                 let dateOption = new Date(this.state.dateVal.value);
                 let dateLast = new Date(this.state.dateVal.value);
                 dateLast.setDate(dateLast.getDate() - 15)
-                for(let data of this.props.deployments){
+                for(let data of this.state.deployedWithOutDate){
                     let kitsDate = new Date(data.dated.substring(0,10))
                     if(kitsDate >= dateLast && kitsDate <= dateOption){
                         newData.push(data)
@@ -427,7 +531,7 @@ class DeploymentTable extends Component {
                 deployedWithOutDate: [],
                 kitVersionValue: null,
                 kitOperatorValue: null,
-                kitNamesOption: null,
+                kitNamesValue: null,
                 nosDay: null,
                 dateVal: null});
             alert("No Deploments to be shown")
@@ -439,7 +543,19 @@ class DeploymentTable extends Component {
 
 
     getKitsVersions = () => {
-        
+        if(this.props.deployments.length == this.props.initialKits.length){
+            this.state.fCountKitName= 0
+            this.state.fCountKitVersion = 0
+            this.state.fCountDate = 0
+            this.state.deployedWithOutKitName= []
+            this.state.deployedWithOutKitVersion= []
+            this.state.deployedWithOutDate= []
+            this.state.kitVersionValue= null
+            this.state.kitOperatorValue= null
+            this.state.kitNamesValue= null
+            this.state.nosDay= null
+            this.state.dateVal= null
+        }
         if(this.state.fCountKitName == 0 && this.state.fCountDate == 0){
             var filtercounter = this.state.fCountDate + this.state.fCountKitName 
             const kitsVer = [];
@@ -450,17 +566,7 @@ class DeploymentTable extends Component {
                 {value: "<", label: "<"},
                 {value: "=", label: "="},
             ];
-            // THIS CODE COULD BE UNCOMMENTED IF WE WANT KIT VERSION TO WORK TOGETHER WITH THE OTHER FILTERS - IT HAS THE BASIC LOGIC
-            // if(filtercounter == 0 && (this.state.fCountKitVersion == 0 || this.state.fCountKitVersion != 0)){
-            //     if(this.state.fCountKitVersion == 0){
-            //         this.state.deployedWithOutKitVersion = []
-            //     }
-                // else if(this.state.fCountKitVersion != 0){
-                //     this.state.deployedWithOutKitVersion = this.state.deployedWithOutKitVersion
-                // }
-                // else{
-                //     this.state
-                // }
+            
             for(const data of this.props.initialKits) {
                 if(!kitsVer.find(obj => obj.label == data.kit_name.concat(": ",data.kit_version))) {
                     kitsVer.push({
@@ -469,29 +575,7 @@ class DeploymentTable extends Component {
                     })
                 }
             }
-            // THIS CODE COULD BE UNCOMMENTED IF WE WANT KIT VERSION TO WORK TOGETHER WITH THE OTHER FILTERS - IT HAS THE BASIC LOGIC
-            // }
-            // else if(filtercounter != 0 && this.state.fCountKitVersion == 0){
-            //     this.state.deployedWithOutKitVersion = this.props.deployments
-            //     for(const data of this.state.deployedWithOutKitVersion) {
-            //         if(!kitsVer.find(obj => obj.value == data.kit_name.concat(": ",data.kit_version))) {
-            //             kitsVer.push({
-            //                 value: data.kit_version,
-            //                 label: data.kit_name.concat(": ",data.kit_version)
-            //             })
-            //         }
-            //     }
-            // }
-            // else if(filtercounter != 0 && this.state.fCountKitVersion != 0){
-            //     for(const data of this.state.deployedWithOutKitVersion) {
-            //         if(!kitsVer.find(obj => obj.value == data.kit_name.concat(": ",data.kit_version))) {
-            //             kitsVer.push({
-            //                 value: data.kit_version,
-            //                 label: data.kit_name.concat(": ",data.kit_version)
-            //             })
-            //         }
-            //     }
-            // }
+        
             return(
                 <div>
                     <Select
@@ -554,31 +638,6 @@ class DeploymentTable extends Component {
 
     filterKitsVersion = () => {
         var newData = []
-        // THIS CODE COULD BE UNCOMMENTED IF WE WANT KIT VERSION TO WORK TOGETHER WITH THE OTHER FILTERS - IT HAS THE BASIC LOGIC
-        //var filtercounter = this.state.fCountDate + this.state.fCountKitName
-        // if(option == null && filtercounter == 0){
-        //     newData = this.props.initialKits
-        // }
-        // else if(option == null && filtercounter != 0){
-        //     if(this.state.deployedWithOutKitVersion == []){
-        //         newData = this.props.deployments
-        //     }
-        //     else{
-        //         newData = this.state.deployedWithOutKitVersion
-        //     }
-        // }
-        // else if(option != null && filtercounter != 0){
-        //     var kitname = option.label.substring(0,(option.label.indexOf(':')))
-        //     //console.log(kitname == this.state.deployedWithOutKitVersion[j].kit_name)
-        //     for(var j=0; j < this.state.deployedWithOutKitVersion.length; j++) {
-        //         //console.log(kitname == this.state.deployedWithOutKitVersion[j].kit_name)
-        //         if(option.value === this.state.deployedWithOutKitVersion[j].kit_version && kitname == this.state.deployedWithOutKitVersion[j].kit_name) {
-        //             newData.push(this.state.deployedWithOutKitVersion[j])
-        //         }
-        //     }       
-        // }
-        // else if(option != null && filtercounter == 0){
-        //     var kitname = option.label.substring(0,(option.label.indexOf(':')))     
         var kitname = this.state.kitVersionValue.label.substring(0,(this.state.kitVersionValue.label.indexOf(':')))     
         for(var data of this.props.initialKits) {
             if(kitname == data.kit_name) {
@@ -597,7 +656,7 @@ class DeploymentTable extends Component {
                 deployedWithOutDate: [],
                 kitVersionValue: null,
                 kitOperatorValue: null,
-                kitNamesOption: null,
+                kitNamesValue: null,
                 nosDay: null,
                 dateVal: null});
                 alert("No Deploments to be shown")
