@@ -145,7 +145,7 @@ class QuickView extends Component {
                             <Card key={key} className="shadow p-3 mb-5 bg-white rounded m-3" role="button">
                                 <Card.Body>
                                     {/* take all deployments in the array and use them as a link back to displaying them on the dashboard */}
-                                    <Row as={Link} to={`${RouteMap.Dashboard}/?quickviewDeployments=${JSON.stringify(this.state.quickViewDeployments[key].deployments).replaceAll(' ',"")}`}>
+                                    <Row as={Link} to={`${RouteMap.Dashboard}/?quickviewDeployments=${JSON.stringify(this.state.quickViewDeployments[key].deployments)}`}>
 
                                         <Col>
                                             <h6 key={key} className="text-center">{key}</h6>
