@@ -124,45 +124,46 @@ func CreatClient() *vault.Client {
 	}
 	return client
 }
-/*GetDeployment controller function to get the list of all deployments or 
+
+/*GetDeployment controller function to get the list of all deployments or
 kit info about a particular deployment*/
 
-func GetDeployments() gin.HandlerFunc{
-	return func(context *gin.Context){
+func GetDeployments() gin.HandlerFunc {
+	return func(context *gin.Context) {
 		fmt.Println(context.Params.ByName("any"))
-		param:= strings.Split(context.Params.ByName("any"), "/")[1:]
-		deployment_name:=""
-		if len(param) == 2{ 
-			if param[0] != " "{ // buffalo-lab/ form the correct deployment name to query info about it 
-				deployment_name= param[0]+"/"
-			} 
-		}else if len(param)==1{ // if the len of param is "1" then just get the list of deployments
-				deployment_name="just list"
-		}else{
-                context.JSON(400,gin.H{"error":"no deployments"})
+		param := strings.Split(context.Params.ByName("any"), "/")[1:]
+		deployment_name := ""
+		if len(param) == 2 {
+			if param[0] != " " { // buffalo-lab/ form the correct deployment name to query info about it
+				deployment_name = param[0] + "/"
+			}
+		} else if len(param) == 1 { // if the len of param is "1" then just get the list of deployments
+			deployment_name = "just list"
+		} else {
+			context.JSON(400, gin.H{"error": "no deployments"})
 		}
-		if deployment_name !="just list"{
-			dbConn:=database.ConnectDB()
-			status:=false
-			deployment_details:=make(map[string]interface{})
-			status,deployment_details=database.GetDeploymentDetails(dbConn,deployment_name)
-			if status==true{
-				context.JSON(200,deployment_details)
-			}else{
-				context.JSON(400,gin.H{"error":"no deployment"})
+		if deployment_name != "just list" {
+			dbConn := database.ConnectDB()
+			status := false
+			deployment_details := make(map[string]interface{})
+			status, deployment_details = database.GetDeploymentDetails(dbConn, deployment_name)
+			if status == true {
+				context.JSON(200, deployment_details)
+			} else {
+				context.JSON(400, gin.H{"error": "no deployment"})
 			}
 
-		}else{
-			dbConn:=database.ConnectDB()
-			status:=false
+		} else {
+			dbConn := database.ConnectDB()
+			status := false
 			var deployments []string
-			status,deployments=database.ListDeployments(dbConn)
-			if status==true{
-				context.JSON(200,gin.H{"deploy_list":deployments})
-			}else{
-				context.JSON(400,gin.H{"error":"no deployments"})
+			status, deployments = database.ListDeployments(dbConn)
+			if status == true {
+				context.JSON(200, gin.H{"deploy_list": deployments})
+			} else {
+				context.JSON(400, gin.H{"error": "no deployments"})
 			}
 		}
-		
+
 	}
 }
