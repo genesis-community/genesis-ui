@@ -73,232 +73,225 @@ func LogoutDB(dbConn *sql.DB, key string) string {
 }
 
 func GetUserDetailsDB(dbConn *sql.DB, key string) (bool, map[string]string) {
-	var(
+	var (
 		accessToken string
-		name string
-		username string
+		name        string
+		username    string
 	)
 	//var accessToken string
-	userDetails:=make(map[string]string)
-	err := dbConn.QueryRow(fmt.Sprintf("SELECT username,name,gittoken FROM user_details WHERE key = '%s'", key)).Scan(&username,&name,&accessToken)
+	userDetails := make(map[string]string)
+	err := dbConn.QueryRow(fmt.Sprintf("SELECT username,name,gittoken FROM user_details WHERE key = '%s'", key)).Scan(&username, &name, &accessToken)
 	if err != nil {
 		return false, nil
 	}
 	dbConn.Close()
-	userDetails["accessToken"]=accessToken
-	userDetails["name"]=name
-	userDetails["username"]=username
+	userDetails["accessToken"] = accessToken
+	userDetails["name"] = name
+	userDetails["username"] = username
 	return true, userDetails
 }
 
 /*
-AddQuickView will add quickview 
-to the table quickviews and will create 
-records into table quickviews_values for each quickview type for each user 
+AddQuickView will add quickview
+to the table quickviews and will create
+records into table quickviews_values for each quickview type for each user
 */
-func AddQuickView(dbConn *sql.DB,quickviewName string,quickview_info map[string][]string,userDetails map[string]string)(string,bool){
-	if quickviewName!="" && len(quickview_info)>0 {
-		
-		deployment_fltrs:=quickview_info["deployments"]
-		kitname_fltrs:=quickview_info["kitname"]
-		
-        var quickview_id int
-		err := dbConn.QueryRow(fmt.Sprintf("INSERT INTO quickviews (user_name,name,created_at) VALUES ('%s', '%s',now()) RETURNING id", userDetails["username"],quickviewName)).Scan(&quickview_id)
+func AddQuickView(dbConn *sql.DB, quickviewName string, quickview_info map[string][]string, userDetails map[string]string) (string, bool) {
+	if quickviewName != "" && len(quickview_info) > 0 {
+
+		deployment_fltrs := quickview_info["deployments"]
+		kitname_fltrs := quickview_info["kitname"]
+
+		var quickview_id int
+		err := dbConn.QueryRow(fmt.Sprintf("INSERT INTO quickviews (user_name,name,created_at) VALUES ('%s', '%s',now()) RETURNING id", userDetails["username"], quickviewName)).Scan(&quickview_id)
+		if err != nil {
+			return err.Error(), false
+		}
+		if quickview_id > 0 {
+
+			if len(deployment_fltrs) > 0 {
+
+				deployments := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(deployment_fltrs)), ","), "[]")
+				sqlStatement := `INSERT INTO quickviews_values(quickview_id,qv_value,qv_value_type,created_at) VALUES ($1,$2,$3,now())`
+				_, err = dbConn.Exec(sqlStatement, quickview_id, deployments, "deployments")
 				if err != nil {
-					return err.Error(),false
-				}
-		if(quickview_id>0){
-
-
-			if(len(deployment_fltrs)>0){
-				
-				deployments:=strings.Trim(strings.Join(strings.Fields(fmt.Sprint(deployment_fltrs)), ", "), "[]")
-				sqlStatement:=`INSERT INTO quickviews_values(quickview_id,qv_value,qv_value_type,created_at) VALUES ($1,$2,$3,now())`
-				_, err=dbConn.Exec(sqlStatement,quickview_id,deployments,"deployments")
-				if err !=nil{
-					return err.Error(),false
+					return err.Error(), false
 				}
 			}
 
-			if(len(kitname_fltrs)>0){
-				
-				kitnames:=strings.Trim(strings.Join(strings.Fields(fmt.Sprint(kitname_fltrs)), ", "), "[]")
-				sqlStatement:=`INSERT INTO quickviews_values(quickview_id,qv_value,qv_value_type,created_at) VALUES ($1,$2,$3,now())`
-				_, err=dbConn.Exec(sqlStatement,quickview_id,kitnames,"kitname")
-				if err !=nil{
-					return err.Error(),false
+			if len(kitname_fltrs) > 0 {
+
+				kitnames := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(kitname_fltrs)), ","), "[]")
+				sqlStatement := `INSERT INTO quickviews_values(quickview_id,qv_value,qv_value_type,created_at) VALUES ($1,$2,$3,now())`
+				_, err = dbConn.Exec(sqlStatement, quickview_id, kitnames, "kitname")
+				if err != nil {
+					return err.Error(), false
 				}
 
 			}
-	    }
+		}
 
-		return "Quickview added",true
+		return "Quickview added", true
 
-
-
-	} else{
-		return "Quickview creation failed",false
+	} else {
+		return "Quickview creation failed", false
 	}
 }
 
 /*
-GetUserQuickViews will give the list of quickviews available for 
+GetUserQuickViews will give the list of quickviews available for
 each user from the database
 */
 
-func GetUserQuickViews(dbConn *sql.DB,userDetails map[string]string) (bool,map[string]map[string][]string,error){
-	quickviews:=make(map[string]map[string][]string)
-	username:=userDetails["username"]
-	if username !=""{
-        rows,err:=dbConn.Query(fmt.Sprintf("SELECT id,name FROM quickviews WHERE user_name='%s'",username))
-		if err!=nil{
-			return false,nil,err
+func GetUserQuickViews(dbConn *sql.DB, userDetails map[string]string) (bool, map[string]map[string][]string, error) {
+	quickviews := make(map[string]map[string][]string)
+	username := userDetails["username"]
+	if username != "" {
+		rows, err := dbConn.Query(fmt.Sprintf("SELECT id,name FROM quickviews WHERE user_name='%s'", username))
+		if err != nil {
+			return false, nil, err
 		}
 		defer rows.Close()
-		for rows.Next(){
-			var(
+		for rows.Next() {
+			var (
 				qv_name string
-			    qv_id string
+				qv_id   string
 			)
-			if err :=rows.Scan(&qv_id,&qv_name);err!=nil{
-				return false,nil,err
+			if err := rows.Scan(&qv_id, &qv_name); err != nil {
+				return false, nil, err
 			}
-			qv,err:=dbConn.Query(fmt.Sprintf("SELECT qv_value_type,qv_value FROM quickviews_values WHERE quickview_id='%s'",qv_id))
-			if err!=nil{
-				return false,nil,err
+			qv, err := dbConn.Query(fmt.Sprintf("SELECT qv_value_type,qv_value FROM quickviews_values WHERE quickview_id='%s'", qv_id))
+			if err != nil {
+				return false, nil, err
 			}
 			defer qv.Close()
-			qvtype:=make(map[string][]string)
-			for qv.Next(){
-				var(
-					qvt string
+			qvtype := make(map[string][]string)
+			for qv.Next() {
+				var (
+					qvt    string
 					values string
 				)
-				if err:=qv.Scan(&qvt,&values);err!=nil{
-					return false,nil,err
+				if err := qv.Scan(&qvt, &values); err != nil {
+					return false, nil, err
 				}
-				qvtype[qvt]=strings.Split(values,",")
+				qvtype[qvt] = strings.Split(values, ",")
 			}
-			if err=qv.Err();err!=nil{
-				return false,nil,err
+			if err = qv.Err(); err != nil {
+				return false, nil, err
 			}
-			quickviews[qv_name]=qvtype
+			quickviews[qv_name] = qvtype
 		}
-		if err=rows.Err();err!=nil{
-			return false,nil,err
+		if err = rows.Err(); err != nil {
+			return false, nil, err
 		}
-		return true,quickviews,nil
-	}else{
-		return false,nil,nil
+		return true, quickviews, nil
+	} else {
+		return false, nil, nil
 	}
 
-
 }
-/*ListDeployment function to get all available deployments 
+
+/*ListDeployment function to get all available deployments
 from the local Database*/
-func ListDeployments(dbConn *sql.DB) (bool,[]string){
-	
+func ListDeployments(dbConn *sql.DB) (bool, []string) {
+
 	var deployment_list []string
-	rows,err:=dbConn.Query(fmt.Sprintf("SELECT name from deployment_details"))
-			if err!=nil{
-				return false,nil
-			}
-			defer rows.Close()
-			for rows.Next(){
-				var deployment_name string
-				if err :=rows.Scan(&deployment_name);err!=nil{
-					return false,nil
-				}
-				deployment_list=append(deployment_list,deployment_name)
-			}
-			if err=rows.Err();err!=nil{
-				return false,nil
-			}
+	rows, err := dbConn.Query(fmt.Sprintf("SELECT name from deployment_details"))
+	if err != nil {
+		return false, nil
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var deployment_name string
+		if err := rows.Scan(&deployment_name); err != nil {
+			return false, nil
+		}
+		deployment_list = append(deployment_list, deployment_name)
+	}
+	if err = rows.Err(); err != nil {
+		return false, nil
+	}
 	dbConn.Close()
-	return true,deployment_list
-			
-	
+	return true, deployment_list
 
 }
-/*GetDeploymentDetails function to get the kit information 
-for a given deployment deployment */
-func GetDeploymentDetails(dbConn *sql.DB,deployment_name string)(bool,map[string]interface{}){
-	deployment_details:=make(map[string]interface{})
-	var deployment_id int
-	err:=dbConn.QueryRow(fmt.Sprintf("SELECT id FROM deployment_details WHERE name= '%s'",deployment_name)).Scan(&deployment_id)
-	if err != nil {
-		return false,nil
-	}
-	if deployment_id>0{
-		rows,err:=dbConn.Query(fmt.Sprintf("SELECT name,version,is_dev,features,deployed_by,deployed_at from kit_details WHERE deployment_id='%d'",deployment_id))
-				if err!=nil{
-					return false,nil
-				}
-				defer rows.Close()
-					for rows.Next(){
-						kit:=make(map[string]string)
-						var(
-							kit_name string
-							kit_version string
-							kit_is_dev string
-							features string
-							deployer string
-							dated string
-						)
-						if err:=rows.Scan(&kit_name,&kit_version,&kit_is_dev,&features,&deployer,&dated);err!=nil{
-							return false,nil
-						}
-						kit["kit_name"]=kit_name
-						kit["kit_version"]=kit_version
-						kit["kit_is_dev"]=kit_is_dev
-						kit["features"]=features
-						kit["deployer"]=deployer
-						kit["dated"]=dated
-						deployment_details[kit_name]=kit
-					}
-					if err=rows.Err();err!=nil{
-						return false,nil
-					}
-			dbConn.Close()
-			return true,deployment_details
 
-				
-	}else{
-		return false,nil
+/*GetDeploymentDetails function to get the kit information
+for a given deployment deployment */
+func GetDeploymentDetails(dbConn *sql.DB, deployment_name string) (bool, map[string]interface{}) {
+	deployment_details := make(map[string]interface{})
+	var deployment_id int
+	err := dbConn.QueryRow(fmt.Sprintf("SELECT id FROM deployment_details WHERE name= '%s'", deployment_name)).Scan(&deployment_id)
+	if err != nil {
+		return false, nil
+	}
+	if deployment_id > 0 {
+		rows, err := dbConn.Query(fmt.Sprintf("SELECT name,version,is_dev,features,deployed_by,deployed_at from kit_details WHERE deployment_id='%d'", deployment_id))
+		if err != nil {
+			return false, nil
+		}
+		defer rows.Close()
+		for rows.Next() {
+			kit := make(map[string]string)
+			var (
+				kit_name    string
+				kit_version string
+				kit_is_dev  string
+				features    string
+				deployer    string
+				dated       string
+			)
+			if err := rows.Scan(&kit_name, &kit_version, &kit_is_dev, &features, &deployer, &dated); err != nil {
+				return false, nil
+			}
+			kit["kit_name"] = kit_name
+			kit["kit_version"] = kit_version
+			kit["kit_is_dev"] = kit_is_dev
+			kit["features"] = features
+			kit["deployer"] = deployer
+			kit["dated"] = dated
+			deployment_details[kit_name] = kit
+		}
+		if err = rows.Err(); err != nil {
+			return false, nil
+		}
+		dbConn.Close()
+		return true, deployment_details
+
+	} else {
+		return false, nil
 	}
 }
 
 /*Function to delete a quickview */
 
-func DeleteQuickViews(dbConn *sql.DB,quickviewName string,userDetails map[string]string)(string,bool){
+func DeleteQuickViews(dbConn *sql.DB, quickviewName string, userDetails map[string]string) (string, bool) {
 
-	if quickviewName!=""{
-		username:=userDetails["username"]
+	if quickviewName != "" {
+		username := userDetails["username"]
 		var quickview_id int
-		fmt.Println(username,quickviewName)
-		err:=dbConn.QueryRow(fmt.Sprintf("SELECT id FROM quickviews WHERE user_name='%s' and name='%s'",username,quickviewName)).Scan(&quickview_id)
-		if err!=nil{
-			return err.Error(),false
+		fmt.Println(username, quickviewName)
+		err := dbConn.QueryRow(fmt.Sprintf("SELECT id FROM quickviews WHERE user_name='%s' and name='%s'", username, quickviewName)).Scan(&quickview_id)
+		if err != nil {
+			return err.Error(), false
 		}
 
-	    sqlStatement:=`DELETE FROM quickviews_values WHERE quickview_id=$1`
-		_, err=dbConn.Exec(sqlStatement,quickview_id)
-				if err !=nil{
-					return err.Error(),false
-				}
+		sqlStatement := `DELETE FROM quickviews_values WHERE quickview_id=$1`
+		_, err = dbConn.Exec(sqlStatement, quickview_id)
+		if err != nil {
+			return err.Error(), false
+		}
 
-		sqlStatement=`DELETE FROM quickviews WHERE id=$1`
-		_, err=dbConn.Exec(sqlStatement,quickview_id)
-				if err !=nil{
-					return err.Error(),false
-				}
+		sqlStatement = `DELETE FROM quickviews WHERE id=$1`
+		_, err = dbConn.Exec(sqlStatement, quickview_id)
+		if err != nil {
+			return err.Error(), false
+		}
 
-		return "success -quickview deleted",true
+		return "success -quickview deleted", true
 
-
-
-	}else{
-		return "no quickview name provided to delete",false
+	} else {
+		return "no quickview name provided to delete", false
 	}
 
 }
