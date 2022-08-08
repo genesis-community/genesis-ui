@@ -6,7 +6,6 @@ COPY cron/go.sum .
 
 
 COPY cron/ .
-RUN go get github.com/blockloop/scan 
 RUN go mod download
 
 RUN apk update \
