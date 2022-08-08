@@ -96,7 +96,6 @@ class Dashboard extends Component {
                         old_dep_data.push(data[x])
                     })
                 })
-               
                 .catch(error => console.log(error))
         }
         this.setState({ deploymentData: old_dep_data, loading: false, initialKits: old_dep_data});
@@ -104,30 +103,192 @@ class Dashboard extends Component {
 
     sortData = (key, sort_by) => {
         const backup = this.state.deploymentData.sort((a, b) => sort_by ? (a[key].localeCompare(b[key])) : (b[key].localeCompare(a[key])))
-        this.setState({ deploymentData: backup })
+        const backup1 = this.state.initialKits.sort((a, b) => sort_by ? (a[key].localeCompare(b[key])) : (b[key].localeCompare(a[key])))
+        // var kitNameArray = []
+        // var kitNameArray1 = []
+        // var kitname = ""
+        // var kitname1 = ""
+        // if(key == "kit_name"){
+        //     var retArr = []
+        //     var retArr1 = []
+        //     if(kitNameArray == []){
+        //         var kitname = backup[0].kit_name
+        //     }
+        //     for(const data of backup){
+        //         if(kitname == data.kit_name){
+        //             kitNameArray.push(data)
+        //         }
+        //         else{
+        //             retArr = retArr.concat(this.sortKit(kitNameArray))
+        //             kitname = data.kit_name
+        //             kitNameArray = []
+        //             kitNameArray.push(data)
+        //         }
+        //     }
+        //     if(kitNameArray1 == []){
+        //         kitname1 = backup[0].kit_name
+        //     }
+        //     for(const data of backup1){
+        //         if(kitname1 == data.kit_name){
+        //            kitNameArray1.push(data)
+        //         }
+        //         else{
+        //             retArr1 = retArr1.concat(this.sortKit(kitNameArray1))
+        //             kitname1 = data.kit_name
+        //             kitNameArray1 = []
+        //             kitNameArray1.push(data)
+        //         }
+        //     }
+        //     this.setState({deploymentData : retArr, initialKits : retArr1});
+        // }
+        // else{
+        var sortedNameVer = []
+        var sortedNameVer1 = []
+        if(key == "kit_name"){
+            var nameData = {}
+            for(var data of backup){
+                if(nameData[data.kit_name] != undefined){
+                    nameData[data.kit_name].push(data)
+                }
+                else{
+                    nameData[data.kit_name] = [data]
+                }
+            }
+            for(var i in nameData){
+                sortedNameVer = sortedNameVer.concat(this.quickSort(nameData[i]))
+            }
+            var nameData1 = {}
+            for(var data of backup1){
+                if(nameData1[data.kit_name] != undefined){
+                    nameData1[data.kit_name].push(data)
+                }
+                else{
+                    nameData1[data.kit_name] = [data]
+                }
+            }
+            for(var i in nameData1){
+                sortedNameVer1 = sortedNameVer1.concat(this.quickSort(nameData1[i]))
+            }
+            this.setState({deploymentData : sortedNameVer, initialKits : sortedNameVer1})
+        }
+        
+        else{
+            this.setState({deploymentData : backup, initialKits : backup1})
+        };
+    }
+
+    quickSort = (arr) => {
+        const a = [...arr];
+        if (a.length < 2) return a;
+        const pivotIndex = Math.floor(arr.length / 2);
+        const pivot = a[pivotIndex];
+        const [lo, hi] = a.reduce(
+          (acc, val, i) => {
+            if (this.comparator(val.kit_version,pivot.kit_version,">") || (this.comparator(val.kit_version,pivot.kit_version,"=") && i != pivotIndex)) {
+              acc[0].push(val);
+            } else if (this.comparator(val.kit_version,pivot.kit_version,"<")) {
+              acc[1].push(val);
+            }
+            return acc;
+          },
+          [[], []]
+        );
+        return [...this.quickSort(lo), pivot, ...this.quickSort(hi)];
+    };
+    
+    comparator = (data1,data2,operator) => {
+        const semver = require('semver')
+        const semverGt = require('semver/functions/gt')
+        const semverLt = require('semver/functions/lt')
+        const semverEq = require('semver/functions/eq')
+        const semverGte = require('semver/functions/gte')
+        const semverLte = require('semver/functions/lte')
+       
+        if (data1 ===  "latest" && data2 !=  "latest"){
+            if(operator == ">"){
+                return semverGt("10000000.100000000.100000",data2)
+            }
+            else if(operator == ">="){
+                return semverGte("10000000.100000000.100000",data2)
+            } 
+            else if(operator == "<"){
+                return semverLt("10000000.100000000.100000",data2)
+            } 
+            else if(operator == "<="){
+                return semverLte("10000000.100000000.100000",data2)
+            } 
+            else if(operator == "="){
+                return semverEq("10000000.100000000.100000",data2)
+            }
+        }
+        else if(data1 !=  "latest" && data2 ===  "latest"){
+            if(operator == ">"){
+                return semverGt(data1,"10000000.100000000.100000")
+            }
+            else if(operator == ">="){
+                return semverGte(data1,"10000000.100000000.100000")
+            } 
+            else if(operator == "<"){
+                return semverLt(data1,"10000000.100000000.100000")
+            } 
+            else if(operator == "<="){
+                return semverLte(data1,"10000000.100000000.100000")
+            } 
+            else if(operator == "="){
+                return semverEq(data1,"10000000.100000000.100000")
+            }
+        }
+        else if(data1 ===  "latest" && data2 ===  "latest"){
+            if(operator == ">"){
+                return semverGt("10000000.100000000.100000","10000000.100000000.100000")
+            }
+            else if(operator == ">="){
+                return semverGte("10000000.100000000.100000","10000000.100000000.100000")
+            } 
+            else if(operator == "<"){
+                return semverLt("10000000.100000000.100000","10000000.100000000.100000")
+            } 
+            else if(operator == "<="){
+                return semverLte("10000000.100000000.100000","10000000.100000000.100000")
+            } 
+            else if(operator == "="){
+                return semverEq("10000000.100000000.100000","10000000.100000000.100000")
+            }
+        }
+        else if(data1 !=  "latest" && data2 !=  "latest"){
+            if(operator == ">"){
+                return semverGt(data1,data2)
+            }
+            else if(operator == ">="){
+                return semverGte(data1,data2)
+            } 
+            else if(operator == "<"){
+                return semverLt(data1,data2)
+            } 
+            else if(operator == "<="){
+                return semverLte(data1,data2)
+            } 
+            else if(operator == "="){
+                return semverEq(data1,data2)
+            }
+        }
     }
 
     filterData = (newData) => {   
          this.setState({deploymentData: newData})
-       // }
-        //else{
-          //  this.state({deploymentData: this.state.initialKits})
-        //}
-        // const backup = this.state.deploymentData.filter(x => checkList.indexOf(x.deployments)!== 
-        // -1) 
-        // this.setState({deploymentData: backup})
     }
 
     addSelect = (option) => {
-        this.setState({ selectedDeployments: option })
+        this.setState({selectedDeployments: option})
         //store the selectedDeployments into sessionstorage 
         sessionStorage.setItem("selectedDeployments", JSON.stringify(option));
         // Remove those deployment data which are not selected anymore
-        console.log(option)
+        //console.log(option)
         const checkList = option.map(x => x.value);
-        console.log(checkList)
-        const backup = this.state.deploymentData.filter(x => checkList.indexOf(x.deployment_name) !== -1)
-        this.setState({ deploymentData: backup, quickviewName: null });
+        //console.log(checkList)
+        const backup = this.state.initialKits.filter(x => checkList.indexOf(x.deployment_name) !== -1)
+        const backup1 = this.state.deploymentData.filter(x => checkList.indexOf(x.deployment_name) !== -1)
+        this.setState({ deploymentData: backup1, quickviewName: null, initialKits: backup});
         localStorage.setItem("selected", JSON.stringify(backup));
     }
 
@@ -161,7 +322,6 @@ class Dashboard extends Component {
 
     removeQuickView = () => {
         const selected = this.state.selectedDeployments.map(x => x.value);
-
         for (let key in this.state.quickViewDeployments) {
             const item = this.state.quickViewDeployments[key];
             let same = true;
