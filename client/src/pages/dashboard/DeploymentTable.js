@@ -8,7 +8,6 @@ import RouteMap from "../../RouteMap";
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import semver from "semver";
-import { compareAsc, format } from 'date-fns'
 
 
 class DeploymentTable extends Component {
@@ -124,7 +123,6 @@ class DeploymentTable extends Component {
                     dateLast.setDate(dateLast.getDate() - 60)
                     for(let data of this.props.initialKits){
                         let kitsDate = new Date(data.dated.substring(0,10))
-                        console.log(kitsDate.toString())
                         if(kitsDate >= dateLast && kitsDate <= dateOption){
                             newData.push(data)
                         }
@@ -136,7 +134,6 @@ class DeploymentTable extends Component {
                     dateLast.setDate(dateLast.getDate() - 30)
                     for(let data of this.props.initialKits){
                         let kitsDate = new Date(data.dated.substring(0,10))
-                        console.log(kitsDate.toString())
                         if(kitsDate >= dateLast && kitsDate <= dateOption){
                             newData.push(data)
                         }
@@ -148,8 +145,7 @@ class DeploymentTable extends Component {
                     dateLast.setDate(dateLast.getDate() - 15)
                     for(let data of this.props.initialKits){
                         let kitsDate = new Date(data.dated.substring(0,10))
-                        console.log(kitsDate.toString())
-                        if(kitsDate >= dateLast && kitsDate <= dateOption){
+\                        if(kitsDate >= dateLast && kitsDate <= dateOption){
                             newData.push(data)
                         }
                     }
@@ -369,7 +365,6 @@ class DeploymentTable extends Component {
 
         if(option != null && this.state.dateVal != null){
             this.state.fCountDate = 1
-            console.log("reached")
             this.filterDates()
         }
         else if(option == null && this.state.dateVal != null){
@@ -426,7 +421,6 @@ class DeploymentTable extends Component {
                 dateLast.setDate(dateLast.getDate() - 60)
                 for(let data of this.props.initialKits){
                     let kitsDate = new Date(data.dated.substring(0,10))
-                    console.log(kitsDate.toString())
                     if(kitsDate >= dateLast && kitsDate <= dateOption){
                         newData.push(data)
                     }
@@ -438,7 +432,6 @@ class DeploymentTable extends Component {
                 dateLast.setDate(dateLast.getDate() - 30)
                 for(let data of this.props.initialKits){
                     let kitsDate = new Date(data.dated.substring(0,10))
-                    console.log(kitsDate.toString())
                     if(kitsDate >= dateLast && kitsDate <= dateOption){
                         newData.push(data)
                     }
@@ -450,7 +443,6 @@ class DeploymentTable extends Component {
                 dateLast.setDate(dateLast.getDate() - 15)
                 for(let data of this.props.initialKits){
                     let kitsDate = new Date(data.dated.substring(0,10))
-                    console.log(kitsDate.toString())
                     if(kitsDate >= dateLast && kitsDate <= dateOption){
                         newData.push(data)
                     }
@@ -471,7 +463,6 @@ class DeploymentTable extends Component {
                 dateLast.setDate(dateLast.getDate() - 60)
                 for(let data of newDa){
                     let kitsDate = new Date(data.dated.substring(0,10))
-                    console.log(kitsDate.toString())
                     if(kitsDate >= dateLast && kitsDate <= dateOption){
                         newData.push(data)
                     }
