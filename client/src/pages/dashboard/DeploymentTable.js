@@ -145,7 +145,7 @@ class DeploymentTable extends Component {
                     dateLast.setDate(dateLast.getDate() - 15)
                     for(let data of this.props.initialKits){
                         let kitsDate = new Date(data.dated.substring(0,10))
-\                        if(kitsDate >= dateLast && kitsDate <= dateOption){
+                        if(kitsDate >= dateLast && kitsDate <= dateOption){
                             newData.push(data)
                         }
                     }
