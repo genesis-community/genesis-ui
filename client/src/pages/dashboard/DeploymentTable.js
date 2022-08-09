@@ -40,7 +40,6 @@ class DeploymentTable extends Component {
     getKits = () => {
         var filtercounter= this.state.fCountDate + this.state.fCountKitVersion
         const kits = [];
-
         /* Logics for 4 possible conditions Kitname has filter and there are other filters
                                             Kitname has no filter and no there are other filters
                                             Kitname has filter and no there are other filters
@@ -619,7 +618,7 @@ class DeploymentTable extends Component {
                 deployedWithOutDate: [],
                 kitVersionValue: null,
                 kitOperatorValue: null,
-                kitNamesOption: null,
+                kitNamesValue: null,
                 nosDay: null,
                 dateVal: null});
                 alert("No Deploments to be shown")
