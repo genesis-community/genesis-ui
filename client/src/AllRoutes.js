@@ -2,7 +2,8 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Navigate
+  Navigate,
+  Redirect
 } from "react-router-dom";
 
 import RouteMap from "./RouteMap";
@@ -29,6 +30,7 @@ class AllRoutes extends Component {
       redirect: false,
       errorMessage: null,
       existingUser: false,
+      canLogin: false
     }
   }
 
@@ -38,13 +40,13 @@ class AllRoutes extends Component {
       redirectUrl: null,
       redirect: false,
       errorMessage: null,
+      canLogin: false
     });
-
+    
     // Get the token from localstore or sessionStorage
     const isRemember = localStorage.getItem("remember_me");
     const localStorage_token = localStorage.getItem("token");
     const sessionStorage_token = sessionStorage.getItem("token");
-
     // todo
     this.setState({ userData: true },
       (async () => {
@@ -55,14 +57,13 @@ class AllRoutes extends Component {
         else if (isRemember === null && sessionStorage_token !== null) {
           await this.getUserInfo(`user?token=${sessionStorage_token}`)
         }
-
         this.setState({ redirect: true });
       })
     );
   }
-
-
+  
   getUserInfo = async (url) => {
+    
     return await fetch(
       (url)
     ).then(response => response.json())
@@ -70,6 +71,8 @@ class AllRoutes extends Component {
         if (response.error) {
           throw Error(response);
         }
+        console.log(response)
+        this.setState({ canLogin: true });
         this.setState({userData: response.profile_details, existingUser: response.existing_user});
         return response.token
       })
@@ -79,10 +82,19 @@ class AllRoutes extends Component {
   }
 
   renderProtectedRoutes = () => {
-    if (this.state.userData === null || this.state.userData === undefined) {
-      this.setState({ redirectUrl: RouteMap.Login, errorMessage: "An error occured: Please try again or contact your administrator for more information." });
-      return "";
-    } else {
+
+    // if (this.state.canLogin === false || this.state.userData === undefined) {
+    //   console.log("checking protected route")
+      
+    //   return (
+    //     <Route path="*" element={<Navigate to={RouteMap.Login} />} key="Navigate" />
+    //   );
+      // this.setState({ redirectUrl: RouteMap.Login, errorMessage: "An error occured: Please try again or contact your administrator for more information." });
+      // return (
+      //   <Route path={RouteMap.Login} exact element={<Login userData={this.state.userData} errorMessage="An error occured: Please try again or contact your administrator for more information." />} key="Login" />
+      // );
+    // } else {
+      console.log("rendering protected routes")
       return ([
         <Route path={RouteMap.LandingPage} exact element={this.RouteWithAuthNav(this.state.userData, LandingPage)} key="routeMap" />,
         <Route path={RouteMap.Dashboard} exact element={this.RouteWithAuthNav(this.state.userData, Dashboard)} key="Dashboard" />,
@@ -90,7 +102,7 @@ class AllRoutes extends Component {
         <Route path={RouteMap.ShowMore} exact element={this.RouteWithAuthNav(this.state.userData, ShowMore)} key="ShowMore" component={ShowMore} />,
 
       ])
-    }
+    // }
   }
 
   RouteWithAuthNav = (userData, component) => {
@@ -107,8 +119,9 @@ class AllRoutes extends Component {
           <Route path={RouteMap.Login} exact element={<Login userData={this.state.userData} errorMessage={this.state.errorMessage} />} key="Login" />
           <Route path={RouteMap.Callback} exact element={<ProcessToken getUserInfo={this.getUserInfo} existingUser={this.state.existingUser} isRemember={localStorage.getItem("remember_me")} />} key="ProcessToken" />
           <Route path={RouteMap.Error_404} exact element={<Error_404 />} key="Error_404" />
-
-          {this.renderProtectedRoutes()}
+          
+          { this.state.canLogin ? this.renderProtectedRoutes() : 
+          <Route path="*" element={<Navigate to={RouteMap.Login} />} /> } 
 
           {this.state.redirect ?
             <Route path="*" element={<Navigate to={this.state.redirectUrl} />} key="Navigate" />
