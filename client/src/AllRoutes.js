@@ -83,17 +83,6 @@ class AllRoutes extends Component {
 
   renderProtectedRoutes = () => {
 
-    // if (this.state.canLogin === false || this.state.userData === undefined) {
-    //   console.log("checking protected route")
-      
-    //   return (
-    //     <Route path="*" element={<Navigate to={RouteMap.Login} />} key="Navigate" />
-    //   );
-      // this.setState({ redirectUrl: RouteMap.Login, errorMessage: "An error occured: Please try again or contact your administrator for more information." });
-      // return (
-      //   <Route path={RouteMap.Login} exact element={<Login userData={this.state.userData} errorMessage="An error occured: Please try again or contact your administrator for more information." />} key="Login" />
-      // );
-    // } else {
       console.log("rendering protected routes")
       return ([
         <Route path={RouteMap.LandingPage} exact element={this.RouteWithAuthNav(this.state.userData, LandingPage)} key="routeMap" />,
@@ -102,7 +91,7 @@ class AllRoutes extends Component {
         <Route path={RouteMap.ShowMore} exact element={this.RouteWithAuthNav(this.state.userData, ShowMore)} key="ShowMore" component={ShowMore} />,
 
       ])
-    // }
+    
   }
 
   RouteWithAuthNav = (userData, component) => {
