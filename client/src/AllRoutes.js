@@ -87,14 +87,13 @@ class AllRoutes extends Component {
         <Route path={RouteMap.LandingPage} exact element={this.RouteWithAuthNav(this.state.userData, LandingPage)} key="routeMap" />,
         <Route path={RouteMap.Dashboard} exact element={this.RouteWithAuthNav(this.state.userData, Dashboard)} key="Dashboard" />,
         <Route path={RouteMap.QuickView} exact element={this.RouteWithAuthNav(this.state.userData, QuickView)} key="QuickView" />,
-        <Route path={RouteMap.ShowMore} exact element={this.RouteWithAuthNav(this.state.userData, ShowMore)} key="ShowMore" component={ShowMore} />,
-
+      
       ])
     }
   }
 
   RouteWithAuthNav = (userData, component) => {
-    return ([
+    return ([ 
       <AuthNavBar userData={userData} />,
       React.createElement(component, userData)
     ])
