@@ -7,6 +7,7 @@ import DeploymentTable from "./DeploymentTable";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faStar, faTrash } from "@fortawesome/free-solid-svg-icons";
 
+
 class Dashboard extends Component {
     constructor(props) {
         super(props);
@@ -21,8 +22,6 @@ class Dashboard extends Component {
             quickviewName: null,
         }
     }
-
-
     componentDidMount = async () => {
         if (localStorage.getItem("quickview")) {
             this.setState({ quickViewDeployments: JSON.parse(localStorage.getItem("quickview")) })
@@ -76,12 +75,13 @@ class Dashboard extends Component {
                 this.setState({
                     deploymentList: options
                 })
+                console.log("this is deployement list")
+                console.log(this.state.deploymentList)
             })
             .catch(error => console.log(error))
     }
-
-
     getDeploymentData = async () => {
+        'use strict';
         this.setState({ deploymentData: [], loading: true });
         const old_dep_data = this.state.deploymentData;
 
@@ -100,23 +100,159 @@ class Dashboard extends Component {
                 })
                 .catch(error => console.log(error))
         }
-        this.setState({ deploymentData: old_dep_data, loading: false });
+        this.setState({ deploymentData: old_dep_data, loading: false, initialKits: old_dep_data});
     }
 
     sortData = (key, sort_by) => {
         const backup = this.state.deploymentData.sort((a, b) => sort_by ? (a[key].localeCompare(b[key])) : (b[key].localeCompare(a[key])))
-        this.setState({ deploymentData: backup })
+        const backup1 = this.state.initialKits.sort((a, b) => sort_by ? (a[key].localeCompare(b[key])) : (b[key].localeCompare(a[key])))
+        var sortedNameVer = []
+        var sortedNameVer1 = []
+        if(key == "kit_name"){
+            var nameData = {}
+            for(var data of backup){
+                if(nameData[data.kit_name] != undefined){
+                    nameData[data.kit_name].push(data)
+                }
+                else{
+                    nameData[data.kit_name] = [data]
+                }
+            }
+            for(var i in nameData){
+                sortedNameVer = sortedNameVer.concat(this.quickSort(nameData[i]))
+            }
+            var nameData1 = {}
+            for(var data of backup1){
+                if(nameData1[data.kit_name] != undefined){
+                    nameData1[data.kit_name].push(data)
+                }
+                else{
+                    nameData1[data.kit_name] = [data]
+                }
+            }
+            for(var i in nameData1){
+                sortedNameVer1 = sortedNameVer1.concat(this.quickSort(nameData1[i]))
+            }
+            this.setState({deploymentData : sortedNameVer, initialKits : sortedNameVer1})
+        }
+        
+        else{
+            this.setState({deploymentData : backup, initialKits : backup1})
+        };
     }
 
+    quickSort = (arr) => {
+        const a = [...arr];
+        if (a.length < 2) return a;
+        const pivotIndex = Math.floor(arr.length / 2);
+        const pivot = a[pivotIndex];
+        const [lo, hi] = a.reduce(
+          (acc, val, i) => {
+            if (this.comparator(val.kit_version,pivot.kit_version,">") || (this.comparator(val.kit_version,pivot.kit_version,"=") && i != pivotIndex)) {
+              acc[0].push(val);
+            } else if (this.comparator(val.kit_version,pivot.kit_version,"<")) {
+              acc[1].push(val);
+            }
+            return acc;
+          },
+          [[], []]
+        );
+        return [...this.quickSort(lo), pivot, ...this.quickSort(hi)];
+    };
+    
+    comparator = (data1,data2,operator) => {
+        const semver = require('semver')
+        const semverGt = require('semver/functions/gt')
+        const semverLt = require('semver/functions/lt')
+        const semverEq = require('semver/functions/eq')
+        const semverGte = require('semver/functions/gte')
+        const semverLte = require('semver/functions/lte')
+       
+        if (data1 ===  "latest" && data2 !=  "latest"){
+            if(operator == ">"){
+                return semverGt("10000000.100000000.100000",data2)
+            }
+            else if(operator == ">="){
+                return semverGte("10000000.100000000.100000",data2)
+            } 
+            else if(operator == "<"){
+                return semverLt("10000000.100000000.100000",data2)
+            } 
+            else if(operator == "<="){
+                return semverLte("10000000.100000000.100000",data2)
+            } 
+            else if(operator == "="){
+                return semverEq("10000000.100000000.100000",data2)
+            }
+        }
+        else if(data1 !=  "latest" && data2 ===  "latest"){
+            if(operator == ">"){
+                return semverGt(data1,"10000000.100000000.100000")
+            }
+            else if(operator == ">="){
+                return semverGte(data1,"10000000.100000000.100000")
+            } 
+            else if(operator == "<"){
+                return semverLt(data1,"10000000.100000000.100000")
+            } 
+            else if(operator == "<="){
+                return semverLte(data1,"10000000.100000000.100000")
+            } 
+            else if(operator == "="){
+                return semverEq(data1,"10000000.100000000.100000")
+            }
+        }
+        else if(data1 ===  "latest" && data2 ===  "latest"){
+            if(operator == ">"){
+                return semverGt("10000000.100000000.100000","10000000.100000000.100000")
+            }
+            else if(operator == ">="){
+                return semverGte("10000000.100000000.100000","10000000.100000000.100000")
+            } 
+            else if(operator == "<"){
+                return semverLt("10000000.100000000.100000","10000000.100000000.100000")
+            } 
+            else if(operator == "<="){
+                return semverLte("10000000.100000000.100000","10000000.100000000.100000")
+            } 
+            else if(operator == "="){
+                return semverEq("10000000.100000000.100000","10000000.100000000.100000")
+            }
+        }
+        else if(data1 !=  "latest" && data2 !=  "latest"){
+            if(operator == ">"){
+                return semverGt(data1,data2)
+            }
+            else if(operator == ">="){
+                return semverGte(data1,data2)
+            } 
+            else if(operator == "<"){
+                return semverLt(data1,data2)
+            } 
+            else if(operator == "<="){
+                return semverLte(data1,data2)
+            } 
+            else if(operator == "="){
+                return semverEq(data1,data2)
+            }
+        }
+    }
+
+    filterData = (newData) => {   
+         this.setState({deploymentData: newData})
+    }
 
     addSelect = (option) => {
-        this.setState({ selectedDeployments: option })
+        this.setState({selectedDeployments: option})
         //store the selectedDeployments into sessionstorage 
         sessionStorage.setItem("selectedDeployments", JSON.stringify(option));
         // Remove those deployment data which are not selected anymore
+        //console.log(option)
         const checkList = option.map(x => x.value);
-        const backup = this.state.deploymentData.filter(x => checkList.indexOf(x.deployment_name) !== -1)
-        this.setState({ deploymentData: backup, quickviewName: null });
+        //console.log(checkList)
+        const backup = this.state.initialKits.filter(x => checkList.indexOf(x.deployment_name) !== -1)
+        const backup1 = this.state.deploymentData.filter(x => checkList.indexOf(x.deployment_name) !== -1)
+        this.setState({ deploymentData: backup1, quickviewName: null, initialKits: backup});
         localStorage.setItem("selected", JSON.stringify(backup));
     }
 
@@ -137,48 +273,101 @@ class Dashboard extends Component {
         return false;
     }
 
-    addQuickView = () => {
+    addQuickView = async () => {
         // Set to localstorage or send to server (in future)
-        const selected = this.state.selectedDeployments.map(x => x.value);
-        if (!(this.existInList(selected))) {
-            const backup = this.state.quickViewDeployments;
-            backup[this.state.quickviewName] = selected
-            this.setState({ quickViewDeployments: backup, quickviewName: null })
-            localStorage.setItem("quickview", JSON.stringify(backup));
-        }
-    }
-
-    removeQuickView = () => {
-        const selected = this.state.selectedDeployments.map(x => x.value);
-
-        for (let key in this.state.quickViewDeployments) {
-            const item = this.state.quickViewDeployments[key];
-            let same = true;
-            for (let s of selected) {
-                if (!item.includes(s)) {
-                    same = false;
-                    break;
-                }
-            }
-            if (same && selected.length === item.length) {
+        if (localStorage.getItem("token")){
+                const selected = this.state.selectedDeployments.map(x => x.value);
+            if (!(this.existInList(selected))) {
                 const backup = this.state.quickViewDeployments;
-                delete backup[key];
-                this.setState({ quickViewDeployments: backup })
-                if (!Object.keys(backup).length) {
-                    localStorage.removeItem("quickview");
-                }
-                else {
-                    localStorage.setItem("quickview", JSON.stringify(backup));
-                }
-                return;
+                backup[this.state.quickviewName] = selected
+                this.setState({ quickViewDeployments: backup, quickviewName: null })
+                const localStorage_token = localStorage.getItem("token");
+
+                console.log(this.state.quickviewName)
+                console.log(this.state.quickViewDeployments)
+                console.log(selected)
+                await fetch(`addQuickview?token=${localStorage_token}`, {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
+                        
+                    },
+                    body: JSON.stringify({
+                        name:this.state.quickviewName,
+                        deployments:selected,
+                        kitname:["k","1","2"]
+                    })
+                })
+                    .then(response => response.json())
+                    .then(response => {
+                      console.log(response)
+                        })
+                    .catch(error => console.log(error))
             }
+        }else if (sessionStorage.getItem("token")){
+            const selected = this.state.selectedDeployments.map(x => x.value);
+            if (!(this.existInList(selected))) {
+                const backup = this.state.quickViewDeployments;
+                backup[this.state.quickviewName] = selected
+                this.setState({ quickViewDeployments: backup, quickviewName: null })
+                const sessionStorage_token = sessionStorage.getItem("token");
+
+                console.log(this.state.quickviewName)
+                console.log(this.state.quickViewDeployments)
+                console.log(selected)
+                await fetch(`addQuickview?token=${sessionStorage_token}`, {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
+                        
+                    },
+                    body: JSON.stringify({
+                        name:this.state.quickviewName,
+                        deployments:selected,
+                        kitname:["placeholder1", "placeholder2"]
+                    })
+                })
+                    .then(response => response.json())
+                    .then(response => {
+                      console.log(response)
+                        })
+                    .catch(error => console.log(error))
+            } 
+        }else{
+            alert("Something is wrong...  Log out and log back in")
         }
-    }
+    }    
+
+    // removeQuickView = () => {
+    //     const selected = this.state.selectedDeployments.map(x => x.value);
+
+    //     for (let key in this.state.quickViewDeployments) {
+    //         const item = this.state.quickViewDeployments[key];
+    //         let same = true;
+    //         for (let s of selected) {
+    //             if (!item.includes(s)) {
+    //                 same = false;
+    //                 break;
+    //             }
+    //         }
+    //         if (same && selected.length === item.length) {
+    //             const backup = this.state.quickViewDeployments;
+    //             delete backup[key];
+    //             this.setState({ quickViewDeployments: backup })
+    //             if (!Object.keys(backup).length) {
+    //                 localStorage.removeItem("quickview");
+    //             }
+    //             else {
+    //                 localStorage.setItem("quickview", JSON.stringify(backup));
+    //             }
+    //             return;
+    //         }
+    //     }
+    
 
     renderQuickView = () => {
         if (this.state.quickViewDeployments && (this.existInList(this.state.selectedDeployments.map(x => x.value)))) {
             return "";
-
             // COMMENT OUT BELOW IF YOU WANT A "REMOVE FROM QUICKVIEW" on Dashboard.
             // return (
             //     <Row className="mx-4">
@@ -211,8 +400,6 @@ class Dashboard extends Component {
             )
         }
     }
-
-
     render() {
         return (
             <div>
@@ -234,7 +421,6 @@ class Dashboard extends Component {
                         <Button variant="success" className="w-100" onClick={this.getDeploymentData}>Show Deployments</Button>
                     </Col>
                 </Row>
-
                 {this.state.deploymentData && this.state.deploymentData.length ?
                     this.renderQuickView()
                     :
@@ -243,8 +429,7 @@ class Dashboard extends Component {
 
                 <Row>
                     <Col className="text-center">
-                        <DeploymentTable deployments={this.state.deploymentData} sortData={this.sortData} />
-
+                        <DeploymentTable filterData = {this.filterData} deployments={this.state.deploymentData} sortData={this.sortData} initialKits={this.state.initialKits}/>
                         {this.state.loading ?
                             <div><FontAwesomeIcon icon={faSpinner} spin /> &nbsp;&nbsp;Loading...</div>
                             :

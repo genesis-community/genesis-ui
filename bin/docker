@@ -13,6 +13,7 @@ export VAULT_ADDR="https://10.128.4.5:443"
 export VAULT_SKIP_VERIFY="true"
 export VAULT_TOKEN="$(cat ~/.vault-token)"
 
+
 case "${cmd}" in
   (compose-build)
     docker compose build

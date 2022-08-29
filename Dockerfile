@@ -3,9 +3,10 @@ FROM golang:1.17 AS build
 WORKDIR /cronjob
 COPY cron/go.mod .
 COPY cron/go.sum .
-RUN go mod download
+
 
 COPY cron/ .
+RUN go mod download
 
 RUN apk update \
         && apk upgrade \
