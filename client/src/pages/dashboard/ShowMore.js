@@ -1,86 +1,62 @@
 import React, { Component } from "react";
+import {Modal, Button} from 'react-bootstrap';
 import { Table, Row, Col, Alert, Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 class ShowMore extends Component {
-    //
+    
     constructor(props) {
         super(props);
         this.state = {
             deploymentData: [],
-
+            show: false,
         }
-        const urlSearchParams = new URLSearchParams(window.location.search);
-
     }
-
-    async componentDidMount() {
-        await this.getDeployment();
-    }
-
-    getDeployment = async () => {
-        const urlSearchParams = new URLSearchParams(window.location.search);
-
-        const old_dep_data = this.state.deploymentData;
-        // http://localhost:3000/list/genesis-lab/
-        await fetch(`http://localhost:3000/list/${urlSearchParams.get("deployment")}`, {
-            headers: {
-                Authorization: `Token ${localStorage.getItem("token") ?? sessionStorage.getItem("token")}`,
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                Object.keys(data).forEach(x => {
-                    // data[x].deployment_name = dep.value
-                    old_dep_data.push(data[x])
-                })
-
-
-            })
-            .catch(error => console.log(error))
-
-        this.setState({ deploymentData: this.state.deploymentData[new URLSearchParams(window.location.search).get("index")], loading: false });
-
-    }
-
-
+    //Displaying deployment data using props
     render() {
-        // console.log(this.state.deploymentData);
-
-        // let deployment = this.state.deploymentData[new URLSearchParams(window.location.search).get("index")];
-        console.log(this.state.deploymentData);
-
         return (
-            <div>
-                <center>
-                    <h1>{new URLSearchParams(window.location.search).get("deployment") + " Details"}</h1>
-                    <br />
-                    <br />
-                    <h2>
+            <div key={this.props.index}>
+                <Button variant="primary" onClick={() => this.setState({show : true})}>
+                        Show more
+                </Button>
+                <Modal
+                    show = {this.state.show}
+                    size="lg"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                >
+                    <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        {this.props.deployment}
+                    </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
                         <ul>
-
-                            {"Deployment Dated: " + this.state.deploymentData.dated}
+                            {"Deployment Dated: " + this.props.data.dated}
                             <br />
                             <br />
-                            {"Deployment Deployer: " + this.state.deploymentData.deployer}
+                            {"Deployment Deployer: " + this.props.data.deployer}
                             <br />
                             <br />
-                            {"Deployment Features: " + this.state.deploymentData.features}
+                            {"Deployment Features: " + this.props.data.features}
                             <br />
                             <br />
-                            {"Deployment Kit Dev: " + this.state.deploymentData.kit_is_dev}
+                            {"Deployment Kit Dev: " + this.props.data.kit_is_dev}
                             <br />
                             <br />
-                            {"Deployment Kit Name: " + this.state.deploymentData.kit_name}
+                            {"Deployment Kit Name: " + this.props.data.kit_name}
                             <br />
                             <br />
-                            {"Deployment Kit Version: " + this.state.deploymentData.kit_version}
+                            {"Deployment Kit Version: " + this.props.data.kit_version}
                         </ul>
-
-                    </h2>
-                </center>
+                    </Modal.Body>
+                    <Modal.Footer>
+                    <Button onClick={() => this.setState({show : false})}>Close</Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
+           
         )
     }
 }

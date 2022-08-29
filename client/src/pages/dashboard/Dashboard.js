@@ -46,6 +46,8 @@ class Dashboard extends Component {
         else{
             this.setState({selectedDeployments:{}})
         }
+        console.log(this.defaultSelections)
+        console.log(this.state.selectedDeployments)
     }
 
     params = new URLSearchParams(window.location.search)
