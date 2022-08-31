@@ -49,7 +49,8 @@ ln -s  $PWD/.env backend/.env
 ln -s  $PWD/.env cron/.env
 ```
 
-6. Then do `make all`
+6. Add the vault token to the file `${HOME}/.vault-token`
+7. Then do `make all`
 
 ## Make Commands
 * `make all` - Run `docker build` to create `genesis-ui` image from [DockerFile](./Dockerfile) and `docker run` to create a `genesis-ui` container based on `genesis-ui` image to hosting Genesis UI.
