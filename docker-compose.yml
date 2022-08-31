@@ -1,0 +1,69 @@
+version: '3.8'
+services:
+    # Go backend
+    api:
+      build:
+        dockerfile: Dockerfile
+        context: "./backend"
+      ports:
+          - "8000:8000"
+      depends_on:
+        - postgres
+      env_file:
+        - backend/.env
+      environment:
+        - VAULT_TOKEN
+        - VAULT_DATA_PREFIX
+        - VAULT_LIST_PREFIX
+        - VAULT_ADDR
+        - VAULT_SKIP_VERIFY
+
+  # React frontend
+    client:
+     stdin_open: true
+     build:
+       dockerfile: Dockerfile
+       context: "./client"
+     ports:
+       - "3000:3000"
+     env_file:
+        - client/.env
+     environment:
+       - CHOKIDAR_USEPOLLING=true
+       - REACT_APP_CLIENT_ID=${CLIENT_ID}
+
+    # Cronjob container - runs every hour
+    cron:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      env_file:
+      - cron/.env
+      environment:
+        - VAULT_TOKEN
+        - VAULT_DATA_PREFIX
+        - VAULT_LIST_PREFIX
+        - VAULT_ADDR
+        - VAULT_SKIP_VERIFY
+
+
+    #Postgres DB
+    postgres:
+      image: postgres
+      restart: always
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=genesis-ui
+      volumes:
+        - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+
+    #GUI for Postgres
+    pgadmin:
+      image: dpage/pgadmin4
+      restart: always
+      environment:
+        PGADMIN_DEFAULT_EMAIL: admin@admin.com
+        PGADMIN_DEFAULT_PASSWORD: postgres
+      ports:
+        - "5050:80"
