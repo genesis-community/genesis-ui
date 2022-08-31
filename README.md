@@ -26,22 +26,30 @@ The informational Interface will contains three web pages:
 ---
 ## Phase 4: Health Monitoring. 
 
----'
-## steps to build and run the genesis-ui
-1.Create a .env file in the genesis-ui folder
-2.And set the values for the below envirnoment variable in .env file
+---
 
-        VAULT_TOKEN=
+## Build and run the genesis-ui
+1. Create a .env file in the genesis-ui folder
+2. Authenticate to safe if you are not already authenticated `safe auth github`, you will be prompted for your Github user token.
+3. Grab the vault token from your profile `cat ${HOME}/.svtoken`
+4. Set the values for the below envirnoment variables in the .env file
+
+```
+        VAULT_TOKEN=        # <---- fill this in from the previous step
         VAULT_DATA_PREFIX=secret
         VAULT_LIST_PREFIX=secret
         VAULT_ADDR=https://vault.lab.starkandwayne.com
         VAULT_SKIP_VERIFY=true
-    For the VAULT_TOKEN get the token value by doing `cat .svtoken` in you home directory
-3.Then create a symbolic link for the .env file to backend/.env and cron/.env file
-        ln -s  $PWD/.env backend/.env  and ln -s  $PWD/.env cron/.env
+```
 
+5. Then create a symbolic link for the .env file to backend/.env and cron/.env file
 
-4.Then do `make all`
+```
+ln -s  $PWD/.env backend/.env
+ln -s  $PWD/.env cron/.env
+```
+
+6. Then do `make all`
 
 ## Make Commands
 * `make all` - Run `docker build` to create `genesis-ui` image from [DockerFile](./Dockerfile) and `docker run` to create a `genesis-ui` container based on `genesis-ui` image to hosting Genesis UI.
